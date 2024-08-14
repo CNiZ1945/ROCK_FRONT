@@ -26,7 +26,6 @@ const MyPage = () => {
         {name: '내가 찜한 리스트', content: ""},
         {name: '나의 작성 리뷰', content: ""},
         {name: '회원정보 수정', content: <MemberInfo />},
-        {name: '결제/이용권', content: ""},
         {name: '회원탈퇴', content: <WithdrawMember />},
     ];
 

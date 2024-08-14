@@ -140,15 +140,6 @@ function Navs() {
 					ADMIN
 				</MenuName>
 
-
-				<MenuName
-					onClick={() => {
-						goToPage('/chart');
-					}}
-					scrollposition={scrollPosition}
-				>
-					CHART
-				</MenuName>
 			</MenuWrapper>
 
 

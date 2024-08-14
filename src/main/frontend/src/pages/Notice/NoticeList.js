@@ -31,11 +31,11 @@ const NoticeList = ({postsPerPage, totalPosts, paginate}) => {
 
     const checkPermission = async () => {
         try {
-            const token = localStorage.getItem('accessToken')
+            const token = localStorage.getItem('accessToken');
             if(!token){
                 alert('로그인이 필요한 페이지입니다.');
                 navigate("/login");
-                return;
+                // return;
             }
             else{
                 setHasPermission(true);
@@ -70,8 +70,8 @@ const NoticeList = ({postsPerPage, totalPosts, paginate}) => {
         } 
         catch (error) {
             console.error('Error fetching board:', error);
-            alert('목록을 불러오는 중 오류가 발생했습니다.')
-            navigate(-1);
+            alert('공지사항 목록을 불러오는 중 오류가 발생했습니다.')
+            navigate("/login");
         }
     };
 
@@ -130,7 +130,10 @@ const NoticeList = ({postsPerPage, totalPosts, paginate}) => {
             initializedRef.current = true;
             checkPermission();
         }
-        loadBoardList();
+        if(hasPermission){
+            loadBoardList();
+        }
+
         getUserRole().then(role => setRole(role));
     }, []);
 

@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import "./css/AdminNoticeListPage.css";
+// import api from '../../api/axios';
 
 function AdminNoticeListPage() {
     const [isLoading, setIsLoading] = useState(true);
@@ -14,6 +15,8 @@ function AdminNoticeListPage() {
     const initializedRef = useRef(false);
 
     const checkPermission = async () => {
+
+        // token 및 권한 설정
         const token = localStorage.getItem('accessToken');
         if (!token) {
             alert("로그인이 필요합니다.");
@@ -41,6 +44,7 @@ function AdminNoticeListPage() {
         }
     };
 
+    // 목록 불러오기
     const loadBoardList = async (page = 0) => {
         try {
             const response = await axios.get('/admin/boardList', {
@@ -55,6 +59,7 @@ function AdminNoticeListPage() {
         }
     };
 
+    // 검색
     const searchBoards = async () => {
         if (!searchKeyword.trim()) {
             loadBoardList(0); // 검색어가 없을 경우 전체 목록을 불러옴
@@ -79,6 +84,7 @@ function AdminNoticeListPage() {
         }
     };
 
+    // 삭제 기능
     const deleteSelectedPosts = async () => {
         const selectedBoards = Array.from(document.querySelectorAll('input[name="selectedBoards"]:checked')).map(board => board.value);
         if (selectedBoards.length > 0) {

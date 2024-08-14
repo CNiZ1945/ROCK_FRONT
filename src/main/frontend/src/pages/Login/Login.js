@@ -3,6 +3,7 @@ import React, {useEffect, useState} from "react";
 import styled from "styled-components";
 import google from "./images/continue_google_neutral.png";
 import { Link } from "react-router-dom";
+import { api } from "../../api/axios";
 
 // Logins-로그인
 function Login() {
@@ -10,9 +11,6 @@ function Login() {
     const [password, setPassword] = useState("");
     const [rememberUserName, setRememberUserName] = useState(false);
 
-    const api = axios.create({
-        baseURL: "http://localhost:8080",
-    })
 
     // 아이디 저장 관련 - 1
     useEffect(() => {

@@ -79,13 +79,14 @@ function MemberInfo() {
 
     const formatTelNumber = (value) => {
         const cleanText = ('' + value).replace(/\D/g, '');
-        const match = cleanText.match(/^(\d{3})(\d{0,4})(\d{0,4})$/);
-        if(match){
-            return `${match[1]}-${match[2]}-${match[3]}`;
+        if (cleanText.length = 11) {
+            return `${cleanText.slice(0, 3)}-${cleanText.slice(3, 7)}-${cleanText.slice(7, 11)}`;
+        } 
+        else {
+            alert('연락처는 3자리-4자리-4자리 형식이어야 합니다');
+            // return;
         }
-        return value;
-    }
-
+    };
 
     const handleEdit = (field) => {
         setEditField(field);
@@ -122,7 +123,8 @@ function MemberInfo() {
     const handleChange = (e) => {
         const { name, value } = e.target;
         // 전화번호 필드일 때만 포맷 적용
-        const formattedValue = name === 'memNewTel' ? formatTelNumber(value) : value;
+        // const formattedValue = name === 'memNewTel' ? formatTelNumber(value) : value;
+        // setTelNumber(formattedValue)
         setNewInfo(prevState => ({
             ...prevState,
             [name]: value,
