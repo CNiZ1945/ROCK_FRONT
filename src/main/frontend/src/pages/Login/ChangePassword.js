@@ -1,9 +1,12 @@
 import React, {useState, useEffect} from 'react';
-import {useNavigate, useLocation} from "react-router-dom";
+import {useNavigate, useLocation, Link} from "react-router-dom";
 import axios from "axios";
+
 
 // css
 import "../../common/css/ChangePassword.css"
+import { api } from '../../api/axios';
+import styled from 'styled-components';
 
 
 
@@ -16,7 +19,8 @@ export default function ChangePassword() {
     const [isResetMode, setIsResetMode] = useState(false);
 
     const [passwords, setPasswords] = useState({
-        memNewPassword: '', memNewPasswordCheck: ''
+        memNewPassword: '', 
+        memNewPasswordCheck: ''
     });
 
     const [passwordError, setPasswordError] = useState('');
@@ -85,11 +89,11 @@ export default function ChangePassword() {
             // 재설정 & 변경 모드 엔드포인트
             if (isResetMode) {
                 const token = sessionStorage.getItem('resetToken');
-                response = await axios.post('/auth/reset-password', updatePasswordDto, {params: {token}});
+                response = await api.post('/auth/reset-password', updatePasswordDto, {params: {token}});
                 sessionStorage.removeItem('resetToken');
             } else {
                 const accessToken = localStorage.getItem('accessToken');
-                response = await axios.put('/auth/update', updatePasswordDto, {
+                response = await api.put('/auth/update', updatePasswordDto, {
                     headers: {'Authorization': `Bearer ${accessToken}`}
                 });
             }
@@ -101,13 +105,17 @@ export default function ChangePassword() {
             }
         } catch (error) {
             console.error('Error changing password:', error);
-            alert(error.response?.data || '비밀번호를 재설정하는 동안 오류가 발생했습니다');
+          // 에러 메시지 처리 개선
+          const errorMessage = error.response?.data ? 
+          error.response.data.replace(/<\/?[^>]+(>|$)/g, "") : // HTML 태그 제거
+          '비밀번호를 재설정하는 동안 오류가 발생했습니다';
+      alert(errorMessage);
         }
     };
 
 
     return (<>
-        <div className="wrap">
+        <PasswordChangeWrap>
 
             <div className="step-bar">
                 <span className="gradation-blue"></span>
@@ -176,7 +184,7 @@ export default function ChangePassword() {
 
                 {/*회원가입 속 로그인하러 가기*/}
                 <div className="login_link">
-                    이전으로 돌아가기&nbsp;&nbsp;<a href="/login">로그인</a>
+                    이전으로 돌아가기&nbsp;&nbsp;<Link to="/login">로그인</Link>
                 </div>
             </form>
 
@@ -184,7 +192,7 @@ export default function ChangePassword() {
 
 
 
-        </div>
+        </PasswordChangeWrap>
 
 
         {/* 변경 모드일 때만 돌아가는 버튼있음 */}
@@ -198,3 +206,14 @@ export default function ChangePassword() {
         </>
     );
 }
+
+const PasswordChangeWrap = styled.div`
+
+    width: 560px;
+    position: relative;
+    margin: 80px auto;
+    padding: 40px 40px;
+    background: rgba(11, 11, 13, 0.8);
+
+
+`

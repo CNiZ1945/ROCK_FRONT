@@ -239,7 +239,7 @@ const NoticeList = ({postsPerPage, totalPosts, paginate}) => {
                     return (<CommonTableRow key={index}>
                         <CommonTableColumn>{index + 1}</CommonTableColumn>
                         <CommonTableColumn>
-                            <Link to={`/noticeView/${item.boardId}`}>{item.boardTitle}</Link>
+                            <Link to={`/user/notice/${item.boardId}`}>{item.boardTitle}</Link>
                         </CommonTableColumn>
                         <CommonTableColumn>{item.boardModifyDate}</CommonTableColumn>
                         <CommonTableColumn>{item.boardViewCount}</CommonTableColumn>

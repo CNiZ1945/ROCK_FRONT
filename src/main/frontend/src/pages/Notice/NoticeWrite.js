@@ -1,11 +1,12 @@
-import React, {useState} from "react";
-import {Link, useNavigate} from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import axios from 'axios';
 // import './css/NoticeWrite.css';
 import styled from "styled-components";
 import google from "../Login/images/continue_google_neutral.png";
 
 import notice from "./images/notice_write.png";
+import { api } from "../../api/axios";
 
 
 
@@ -34,6 +35,7 @@ function NoticeWrite() {
         setFiles(newFiles);
     };
 
+    // 파일 추가 버튼 기능
     const addFileInput = () => {
         if (fileInputs.length >= 5) {
             alert("최대 5개의 파일만 업로드할 수 있습니다.");
@@ -42,7 +44,12 @@ function NoticeWrite() {
         setFileInputs([...fileInputs, fileInputs.length]);
     };
 
+    // 파일 삭제 버튼 기능
     const removeFileInput = (index) => {
+        if (fileInputs.length <= 1) {
+            alert("최소 하나의 파일 입력은 남겨야 합니다.");
+            return;
+        }
         const newFileInputs = fileInputs.filter((_, i) => i !== index);
         const newFiles = files.filter((_, i) => i !== index);
         setFileInputs(newFileInputs);
@@ -60,7 +67,7 @@ function NoticeWrite() {
 
         //비동기
         try {
-            const response = await axios.post('/admin/boardWrite', data);
+            const response = await api.post('/admin/boardWrite', data);
             console.log('게시글 작성 성공:', response);
             const boardId = response.data.boardId; // 서버에서 반환한 게시글 ID
 
@@ -86,17 +93,17 @@ function NoticeWrite() {
         });
 
         try {
-            await axios.post(`/admin/boardUpload/${boardId}`, formData, {
+            await api.post(`/admin/boardUpload/${boardId}`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
             });
             console.log('파일 업로드 성공');
-            navigate('/admin/Notice');
+            navigate('/user/Notice');
         } catch (error) {
             console.error('파일 업로드 실패:', error.response ? error.response.data : error.message);
             alert('파일 업로드에 실패했습니다. 게시글은 작성되었습니다.');
-            navigate('/admin/Notice');
+            navigate('/user/Notice');
         }
     };
 
@@ -172,57 +179,47 @@ function NoticeWrite() {
 
                         {fileInputs.map((input, index) => (
 
-                            <div className="filebox" key={index}>
+                            <div className="filebox" key={input}>
 
                                 {/* 파일첨부 */}
-                                <label
-                                    htmlFor="file_0">파일첨부</label>
+                                <label htmlFor="file_0">파일첨부</label>
                                 <input type="file"
-                                       id={`file_${index}`}
-                                       name={`file_${index}`}
-                                       onChange={(e) => handleFileChange(index, e)}
+                                    id={`file_${index}`}
+                                    name={`file_${index}`}
+                                    onChange={(e) => handleFileChange(index, e)}
                                 />
+                                {/* 파일삭제 */}
+                                <button className="removeFile" onClick={() => {removeFileInput(index)}}>파일 삭제</button>
 
                                 {/* 파일 추가 */}
-                                <label
+                                {/* <label
                                     htmlFor="file_0">파일추가</label>
                                 <input type="file"
                                        id={`file_${index}`}
                                        name={`file_${index}`}
                                        onChange={(e) => handleFileChange(index, e)}
-                                />
+                                /> */}
+                                {/* 추가 파일 업로드 버튼 */}
+                                {/* <AddFileUpload> */}
+                                    <button type="button" onClick={addFileInput}>파일 추가</button>
+                                {/* </AddFileUpload> */}
 
-                                {/* 파일삭제 */}
-                                <label
-                                    className="removeFile"
-                                    htmlFor="del">삭제
-                                </label>
 
-                                <input
-                                    className="removeFile"
-                                    id="del"
-                                    name="del"
-                                    type="hidden"
-                                    onClick={() => removeFileInput(index)} 파일삭제="true"/>
 
-                                {/*등록 버튼*/}
-                                <label
-                                    className="submit"
-                                    htmlFor="write">작성
-                                    <img
-                                        className="submit-img"
-                                        src={notice} />
-                                </label>
 
-                                <input
-                                    className="submit"
-                                    id="write"
-                                    name="write"
-                                    type="hidden"
-                                />
+
+
+
 
                             </div>))}
-
+                                {/*등록 버튼*/}
+                                <button 
+                            type="submit" 
+                            className="submit"
+                        >
+                            작성
+                            <img className="submit-img" src={notice} alt="작성" />
+                        </button>
                     </FormBlockFiles>
 
 
@@ -363,14 +360,14 @@ const FormBlockFiles = styled.div`
 
     .filebox label {
         margin-right: 20px;
-
+        margin-bottom: 20px;
         display: inline-block;
         padding: .5em .75em;
         color: #0f2027;
         font-size: 13px;
         line-height: 30px;
         text-align: center;
-        vertical-align: middle;
+        // vertical-align: middle;
         background-color: #fdfdfd;
         cursor: pointer;
         border: 1px solid #ebebeb;
@@ -400,14 +397,37 @@ const FormBlockFiles = styled.div`
     /* 파일 필드 숨기기 */
 
     .filebox input[type="file"] {
-        position: absolute;
-        width: 1px;
-        height: 1px;
-        padding: 0;
-        margin: -1px;
-        overflow: hidden;
+        // position: absolute;
+        width: 200px;
+        height: 43px;
+        padding: .55em .75em;
+        margin-top: -4px;
+        margin-right: 20px;
+        // overflow: hidden;
         clip: rect(0, 0, 0, 0);
-        border: 0;
+        border: 1px solid #ccc;
+        font-size: 13px;
+        vertical-align: middle;
+        // right: 10px
+        }
+
+    button{
+    margin-right: 20px;
+    display: inline-block;
+    padding: .5em .75em;
+    color: #0f2027;
+    font-size: 13px;
+    line-height: 30px;
+    text-align: center;
+    // vertical-align: middle;
+    background-color: #fdfdfd;
+    cursor: pointer;
+    border: 1px solid #ebebeb;
+    width: 90px;
+    height: 45px;
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    background-color: #fff;
     }
 `;
 
@@ -455,7 +475,25 @@ const InputTextSizeWTypeL = styled.div`
     margin-top: 1px;
     text-align: left;
 `;
+const AddFileUpload = styled.div`
+   margin-right: 20px;
+    display: inline-block;
+    padding: .5em .75em;
+    color: #0f2027;
+    font-size: 13px;
+    line-height: 30px;
+    text-align: center;
+    vertical-align: middle;
+    background-color: #fdfdfd;
+    cursor: pointer;
+    border: 1px solid #ebebeb;
+    width: 90px;
+    height: 45px;
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    background-color: #fff;
 
+`
 
 //폼 시작 전 글씨 스타일
 // 모든 폼 폰트 사이즈

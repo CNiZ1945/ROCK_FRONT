@@ -10,7 +10,6 @@ import mypageIcon from './images/icon_mypage.png';
 import useFetch from '../../Hooks/useFetch';
 import search from './images/search.svg';
 
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars, faUser, faTimes } from "@fortawesome/free-solid-svg-icons";
 
@@ -18,6 +17,8 @@ import { faBars, faUser, faTimes } from "@fortawesome/free-solid-svg-icons";
 
 
 function Navs() {
+	const [accessToken, setAccessToken] = useState(localStorage.getItem('accessToken'));
+
 	const [searchInput, setSearchInput] = useState('');
 	const [scrollPosition, setScrollPosition] = useState(0);
 
@@ -29,6 +30,24 @@ function Navs() {
 		navigate(path);
 	};
 
+	const handleLogout = async () => {
+		setAccessToken(localStorage.getItem('accessTokne'))
+
+		try {
+            if (accessToken) {
+                localStorage.removeItem('accessToken');
+                setAccessToken(null);
+				navigate('/login');
+            }	
+			else{
+           		navigate('/login');
+			}		
+		} 
+		catch (error) {
+			console.error('로그아웃 중 오류 발생:', error);
+            alert('로그아웃 중 오류가 발생했습니다. 다시 시도해주세요.');
+		}
+	}
 
 	const updateScroll = () => {
 		setScrollPosition(window.scrollY || document.documentElement.scrollTop);
@@ -166,7 +185,7 @@ function Navs() {
 
 			<IconWrapper>
 				<IconImg
-					onClick={() => goToPage('/login')}
+					onClick={() => handleLogout()}
 					alt="loginIcon"
 					src={loginIcon}
 					scrollposition={scrollPosition}

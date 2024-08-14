@@ -13,6 +13,7 @@ import { api } from "../../api/axios"
 function MemberInfo() {
 
     const navigate = useNavigate();
+    const [telNumber, setTelNumber] = useState();
 
     const [memberInfo, setMemberInfo] = useState({
         memName: '',
@@ -76,7 +77,14 @@ function MemberInfo() {
     }, []);
 
 
-
+    const formatTelNumber = (value) => {
+        const cleanText = ('' + value).replace(/\D/g, '');
+        const match = cleanText.match(/^(\d{3})(\d{0,4})(\d{0,4})$/);
+        if(match){
+            return `${match[1]}-${match[2]}-${match[3]}`;
+        }
+        return value;
+    }
 
 
     const handleEdit = (field) => {
@@ -113,6 +121,8 @@ function MemberInfo() {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
+        // 전화번호 필드일 때만 포맷 적용
+        const formattedValue = name === 'memNewTel' ? formatTelNumber(value) : value;
         setNewInfo(prevState => ({
             ...prevState,
             [name]: value,

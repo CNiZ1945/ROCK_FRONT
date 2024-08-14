@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Link, NavLink, useLocation, useNavigate} from 'react-router-dom';
+import {Link, NavLink, useLocation, useNavigate,} from 'react-router-dom';
 import styled from "styled-components";
 import top from "../images/top.png";
 import axios from "axios";
@@ -9,12 +9,13 @@ import MemberInfo from "../MemberInfo";
 // import FindPassword from "../FindPW";
 import WithdrawMember from "../WithdrawMember";
 import { api } from '../../../api/axios';
-import { DogImg } from './ProfileImg';
+import {DogImg, BirdImg, FishImg, CatImg, TurtleImg, 
+    profile1, profile2, profile3, profile4, profile5} from './ProfileImg'
 
 
 //MyPage header
 const MyPage = () => {
-
+    const navigate = useNavigate();
     //탭 폼
     const [currentTab, setTab] = useState(0);
     const [memberName, setMemberName] = useState('');
@@ -34,6 +35,7 @@ const MyPage = () => {
             const accessToken = localStorage.getItem('accessToken');
             if (!accessToken) {
                 alert('로그인이 필요합니다.');
+                navigate('/login')
                 return;
             }
 
@@ -72,12 +74,10 @@ const MyPage = () => {
             <TopContainer>
                 <Section>
                     <ProfileBoxContainer>
-                        <TopImg src={DogImg}></TopImg>
+                        <TopImg src={profile2}></TopImg>
 
                         <TitelBox>{memberName} 님
-                            <img
-                                className="profile-img"
-                                src={edit}/>
+
                         </TitelBox>
 
                         <FormBlockBody>
@@ -85,7 +85,7 @@ const MyPage = () => {
                                 <EmailsButton
                                     type="button"
                                     onClick={() => {
-
+                                        
                                     }}
                                 >
                                     프로필 전환
