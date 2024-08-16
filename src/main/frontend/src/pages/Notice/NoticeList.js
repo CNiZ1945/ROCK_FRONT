@@ -1,9 +1,9 @@
-import React, {useState, useEffect, useRef} from 'react';
-import {Link, useNavigate} from 'react-router-dom';
+import React, { useState, useEffect, useRef } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import CommonTable from '../../components/table/CommonTable';
 import CommonTableColumn from '../../components/table/CommonTableColumn';
 import CommonTableRow from '../../components/table/CommonTableRow';
-import {postList} from '../../Data';
+import { postList } from '../../Data';
 import styled from "styled-components";
 import Pagination from "react-js-pagination";
 import './css/Paging.css';
@@ -12,8 +12,8 @@ import { api } from '../../api/axios';
 
 
 //일반 회원 공지사항(게시판) 리스트
-const NoticeList = ({postsPerPage, totalPosts, paginate}) => {
-    
+const NoticeList = () => {
+
     const navigate = useNavigate();
 
     const [isLoading, setIsLoading] = useState(true);
@@ -25,33 +25,42 @@ const NoticeList = ({postsPerPage, totalPosts, paginate}) => {
     const [role, setRole] = useState(null);
     const initializedRef = useRef(false);
 
+    //체크 박서 선택 변수
+    const [checkboxSelectAll, setCheckSelectAll] = useState(false);
+    const [selectCheckbox, setSelectCheckbox] = useState([]);
+
     // pagenation useState
     const [page, setPage] = useState(1);
 
+    // const pagenation
 
+
+    // 로그인 및 권한 상태 확인
     const checkPermission = async () => {
         try {
             const token = localStorage.getItem('accessToken');
-            if(!token){
+            if (!token) {
                 alert('로그인이 필요한 페이지입니다.');
                 navigate("/login");
                 // return;
             }
-            else{
+            else {
                 setHasPermission(true);
-            }    
-        } 
+
+            }
+        }
         catch (error) {
             console.error('PostList user info error:', error);
             alert("오류가 발생했습니다. 다시 로그인해주세요")
             navigate('/login');
         }
-        finally{
+        finally {
             setIsLoading(false);
         }
-        
+
     }
 
+    // 공지글 내용 불러오기
     const loadBoardList = async (page = 0) => {
         try {
             const response = await api.get('/user/boardList', {
@@ -67,7 +76,7 @@ const NoticeList = ({postsPerPage, totalPosts, paginate}) => {
             setTotalPages(response.data.totalPages);
             setCurrentPage(page);
 
-        } 
+        }
         catch (error) {
             console.error('Error fetching board:', error);
             alert('공지사항 목록을 불러오는 중 오류가 발생했습니다.')
@@ -75,13 +84,14 @@ const NoticeList = ({postsPerPage, totalPosts, paginate}) => {
         }
     };
 
+    // 공지글 검색 기능
     const searchBoards = async () => {
-        if(!searchKeyword.trim()) {
+        if (!searchKeyword.trim()) {
             loadBoardList(0);
             return;
         }
         try {
-            const response = await api.get('/user/boardSearch',  {
+            const response = await api.get('/user/boardSearch', {
                 params: {
                     page: 0,
                     size: 10,
@@ -90,11 +100,11 @@ const NoticeList = ({postsPerPage, totalPosts, paginate}) => {
                     boardContent: searchKeyword,
                 }
             });
-            
+
             setBoardList(response.data.content);
             setTotalPages(response.data.totalPages);
             setCurrentPage(0);
-        } 
+        }
         catch (error) {
             console.error('Error searching board:', error);
             alert('검색 중 오류가 발생했습니다.');
@@ -102,51 +112,108 @@ const NoticeList = ({postsPerPage, totalPosts, paginate}) => {
         }
     };
 
+    // 체크 박스 초기화
+    useEffect(() => {
+        if (boardList) {
+            setSelectCheckbox(new Array(boardList.length).fill(false)); // 초기화
+        }
+    }, [boardList]);
+
+    // 체크 박스 모두 선택하기
+    const handleAllcheck = (e) => {
+        const isChecked = e.target.checked;
+        setCheckSelectAll(isChecked);
+
+        // 체크 박스 선택 또는 해제
+        if (isChecked) {
+            setSelectCheckbox(new Array(boardList.length).fill(true));
+        } else {
+            setSelectCheckbox(new Array(boardList.length).fill(false));
+        }
+
+    }
+
+    // 개별 체크 박스 관리 및 동기화
+    const handleCheckbox = (index) => {
+        const updatedCheckbox = [...selectCheckbox];
+        updatedCheckbox[index] = !updatedCheckbox[index];
+        setSelectCheckbox(updatedCheckbox);
+
+        //전체 선택 여부를 업데이트
+        const allChecked = updatedCheckbox.every(item => item);
+        setCheckSelectAll(allChecked);
+    }
+
+    //체크 박스 선택해서 삭제
+    const deleteSelectedPosts = async () => {
+        const selectedBoards = Array.from(document.querySelectorAll('input[name="selectedBoards"]:checked')).map(board => board.value);
+        if (selectedBoards.length > 0) {
+            try {
+                await api.delete('/admin/listdelete', { data: selectedBoards });
+                alert('선택된 게시물들이 삭제되었습니다.');
+                loadBoardList(currentPage);
+            }
+            catch (error) {
+                console.error('게시물 삭제 중 오류 발생:', error);
+                alert('게시물 삭제 중 오류가 발생했습니다.');
+
+            }
+        }
+        else {
+            alert('삭제할 게시물을 선택하세요.');
+        }
+    }
+
+
     const getUserRole = async () => {
         try {
             const token = localStorage.getItem('accessToken');
-            if(!token){
+            if (!token) {
                 throw new Error("No access Token found");
-            }  
+            }
             const response = await api.get('/auth/memberinfo', {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
             });
-            return response.data.memRole;  
-        } 
+            return response.data.memRole;
+        }
 
         catch (error) {
             console.error('Error fetching member role:', error);
             return null;
-            
+
         }
 
     }
-    
 
+    // 권한 확인 후 공지글 불러오기
     useEffect(() => {
-        if(!initializedRef.current){
+        if (!initializedRef.current) {
             initializedRef.current = true;
             checkPermission();
+            console.log("hasPermission: ", hasPermission);
+
         }
-        if(hasPermission){
+        if (hasPermission) {
             loadBoardList();
         }
+        // loadBoardList();
 
         getUserRole().then(role => setRole(role));
-    }, []);
+    }, [hasPermission]);
 
 
-    if(isLoading){
-        return(
+
+    if (isLoading) {
+        return (
             <div>
                 Loading ...
             </div>
         );
     }
 
-    if(!hasPermission){
+    if (!hasPermission) {
         return null;
     }
     // =============================================================================
@@ -169,10 +236,10 @@ const NoticeList = ({postsPerPage, totalPosts, paginate}) => {
         setPage(page);
     };
 
-    const pageNumbers = [];
-    for (let i = 1; i <= Math.ceil(totalPosts / postsPerPage); i++) {
-        pageNumbers.push(i);
-    }
+    // const pageNumbers = [];
+    // for (let i = 1; i <= Math.ceil(totalPosts / postsPerPage); i++) {
+    //     pageNumbers.push(i);
+    // }
 
 
     //★연습용 Data.js ---------------------------
@@ -217,15 +284,22 @@ const NoticeList = ({postsPerPage, totalPosts, paginate}) => {
 
                 {/* <!-- 글쓰기 버튼 --> */}
                 {role === 'ADMIN' && (
-                    <button
-                        className="botom_write"
-                        type="button"
-                        onClick={() => {
-                            navigate(`/admin/notice/write`);
-                        }}
-                    >
-                        <NoticeWriteButton>글쓰기</NoticeWriteButton>
-                    </button>
+                    <>
+                        <button
+                            className="botom_write"
+                            type="button"
+                            onClick={() => navigate(`/admin/notice/write`)}
+                        >
+                            <NoticeWriteButton>글쓰기</NoticeWriteButton>
+                        </button>
+                        <button
+                            className="botom_write"
+                            type="button"
+                            onClick={() => deleteSelectedPosts()}
+                        >
+                            <NoticeWriteButton>삭제</NoticeWriteButton>
+                        </button>
+                    </>
                 )}
 
             </Header>
@@ -236,15 +310,30 @@ const NoticeList = ({postsPerPage, totalPosts, paginate}) => {
             <div className="step-bar">
                 <span className="gradation-blue"></span>
             </div>
-            
-            <CommonTable headersName={['글번호', '제목', '등록일', '조회수']}>
+
+            <CommonTable headersName={[
+                <input
+                    type='checkbox'
+                    checked={checkboxSelectAll}
+                    onChange={handleAllcheck}
+                />,
+
+                '글번호', '제목', '등록일', '조회수']}>
                 {boardList ? boardList.map((item, index) => {
                     return (<CommonTableRow key={index}>
+                        <CommonTableColumn><input 
+                            type='checkbox'
+                            checked={selectCheckbox[index] || false}
+                            onChange={() => handleCheckbox(index)}
+                            name='selectedBoards'
+                            value={item.boardId}
+                        />
+                        </CommonTableColumn>
                         <CommonTableColumn>{index + 1}</CommonTableColumn>
                         <CommonTableColumn>
                             <Link to={`/user/notice/${item.boardId}`}>{item.boardTitle}</Link>
                         </CommonTableColumn>
-                        <CommonTableColumn>{item.boardModifyDate}</CommonTableColumn>
+                        <CommonTableColumn>{item.modifyDate}</CommonTableColumn>
                         <CommonTableColumn>{item.boardViewCount}</CommonTableColumn>
                     </CommonTableRow>)
                 }) : '공지글이 없습니다'}

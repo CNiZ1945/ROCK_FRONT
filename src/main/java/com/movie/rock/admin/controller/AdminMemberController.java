@@ -31,8 +31,8 @@ public class AdminMemberController {
     // 회원 리스트
     @GetMapping("/members")
     public ResponseEntity<Page<MemberListDTO>> getAllMembers(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "15") int size) {
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "15") int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("memNum").ascending());
         Page<MemberEntity> membersPage = memberService.getAllMembersPageable(pageable);
         Page<MemberListDTO> memberDTOs = membersPage.map(MemberListDTO::new);

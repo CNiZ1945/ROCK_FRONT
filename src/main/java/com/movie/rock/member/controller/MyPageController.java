@@ -42,8 +42,8 @@ public class MyPageController {
     @GetMapping("/history")
     public ResponseEntity<Page<MyPageWatchHistoryResponseDTO>> getWatchHistory(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size) {
 
         Long memNum = userDetails.getMemNum();// userDetails에서 memNum을 추출하는 로직
 

@@ -32,10 +32,10 @@ public class MovieSearchController {
     @GetMapping("/user/MovieSearch")
     public ResponseEntity<Page<MovieSearchResponseDTO>> userMovieSearch(
             @PageableDefault(size = 5, sort = "movieId", direction = Sort.Direction.DESC) Pageable pageable,
-            @RequestParam(value = "movieTitle", defaultValue = "") String movieTitle,
-            @RequestParam(value = "movieDirectors", defaultValue = "") List<String> movieDirectors,
-            @RequestParam(value = "movieActors", defaultValue = "") List<String> movieActors,
-            @RequestParam(value = "genres", defaultValue = "") List<String> genres) {
+            @RequestParam(name = "movieTitle" ,value = "movieTitle", defaultValue = "") String movieTitle,
+            @RequestParam(name = "movieDirectors", value = "movieDirectors", defaultValue = "") List<String> movieDirectors,
+            @RequestParam(name = "movieActors", value = "movieActors", defaultValue = "") List<String> movieActors,
+            @RequestParam(name = "genres", value = "genres", defaultValue = "") List<String> genres) {
 
         log.info("검색 요청: 제목={}, 감독={}, 배우={}, 장르={}", movieTitle, movieDirectors, movieActors, genres);
 

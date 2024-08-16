@@ -74,7 +74,7 @@ function NoticeWrite() {
             if (files.length > 0) {
                 await uploadFiles(boardId, files);
             } else {
-                navigate('/admin/Notice');
+                navigate('/user/Notice');
             }
         } catch (error) {
             console.error('게시글 작성 실패:', error);

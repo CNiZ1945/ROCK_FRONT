@@ -52,7 +52,7 @@ public class AdminMovieController {
     @GetMapping("/movie/list/search")
     public ResponseEntity<Page<AdminMovieListResponseDTO>> findByAllSearch(
             @PageableDefault(size = 10, sort = "movieId", direction = Sort.Direction.DESC) Pageable pageable,
-            @RequestParam(required = false) String searchTerm
+            @RequestParam(name = "searchTerm", required = false) String searchTerm
     ) {
         Page<AdminMovieListResponseDTO> searchList = movieAdminService.findByAllSearch(searchTerm, pageable);
         return ResponseEntity.status(HttpStatus.OK).body(searchList);
@@ -231,9 +231,9 @@ public class AdminMovieController {
     //자동완성
     @GetMapping("/directors/search")
     public ResponseEntity<Page<DirectorResponseDTO>> searchDirectors(
-            @RequestParam String query,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(name = "query") String query,
+            @RequestParam(name="page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size) {
         log.info("Searching directors with query: {}, page: {}, size: {}", query, page, size);
         Pageable pageable = PageRequest.of(page, size);
         Page<DirectorResponseDTO> directorsPage = movieAdminService.searchDirectors(query, pageable);
@@ -242,9 +242,9 @@ public class AdminMovieController {
 
     @GetMapping("/actors/search")
     public ResponseEntity<Page<ActorResponseDTO>> searchActors(
-            @RequestParam String query,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(name = "query") String query,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size) {
         log.info("Searching actors with query: {}, page: {}, size: {}", query, page, size);
         Pageable pageable = PageRequest.of(page, size);
         Page<ActorResponseDTO> actorsPage = movieAdminService.searchActors(query, pageable);
@@ -253,9 +253,9 @@ public class AdminMovieController {
 
     @GetMapping("/genres/search")
     public ResponseEntity<Page<GenreResponseDTO>> searchGenres(
-            @RequestParam String query,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(name = "query") String query,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size) {
         log.info("Searching genres with query: {}, page: {}, size: {}", query, page, size);
         Pageable pageable = PageRequest.of(page, size);
         Page<GenreResponseDTO> genresPage = movieAdminService.searchGenres(query, pageable);

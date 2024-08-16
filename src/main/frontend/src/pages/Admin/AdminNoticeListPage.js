@@ -106,7 +106,10 @@ function AdminNoticeListPage() {
             initializedRef.current = true;
             checkPermission();
         }
-        loadBoardList();
+        if(hasPermission){
+            loadBoardList();
+        }
+
     }, []);
 
     if (isLoading) {

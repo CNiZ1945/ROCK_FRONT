@@ -5,6 +5,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { api } from '../../api/axios';
+import styled from 'styled-components';
 
 
 
@@ -14,6 +15,8 @@ const NoticeView = () => {
     // 변수 설정
     const [noticeInfo, setNoticeInfo] = useState(null);
     const [isAdmin, setIsAdmin] = useState(false);
+    const [editTitle, setEditTitle] = useState('');
+    const [editContent, setEditContent] = useState('');
     const navigate = useNavigate();
     const { boardId } = useParams();
 
@@ -31,14 +34,14 @@ const NoticeView = () => {
                 'Authorization': `Bearer ${token}`
             }
         }).then(response => {
-            if (response.data.memRole !== 'ADMIN') {
-                alert("권한이 없습니다.");
-                navigate('/login');
+            if (response.data.memRole === 'ADMIN') {
+                setIsAdmin(true);
             }
             else {
-                setIsAdmin(true);
-                getBoardDetail(boardId);
+                setIsAdmin(false);
+                
             }
+            getBoardDetail(boardId);
         }).catch(error => {
             console.error("사용자 정보를 가져오는 중 오류 발생:", error);
             alert("오류가 발생했습니다. 다시 로그인해주세요")
@@ -63,23 +66,30 @@ const NoticeView = () => {
             });
     };
 
+    // 공지글 수정
     const editPost = () => {
         const token = localStorage.getItem('accessToken');
-        const editedTitle = document.getElementById('boardTitle').value;
-        const editedContent = document.getElementById('boardContent').value;
 
+        const updateTitle = editTitle || noticeInfo.boardTitle;
+        const updateContent = editContent || noticeInfo.boardContent;
+
+        if(!updateTitle || !updateContent){
+            alert("공지글 제목과 내용이 모두 필요합니다.")
+            return;
+        }
         api.patch(`/admin/${boardId}/boardUpdate`, {
             boardId,
-            boardTitle: editedTitle,
-            boardContent: editedContent,
+            boardTitle: editTitle,
+            boardContent: editContent,
         }, {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json',
             }
         }).then(response => {
+            alert("공지글 수정이 완료되었습니다.");
             console.log('게시글 수정 완료:', response.data);
-            navigate(-1);
+            navigate(0);
         }).catch(error => {
             console.error('게시글 수정 중 오류 발생:', error);
             handleAxiosError(error);
@@ -87,53 +97,64 @@ const NoticeView = () => {
 
     }
 
+    // 공지글 삭제
     const deletePost = () => {
         const token = localStorage.getItem('accessToken');
 
-        api.delete(`/admin/${boardId}/boarddelete`, {
+        api.delete(`/admin/${boardId}/delete`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
         }).then(response => {
             console.log('게시글 삭제 완료:', response.data);
             alert('게시글이 삭제되었습니다.');
-            navigate('/admin/notice');
+            navigate('/user/notice');
 
         }).catch(error => {
             console.error('게시글 삭제 중 오류 발생:', error);
             handleAxiosError(error)
-        })
-    }
+        });
+    };
 
-    const downloadFile = (boardfileId, fileName) => {
+    //파일 다운로드
+    const downloadFile = (boardFileId, fileName) => {
         const token = localStorage.getItem('accessToken');
 
         api.get('/admin/boardDownload', {
-            params: { boardfileId },
+            params: { boardFileId },
             responseType: 'blob',
             headers: {
                 'Authorization': `Bearer ${token}`,
             }
 
         }).then(response => {
-            const blob = new Blob([response.data], {
-                type: response.headers['Content-Type']
-            });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.style.display = 'none';
-            a.href = url;
-            a.download = fileName;
-            document.body.appendChild(a);
-            a.click();
-            window.URL.revokeObjectURL(url);
+            if(response.status === 200){
+                const blob = new Blob([response.data], {
+                    type: response.headers['Content-Type']
+                });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = fileName;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+            }
+            else{
+                console.error("downloadFile response.status:", response.status);
+                alert('파일 다운로드 중 오류가 발생했습니다.');
+            }
+
         }).catch(error => {
             console.error('파일 다룬로드 중 오류 발생:', error);
-            handleAxiosError(error);
+            alert("파일 다운로드 중 오류가 발생했습니다");
+            // handleAxiosError(error);
         });
 
     };
-
+    
+    // 에러 처리 
     const handleAxiosError = (error) => {
         if (error.response) {
             console.error('응답 데이터:', error.response.data);
@@ -151,18 +172,30 @@ const NoticeView = () => {
         }
     }
 
+    useEffect(() => {
+        if(noticeInfo) {
+            setEditTitle(noticeInfo.boardTitle);
+            setEditContent(noticeInfo.boardContent);
+        }
+    }, [noticeInfo]);
 
     return (
+        <Wrap>
+
         <div className="noticeView">
             <div className="noticeViewHead">
                 <div className="noticeViewTitle">
                     {/* 조건부 렌더링 적용 */}
-                    {noticeInfo ? (
+                    {noticeInfo ? ( 
+                        
                         <input
                             type="text"
                             id="boardTitle"
                             className="post_title"
-                            value={noticeInfo.boardTitle}
+                            onChange={(e) => setEditTitle(e.target.value)}
+                            value={editTitle !== "" ? editTitle : noticeInfo?.boardTitle}
+
+                            readOnly = {!isAdmin}
                         />
                     ) : (
                         <input
@@ -195,15 +228,16 @@ const NoticeView = () => {
                     <textarea
                         id="boardContent"
                         className="post_text"
-                        value={noticeInfo.boardContent}
-                        readOnly
+                        value={editContent !== '' ? editContent : noticeInfo?.boardContent}
+                        onChange={(e) => setEditContent(e.target.value)}
+                        readOnly = {!isAdmin}
                     ></textarea>
                 ) : (
                     <textarea
                         id="boardContent"
                         className="post_text"
                         defaultValue="내용 없음"
-                        readOnly
+                        readOnly = {!isAdmin}
                     ></textarea>
                 )}
             </div>
@@ -241,7 +275,19 @@ const NoticeView = () => {
                 </div>
             </div>
         </div>
+        </Wrap>
     );
     
 }
 export default NoticeView;
+
+const Wrap = styled.div`
+    width: 100%;
+    //height: 100vh;
+    position: relative;
+    margin: 0 auto;
+    //padding: 40px 40px;
+    //background: rgb(255,255,255);
+    background: #fff;
+    display: inline-block;
+`;

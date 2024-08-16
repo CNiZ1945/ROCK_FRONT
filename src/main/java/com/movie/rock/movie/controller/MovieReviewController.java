@@ -47,8 +47,8 @@ public class MovieReviewController {
     @GetMapping("/{movieId}/reviews")
     public ResponseEntity<ReviewPageResponseDTO> getMovieReviews(
             @PathVariable("movieId") Long movieId,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "latest") String sortBy,
+            @RequestParam(name = "page", defaultValue = "1") int page,
+            @RequestParam(name = "sortBy", defaultValue = "latest") String sortBy,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         MemberEntity member = userDetails.memberEntity();

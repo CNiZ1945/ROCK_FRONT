@@ -63,8 +63,8 @@ public class BoardUserController {
     @GetMapping("/user/boardSearch")
     public ResponseEntity<Page<BoardListResponseDTO>> boardSearch(
             @PageableDefault(size = 5, sort = "boardId", direction = Sort.Direction.DESC) Pageable pageable,
-            @RequestParam("boardTitle") String boardTitle,
-            @RequestParam("boardContent") String boardContent) {
+            @RequestParam(name = "boardTitle") String boardTitle,
+            @RequestParam(name = "boardContent") String boardContent) {
         BoardSearchRequestDTO boardSearchData = BoardSearchRequestDTO.BoardSearchData(boardTitle,boardContent);
         Page<BoardListResponseDTO> boardSearch = boardService.boardSearch(boardSearchData, pageable);
 

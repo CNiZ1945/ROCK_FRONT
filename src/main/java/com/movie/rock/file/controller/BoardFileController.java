@@ -1,9 +1,8 @@
 package com.movie.rock.file.controller;
 
-import com.movie.rock.file.data.BoardFileDownloadResponseDTO;
-import com.movie.rock.file.data.BoardFileUploadResponseDTO;
-import com.movie.rock.file.service.BoardFileService;
-import lombok.RequiredArgsConstructor;
+import java.io.IOException;
+import java.util.List;
+
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -11,11 +10,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.util.List;
+import com.movie.rock.file.data.BoardFileDownloadResponseDTO;
+import com.movie.rock.file.data.BoardFileUploadResponseDTO;
+import com.movie.rock.file.service.BoardFileService;
+
+import lombok.RequiredArgsConstructor;
 
 @Controller
 @RequiredArgsConstructor
@@ -25,7 +31,7 @@ public class BoardFileController {
     //업로드
     @PostMapping("/admin/boardUpload/{boardId}")
     public ResponseEntity<List<BoardFileUploadResponseDTO>> boardUpload(
-            @PathVariable("boardId") Long boardId, @RequestParam("files") List<MultipartFile> files) throws IOException {
+            @PathVariable("boardId") Long boardId, @RequestParam(name = "files") List<MultipartFile> files) throws IOException {
         List<BoardFileUploadResponseDTO> saveFiles = boardFileService.boardFileUpload(boardId, files);
         return ResponseEntity.status(HttpStatus.CREATED).body(saveFiles);
     }
@@ -33,7 +39,7 @@ public class BoardFileController {
     //다운로드
     @GetMapping("/admin/boardDownload")
     public ResponseEntity<Resource> boardDownLoad(
-            @RequestParam("boardFileId") Long boardFileId) throws IOException{
+            @RequestParam(name = "boardFileId") Long boardFileId) throws IOException{
         BoardFileDownloadResponseDTO downFile = boardFileService.boardDownload(boardFileId);
 
         return ResponseEntity.status(HttpStatus.OK)
@@ -45,7 +51,7 @@ public class BoardFileController {
 
     //삭제
     @DeleteMapping("admin/boardDelete")
-    public ResponseEntity<Long> boardDelete(@RequestParam("boardFileId") Long boardFileId) {
+    public ResponseEntity<Long> boardDelete(@RequestParam(name="boardFileId") Long boardFileId) {
         boardFileService.delete(boardFileId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
