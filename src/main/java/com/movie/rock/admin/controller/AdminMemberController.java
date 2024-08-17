@@ -1,9 +1,11 @@
 package com.movie.rock.admin.controller;
 
-import com.movie.rock.member.data.MemberEntity;
-import com.movie.rock.member.data.MemberListDTO;
-import com.movie.rock.member.service.MemberService;
-import jakarta.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -13,13 +15,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import com.movie.rock.member.data.MemberEntity;
+import com.movie.rock.member.data.MemberListDTO;
+import com.movie.rock.member.service.MemberService;
 
 @RestController
 @RequestMapping("/admin")
@@ -42,7 +47,7 @@ public class AdminMemberController {
     // 회원 검색
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/members/search")
-    public ResponseEntity<List<MemberListDTO>> searchMembers(@RequestParam String term) {
+    public ResponseEntity<List<MemberListDTO>> searchMembers(@RequestParam(name = "term") String term) {
         List<MemberEntity> members = memberService.getAllMembers().stream()
                 .filter(member -> member.getMemId().contains(term) ||
                         member.getMemName().contains(term) ||

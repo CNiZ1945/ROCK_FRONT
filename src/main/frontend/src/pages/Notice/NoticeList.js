@@ -19,15 +19,18 @@ const NoticeList = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [hasPermission, setHasPermission] = useState(false);
     const [boardList, setBoardList] = useState([]);
-    const [currentPage, setCurrentPage] = useState(0);
+    const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
     const [searchKeyword, setSearchKeyword] = useState('');
     const [role, setRole] = useState(null);
     const initializedRef = useRef(false);
 
-    //체크 박서 선택 변수
+    //체크 박스 선택 변수
     const [checkboxSelectAll, setCheckSelectAll] = useState(false);
     const [selectCheckbox, setSelectCheckbox] = useState([]);
+
+    // 검색 상태 변수
+    const [isSearching, setIsSearching] = useState(false); // 검색 상태 추가
 
     // pagenation useState
     const [page, setPage] = useState(1);
@@ -61,20 +64,22 @@ const NoticeList = () => {
     }
 
     // 공지글 내용 불러오기
-    const loadBoardList = async (page = 0) => {
+    const loadBoardList = async (page = 1) => {
         try {
             const response = await api.get('/user/boardList', {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
                 },
                 params: {
-                    page, size: 10, sort: 'boardId,DESC'
+                    page: page -1, 
+                    size: 10, 
+                    sort: 'boardId,DESC'
                 }
             });
 
             setBoardList(response.data.content);
             setTotalPages(response.data.totalPages);
-            setCurrentPage(page);
+            setCurrentPage(page + 1);
 
         }
         catch (error) {
@@ -103,7 +108,7 @@ const NoticeList = () => {
 
             setBoardList(response.data.content);
             setTotalPages(response.data.totalPages);
-            setCurrentPage(0);
+            setCurrentPage(page + 1);
         }
         catch (error) {
             console.error('Error searching board:', error);
@@ -186,7 +191,9 @@ const NoticeList = () => {
         }
 
     }
-
+    // useEffect(() => {
+    //     loadBoardList(currentPage);
+    // }, [currentPage]);
     // 권한 확인 후 공지글 불러오기
     useEffect(() => {
         if (!initializedRef.current) {
@@ -196,12 +203,13 @@ const NoticeList = () => {
 
         }
         if (hasPermission) {
-            loadBoardList();
+            loadBoardList(currentPage);
         }
         // loadBoardList();
 
         getUserRole().then(role => setRole(role));
     }, [hasPermission]);
+
 
 
 
@@ -232,10 +240,15 @@ const NoticeList = () => {
 
     //페이지네이션 ---------------------------
 
-    const handlePageChange = (page) => {
-        setPage(page);
+    // 페이지 변경 핸들러
+    const handlePageChange = (pageNumber) => {
+        setCurrentPage(pageNumber);
+        if (isSearching) {
+            searchBoards(pageNumber);
+        } else {
+            loadBoardList(pageNumber);
+        }
     };
-
     // const pageNumbers = [];
     // for (let i = 1; i <= Math.ceil(totalPosts / postsPerPage); i++) {
     //     pageNumbers.push(i);
@@ -249,40 +262,26 @@ const NoticeList = () => {
     //     setDataList(postList);
     // }, [])
 
-
+    // 초기 데이터 로딩
 
     return (
 
         <Wrap>
             <WriteSection>
-                {/*검색창*/}
-                <Link><img src={search} alt="검색창"></img></Link>
-
+                {/* 검색창 */}
+                <button onClick={searchBoards}><img src={search} alt="검색창" /></button>
                 <SearchInput
                     type="text"
                     className="bottom_search_text"
                     placeholder="무엇이든 찾아보세요"
+                    value={searchKeyword}
                     onChange={e => setSearchKeyword(e.target.value)}
                 />
-
-                {/* 버튼 */}
-                {/* <SearchButton */}
-                {/*    type="button"*/}
-                {/*    className="search_icon"*/}
-                {/*    onClick=""*/}
-                {/*    onChange=""*/}
-                {/*>*/}
-                {/*    <i className="fas fa-search"></i>*/}
-                {/*</SearchButton>*/}
-
             </WriteSection>
-
 
             <Header>
                 공지사항
-
-
-                {/* <!-- 글쓰기 버튼 --> */}
+                {/* 글쓰기 버튼 */}
                 {role === 'ADMIN' && (
                     <>
                         <button
@@ -295,63 +294,81 @@ const NoticeList = () => {
                         <button
                             className="botom_write"
                             type="button"
-                            onClick={() => deleteSelectedPosts()}
+                            onClick={deleteSelectedPosts}
                         >
                             <NoticeWriteButton>삭제</NoticeWriteButton>
                         </button>
                     </>
                 )}
-
             </Header>
-
-
-
 
             <div className="step-bar">
                 <span className="gradation-blue"></span>
             </div>
 
-            <CommonTable headersName={[
+            {role === 'ADMIN' ? (            
+                <CommonTable headersName={[
                 <input
                     type='checkbox'
                     checked={checkboxSelectAll}
                     onChange={handleAllcheck}
                 />,
-
                 '글번호', '제목', '등록일', '조회수']}>
-                {boardList ? boardList.map((item, index) => {
-                    return (<CommonTableRow key={index}>
-                        <CommonTableColumn><input 
-                            type='checkbox'
-                            checked={selectCheckbox[index] || false}
-                            onChange={() => handleCheckbox(index)}
-                            name='selectedBoards'
-                            value={item.boardId}
-                        />
+                {boardList.length > 0 ? boardList.map((item, index) => (
+                    <CommonTableRow key={index}>
+                        <CommonTableColumn>
+                            <input
+                                type='checkbox'
+                                checked={selectCheckbox[index] || false}
+                                onChange={() => handleCheckbox(index)}
+                                name='selectedBoards'
+                                value={item.boardId}
+                            />
                         </CommonTableColumn>
-                        <CommonTableColumn>{index + 1}</CommonTableColumn>
+                        <CommonTableColumn>{(currentPage - 2) * 10 + index + 1}</CommonTableColumn>
                         <CommonTableColumn>
                             <Link to={`/user/notice/${item.boardId}`}>{item.boardTitle}</Link>
                         </CommonTableColumn>
                         <CommonTableColumn>{item.modifyDate}</CommonTableColumn>
                         <CommonTableColumn>{item.boardViewCount}</CommonTableColumn>
-                    </CommonTableRow>)
-                }) : '공지글이 없습니다'}
+                    </CommonTableRow>
+                )) : '공지글이 없습니다'}
             </CommonTable>
+            ) : 
+            (
+                <CommonTable headersName={[
+                    '글번호', '제목', '등록일', '조회수']}>
+                    {boardList.length > 0 ? boardList.map((item, index) => (
+                        <CommonTableRow key={index}>
+                            <CommonTableColumn>{(currentPage - 2) * 10 + index + 1}</CommonTableColumn>
+                            <CommonTableColumn>
+                                <Link to={`/user/notice/${item.boardId}`}>{item.boardTitle}</Link>
+                            </CommonTableColumn>
+                            <CommonTableColumn>{item.modifyDate}</CommonTableColumn>
+                            <CommonTableColumn>{item.boardViewCount}</CommonTableColumn>
+                        </CommonTableRow>
+                    )) : '공지글이 없습니다'}
+                </CommonTable>
+            )}
 
 
+            {/* 페이지네이션 컴포넌트 */}
             <Pagination
-                className="pagination"
-                activePage={page} // 현재 페이지
-                itemsCountPerPage={1} // 한 페이지랑 보여줄 아이템 갯수
-                totalItemsCount={10} // 총 아이템 갯수
-                pageRangeDisplayed={10} // paginator의 페이지 범위
-                prevPageText={"‹"} // "이전"을 나타낼 텍스트
-                nextPageText={"›"} // "다음"을 나타낼 텍스트
+                className="noticepagination"
+                activePage={currentPage} // 현재 페이지
+                itemsCountPerPage={10} // 한 페이지당 아이템 수
+                totalItemsCount={totalPages * 10} // 총 아이템 수
+                pageRangeDisplayed={5} // 페이지네이션의 페이지 범위
+                prevPageText={"‹"}
+                nextPageText={"›"}
+                firstPageText={"«"}
+                lastPageText={"»"}
+                // prevPageText={"‹"} // "이전"을 나타낼 텍스트
+                // nextPageText={"›"} // "다음"을 나타낼 텍스트
                 onChange={handlePageChange} // 페이지 변경을 핸들링하는 함수
             />
-
-        </Wrap>);
+        </Wrap>
+    );
 };
 export default NoticeList;
 

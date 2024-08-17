@@ -22,6 +22,7 @@ import AdminApp from './pages/Admin/AdminApp';
 import AdminMovieList from './pages/Admin/AdminMovieList';
 import SearchKeyword from './pages/SearchKeyword/SearchKeyword';
 import AdminNoticeListPage from './pages/Admin/AdminNoticeListPage';
+import AdminMemberListPage from './pages/Admin/AdminMemberListPage';
 
 
 //Router
@@ -70,9 +71,9 @@ const Router = () => {
                 <Route path="/admin/movieList" element={<AdminMovieList/>}/>
                 {/*<Route path="/admin/movieUpload" element={<AdminMovieUpload/>}/>*/}
                 {/*<Route path="/admin/movie/:movieId/modify" element={<AdminMovieUploadModify/>}/>*/}
-                {/*<Route path="/admin/movieUploadFile" element={<AdminMovieUploadFile/>} />*/}
-                {/*<Route path="/admin/movie/:movieId/modify2" element={<AdminMovieUploadFileModify/>} />*/}
-                {/*<Route path="/admin/memberList" element={<AdminMemberList/>} />*/}
+                {/* <Route path="/admin/movieUploadFile" element={<AdminMovieUploadFile/>} /> */}
+                {/* <Route path="/admin/movie/:movieId/modify2" element={<AdminMovieUploadFileModify/>} /> */}
+                <Route path="/admin/memberList" element={<AdminMemberListPage />} />
                 <Route path="/admin/notice" element={<AdminNoticeListPage />}/>
 
 

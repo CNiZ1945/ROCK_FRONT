@@ -288,7 +288,7 @@ const AdminMovieList = ({postsPerPage, totalPosts, paginate}) => {
             </div>
             {/*3-2.상단 브레드스크럼 메뉴바*/}
             <div className="admin_movie_head">
-                <span>Admin&nbsp;&nbsp;>&nbsp;&nbsp;영화 관리&nbsp;&nbsp;</span>
+                <span>Admin&nbsp;&nbsp;{">"}&nbsp;&nbsp;영화 관리&nbsp;&nbsp;</span>
                 {/*<span className="s">></span>*/}
             </div>
 
@@ -297,7 +297,7 @@ const AdminMovieList = ({postsPerPage, totalPosts, paginate}) => {
             {/*04.바디 박스*/}
             <div className="wrap_Boby">
                 {/*05.컨텐츠 박스*/}
-                <div className="list_div">
+                <div>
                     {/*6.검색 + 옵션*/}
                     <FormBox onSubmit="">
                         {/*6-1.옵션*/}
