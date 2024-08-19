@@ -1,187 +1,514 @@
-import React, { useEffect, useRef, useState } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import "./css/AdminNoticeListPage.css";
-// import api from '../../api/axios';
+import CommonTable from '../../components/table/CommonTable';
+import CommonTableColumn from '../../components/table/CommonTableColumn';
+import CommonTableRow from '../../components/table/CommonTableRow';
+import { postList } from '../../Data';
+import styled from "styled-components";
+import Pagination from "react-js-pagination";
+import './css/Paging.css';
+import search from "./images/search.svg"
+import { api } from '../../api/axios';
+import SideBar from './SideBar';
 
+import home from "./images/home.svg";
 function AdminNoticeListPage() {
+
+    const navigate = useNavigate();
+
     const [isLoading, setIsLoading] = useState(true);
     const [hasPermission, setHasPermission] = useState(false);
     const [boardList, setBoardList] = useState([]);
-    const [currentPage, setCurrentPage] = useState(0);
+    const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
     const [searchKeyword, setSearchKeyword] = useState('');
-    const navigate = useNavigate();
+    const [role, setRole] = useState(null);
     const initializedRef = useRef(false);
 
+    //체크 박스 선택 변수
+    const [checkboxSelectAll, setCheckSelectAll] = useState(false);
+    const [selectCheckbox, setSelectCheckbox] = useState([]);
+
+    // 검색 상태 변수
+    const [isSearching, setIsSearching] = useState(false); // 검색 상태 추가
+
+    // pagenation useState
+    const [page, setPage] = useState(1);
+
+    // const pagenation
+
+
+    // 로그인 및 권한 상태 확인
     const checkPermission = async () => {
-
-        // token 및 권한 설정
-        const token = localStorage.getItem('accessToken');
-        if (!token) {
-            alert("로그인이 필요합니다.");
-            navigate('/login');
-            return;
-        }
-
         try {
-            const response = await axios.get('/auth/memberinfo', {
-                headers: { 'Authorization': 'Bearer ' + token }
-            });
-            const role = response.data.memRole;
-            if (role === 'ADMIN') {
-                setHasPermission(true);
-            } else {
-                alert("권한이 없습니다.");
-                navigate('/Login');
+            const token = localStorage.getItem('accessToken');
+            if (!token) {
+                alert('로그인이 필요한 페이지입니다.');
+                navigate("/login");
+                // return;
             }
-        } catch (error) {
-            console.error('Error fetching user info:', error);
-            alert("오류가 발생했습니다. 다시 로그인해주세요.");
+            else {
+                setHasPermission(true);
+
+            }
+        }
+        catch (error) {
+            console.error('PostList user info error:', error);
+            alert("오류가 발생했습니다. 다시 로그인해주세요")
             navigate('/login');
-        } finally {
+        }
+        finally {
             setIsLoading(false);
         }
-    };
 
-    // 목록 불러오기
-    const loadBoardList = async (page = 0) => {
+    }
+
+    // 공지글 내용 불러오기
+    const loadBoardList = async (page = 1) => {
         try {
-            const response = await axios.get('/admin/boardList', {
-                params: { page, size: 10, sort: 'boardId,DESC' }
+            const response = await api.get('/user/boardList', {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+                },
+                params: {
+                    page: page - 1,
+                    size: 10,
+                    sort: 'boardId,DESC'
+                }
             });
+
             setBoardList(response.data.content);
             setTotalPages(response.data.totalPages);
             setCurrentPage(page);
-        } catch (error) {
-            console.error('Error fetching boards:', error);
-            alert('목록을 불러오는 중 오류가 발생했습니다.');
+
+        }
+        catch (error) {
+            console.error('Error fetching board:', error);
+            alert('공지사항 목록을 불러오는 중 오류가 발생했습니다.')
+            navigate("/login");
         }
     };
 
-    // 검색
-    const searchBoards = async () => {
-        if (!searchKeyword.trim()) {
-            loadBoardList(0); // 검색어가 없을 경우 전체 목록을 불러옴
-            return;
-        }
+    // 공지글 검색 기능
+    const searchBoards = async (page = 1) => {
         try {
-            const response = await axios.get('/admin/boardSearch', {
+            if (!searchKeyword.trim()) {
+                setIsSearching(false);
+                loadBoardList(0);
+                return;
+            }
+
+
+            const response = await api.get('/user/boardSearch', {
                 params: {
-                    page: 0,
+                    page: page - 1,
                     size: 10,
                     sort: 'boardId,DESC',
                     boardTitle: searchKeyword,
-                    boardContent: searchKeyword
+                    boardContent: searchKeyword,
                 }
             });
+
             setBoardList(response.data.content);
             setTotalPages(response.data.totalPages);
-            setCurrentPage(0);
-        } catch (error) {
-            console.error('Error searching boards:', error);
+            setCurrentPage(page);
+            setIsSearching(true);
+        }
+        catch (error) {
+            console.error('Error searching board:', error);
             alert('검색 중 오류가 발생했습니다.');
+            navigate(-1);
         }
     };
 
-    // 삭제 기능
+    // 체크 박스 초기화
+    useEffect(() => {
+        if (boardList) {
+            setSelectCheckbox(new Array(boardList.length).fill(false)); // 초기화
+        }
+    }, [boardList]);
+
+    // 체크 박스 모두 선택하기
+    const handleAllcheck = (e) => {
+        const isChecked = e.target.checked;
+        setCheckSelectAll(isChecked);
+
+        // 체크 박스 선택 또는 해제
+        if (isChecked) {
+            setSelectCheckbox(new Array(boardList.length).fill(true));
+        } else {
+            setSelectCheckbox(new Array(boardList.length).fill(false));
+        }
+
+    }
+
+    // 개별 체크 박스 관리 및 동기화
+    const handleCheckbox = (index) => {
+        const updatedCheckbox = [...selectCheckbox];
+        updatedCheckbox[index] = !updatedCheckbox[index];
+        setSelectCheckbox(updatedCheckbox);
+
+        //전체 선택 여부를 업데이트
+        const allChecked = updatedCheckbox.every(item => item);
+        setCheckSelectAll(allChecked);
+    }
+
+    //체크 박스 선택해서 삭제
     const deleteSelectedPosts = async () => {
         const selectedBoards = Array.from(document.querySelectorAll('input[name="selectedBoards"]:checked')).map(board => board.value);
         if (selectedBoards.length > 0) {
             try {
-                await axios.delete('/admin/listdelete', { data: selectedBoards });
-                alert('선택한 게시물들이 삭제되었습니다.');
+                await api.delete('/admin/listdelete', { data: selectedBoards });
+                alert('선택된 게시물들이 삭제되었습니다.');
                 loadBoardList(currentPage);
-            } catch (error) {
-                console.error('게시물 삭제 오류:', error);
-                alert('게시물 삭제 중 오류가 발생했습니다.');
             }
-        } else {
+            catch (error) {
+                console.error('게시물 삭제 중 오류 발생:', error);
+                alert('게시물 삭제 중 오류가 발생했습니다.');
+
+            }
+        }
+        else {
             alert('삭제할 게시물을 선택하세요.');
         }
-    };
+    }
 
+
+    const getUserRole = async () => {
+        try {
+            const token = localStorage.getItem('accessToken');
+            if (!token) {
+                throw new Error("No access Token found");
+            }
+            const response = await api.get('/auth/memberinfo', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            return response.data.memRole;
+        }
+
+        catch (error) {
+            console.error('Error fetching member role:', error);
+            return null;
+
+        }
+
+    }
+
+    // 권한 확인 후 게시글 불러오기
     useEffect(() => {
         if (!initializedRef.current) {
             initializedRef.current = true;
             checkPermission();
-        }
-        if(hasPermission){
-            loadBoardList();
-        }
+            console.log("hasPermission: ", hasPermission);
 
-    }, []);
+        }
+        if (hasPermission) {
+            loadBoardList(currentPage);
+        }
+        // loadBoardList();
+
+        getUserRole().then(role => setRole(role));
+    }, [hasPermission]);
+
+    const noticeNumber = (index) => {
+        return (currentPage - 1) * 10 + index + 1;
+    }
+
 
     if (isLoading) {
-        return <div>Loading...</div>;
+        return (
+            <div>
+                Loading ...
+            </div>
+        );
     }
 
     if (!hasPermission) {
         return null;
     }
 
-    return (
-        <div className="body">
 
-            <div className="main">
-                <div className="admin_notice_div">
-                    <div className="admin_notice_head">
-                        <h2>공지사항</h2>
-                    </div>
-                    <div className="search-container">
-                        <input
-                            type="text"
-                            value={searchKeyword}
-                            onChange={e => setSearchKeyword(e.target.value)}
-                            placeholder="제목 검색..."
-                        />
-                        <button onClick={searchBoards}>검색</button>
-                    </div>
-                    <div className="admin_notice_list">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th><input type="checkbox" id="selectAllBoards" /></th>
-                                    <th>번호</th>
-                                    <th>공지</th>
-                                    <th>제목</th>
-                                    <th>날짜</th>
-                                    <th>조회수</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {boardList.map((board, index) => (
-                                    <tr key={board.boardId}>
-                                        <td><input type="checkbox" name="selectedBoards" value={board.boardId} /></td>
-                                        <td>{index + 1}</td>
-                                        <td>{board.notice ? '공지' : ''}</td>
-                                        <td><Link to={`/user/Notice/${board.boardId}`} className="board-title-link">{board.boardTitle}</Link></td>
-                                        <td>{board.modifyDate}</td>
-                                        <td>{board.boardViewCount}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                        <button onClick={() => navigate('/admin/Notice/Write')}>글쓰기</button>
-                        <button onClick={deleteSelectedPosts}>선택한 글 삭제</button>
-                    </div>
-                    <div id="pagination" className="pagination">
-                        {Array.from({ length: totalPages }, (_, i) => (
-                            <button
-                                key={i}
-                                className={i === currentPage ? 'active' : ''}
-                                onClick={() => loadBoardList(i)}
-                            >
-                                {i + 1}
-                            </button>
-                        ))}
-                    </div>
-                </div>
+    //페이지네이션 ---------------------------
+
+    // 페이지 변경 핸들러
+    const handlePageChange = (pageNumber) => {
+        console.log("click page:", pageNumber);
+
+        setCurrentPage(pageNumber);
+        // 검색할 때
+        if (isSearching) {
+            searchBoards(pageNumber);
+        }
+        // 기본 상태 
+        else {
+            loadBoardList(pageNumber);
+        }
+    };
+    // const pageNumbers = [];
+    // for (let i = 1; i <= Math.ceil(totalPosts / postsPerPage); i++) {
+    //     pageNumbers.push(i);
+    // }
+
+
+    //★연습용 Data.js ---------------------------
+    // const [dataList, setDataList] = useState([]);
+
+    // useEffect(() => {
+    //     setDataList(postList);
+    // }, [])
+
+    // 초기 데이터 로딩
+
+
+    return (
+        <div className='wrap'>
+
+            <SideBar />
+            {/*3.상단 브레드스크럼 메뉴바*/}
+            {/*3-1.상단 브레드스크럼 메뉴바*/}
+            <div className="admin_head">
+                <img src={home}></img>
+                <h2>관리자페이지</h2>
             </div>
+            {/*3-2.상단 브레드스크럼 메뉴바*/}
+            <div className="admin_movie_head">
+                <span>Admin&nbsp;&nbsp;{">"}&nbsp;&nbsp;공지 사항&nbsp;&nbsp;</span>
+                {/*<span className="s">></span>*/}
+            </div>
+            <WriteSection>
+                {/* 검색창 */}
+                <button onClick={() => searchBoards(1)}><img src={search} alt="검색창" /></button>
+                <SearchInput
+                    type="text"
+                    className="bottom_search_text"
+                    placeholder="무엇이든 찾아보세요"
+                    value={searchKeyword}
+                    onChange={e => setSearchKeyword(e.target.value)}
+                />
+            </WriteSection>
+
+            <Header>
+                공지사항
+                {/* 글쓰기 버튼 */}
+                {role === 'ADMIN' && (
+                    <>
+                        <button
+                            className="botom_write"
+                            type="button"
+                            onClick={() => navigate(`/admin/notice/write`)}
+                        >
+                            <NoticeWriteButton>글쓰기</NoticeWriteButton>
+                        </button>
+                        <button
+                            className="botom_write"
+                            type="button"
+                            onClick={deleteSelectedPosts}
+                        >
+                            <NoticeWriteButton>삭제</NoticeWriteButton>
+                        </button>
+                    </>
+                )}
+            </Header>
+
+            <div className="step-bar">
+                <span className="gradation-blue"></span>
+            </div>
+
+            {role === 'ADMIN' ? (
+                <CommonTable headersName={[
+                    <input
+                        type='checkbox'
+                        checked={checkboxSelectAll}
+                        onChange={handleAllcheck}
+                    />,
+                    '글번호', '제목', '등록일', '조회수']}>
+                    {boardList.length > 0 ? boardList.map((item, index) => (
+                        <CommonTableRow key={index}>
+                            <CommonTableColumn>
+                                <input
+                                    type='checkbox'
+                                    checked={selectCheckbox[index] || false}
+                                    onChange={() => handleCheckbox(index)}
+                                    name='selectedBoards'
+                                    value={item.boardId}
+                                />
+                            </CommonTableColumn>
+                            <CommonTableColumn>{noticeNumber(index)}</CommonTableColumn>
+                            <CommonTableColumn>
+                                <Link to={`/user/notice/${item.boardId}`}>{item.boardTitle}</Link>
+                            </CommonTableColumn>
+                            <CommonTableColumn>{item.modifyDate}</CommonTableColumn>
+                            <CommonTableColumn>{item.boardViewCount}</CommonTableColumn>
+                        </CommonTableRow>
+                    )) : '공지글이 없습니다'}
+                </CommonTable>
+            ) :
+                (
+                    <CommonTable headersName={[
+                        '글번호', '제목', '등록일', '조회수']}>
+                        {boardList.length > 0 ? boardList.map((item, index) => (
+                            <CommonTableRow key={index}>
+                                <CommonTableColumn>{noticeNumber(index)}</CommonTableColumn>
+                                <CommonTableColumn>
+                                    <Link to={`/user/notice/${item.boardId}`}>{item.boardTitle}</Link>
+                                </CommonTableColumn>
+                                <CommonTableColumn>{item.modifyDate}</CommonTableColumn>
+                                <CommonTableColumn>{item.boardViewCount}</CommonTableColumn>
+                            </CommonTableRow>
+                        )) : '공지글이 없습니다'}
+                    </CommonTable>
+                )}
+
+
+            {/* 페이지네이션 컴포넌트 */}
+            <Pagination
+                className="noticepagination"
+                activePage={currentPage} // 현재 페이지
+                itemsCountPerPage={10} // 한 페이지당 아이템 수
+                totalItemsCount={totalPages * 10} // 총 아이템 수
+                pageRangeDisplayed={5} // 페이지네이션의 페이지 범위
+                prevPageText={"‹"}// "이전"을 나타낼 텍스트
+                nextPageText={"›"}// "다음"을 나타낼 텍스트
+                firstPageText={"«"}
+                lastPageText={"»"}
+                onChange={handlePageChange} // 페이지 변경을 핸들링하는 함수
+            />
+    
         </div>
+        
     );
-}
+};
+
 
 export default AdminNoticeListPage;
+// STYLE ------------------------------
+// 검색창+글쓰기 버튼 감싸는 박스
+const WriteSection = styled.section`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 74px;
+    margin: 0 auto;
+    width: 1024px;
+    border-bottom: 1px solid rgb(176, 184, 193);
+    
+    img{
+        width: 26px;
+        height: 26px;
+        margin-bottom: 10px;
+        margin-left: 20px;
+        opacity: 0.5;
+    }
+`;
+
+
+// 검색창
+const SearchInput = styled.input`
+    display: flex;
+    justify-content: center;
+    width: 1024px;
+    padding-bottom: 16px;
+    padding-left: 20px;
+    border: none;
+    outline: none;
+    //caret-color: rgb(49, 130, 246);
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 130%;
+    color: #333;
+    min-height: 32px;
+`;
+
+
+
+const Header = styled.div`
+    font-family: 'SUIT-Regular' !important;
+    color: rgb(51, 61, 75);
+    font-size: 36px;
+    font-weight: 800;
+    margin-bottom: 48px;
+    padding-top: 74px;
+    text-align: left;
+    width: 1044px;
+    margin: 0 auto;
+    margin-bottom: 48px;
+
+    .name-notice {
+        display: flex;
+        justify-content: center;
+    }
+    //글쓰기 버튼
+    .botom_write{
+        width: 90px;
+        height: 45px;
+        border: 1px solid #cccccc;
+        border-radius: 2px;
+        background-color: #e5e8eb;
+
+        float: right;
+
+        margin-top: 2px;
+
+        position: relative;
+        bottom: -10px;
+
+
+        &:hover {
+            cursor: pointer;
+            //border: 2px solid rgb(51, 61, 75);
+            background-color:  #3182f6;;
+        }
+    }
+
+    .botom_write a{
+        font-size: 14px;
+        color: #0f2027;
+        //padding: 10px 25px;
+        text-align: center;
+        display: flex;
+        justify-content: center;
+        cursor: pointer;
+        color: rgb(51, 61, 75);
+
+        &:hover {
+            cursor: pointer;
+            color: #fff;
+           font-weight: 600;
+        }
+    }
+`;
+
+const NoticeWriteButton = styled.div`
+    font-size: 15px;
+`;
+
+const Wrap = styled.div`
+    width: 100%;
+    //height: 100vh;
+    position: relative;
+    margin: 0 auto;
+    //padding: 40px 40px;
+    //background: rgb(255,255,255);
+    background: #fff;
+    display: inline-block;
+`;
+
+
+//푸터 전체 - 위치/배경
+// const FooterTag = styled.footer`
+//     color: #6b7684;
+//     display: flex;
+//     align-items: center;
+//     flex-direction: column;
+//     margin-left: auto;
+//     margin-right: auto;
+//     padding: 26px 0;
+//     text-align: center;
+//     bottom: 0;
+//     width: 100%;
+//     z-index: 9999999 !important;;
+//     background-color: rgb(11, 11, 13) !important;
+//     border-top: 1px solid rgb(25, 31, 40);
+// `;

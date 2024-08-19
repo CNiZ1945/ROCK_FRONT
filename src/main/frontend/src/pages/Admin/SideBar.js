@@ -44,7 +44,7 @@ const SideBar = () => {
 
                     <Menu>
                         <Img src={pencil}></Img>
-                        <NavLink className="a" style={({isActive}) => (isActive ? activeStyle : {})} to='/user/notice'>
+                        <NavLink className="a" style={({isActive}) => (isActive ? activeStyle : {})} to='/admin/notice'>
                             Notice
                         </NavLink>
                     </Menu>
@@ -106,7 +106,7 @@ const Side = styled.div`
     //margin-left: 40px;
     background-color: #1351f9;
     padding: 20px 0px;
-    z-index: 999999;
+    // z-index: 999999;
 
     .side_span {
         color: #fff;

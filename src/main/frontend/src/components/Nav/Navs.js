@@ -133,7 +133,7 @@ function Navs() {
 
 				<MenuName
 					onClick={() => {
-						goToPage('/admin');
+						goToPage('/admin/memberList');
 					}}
 					scrollposition={scrollPosition}
 				>

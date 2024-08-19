@@ -71,15 +71,15 @@ const NoticeList = () => {
                     'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
                 },
                 params: {
-                    page: page -1, 
-                    size: 10, 
+                    page: page - 1,
+                    size: 10,
                     sort: 'boardId,DESC'
                 }
             });
 
             setBoardList(response.data.content);
             setTotalPages(response.data.totalPages);
-            setCurrentPage(page + 1);
+            setCurrentPage(page);
 
         }
         catch (error) {
@@ -90,15 +90,18 @@ const NoticeList = () => {
     };
 
     // 공지글 검색 기능
-    const searchBoards = async () => {
-        if (!searchKeyword.trim()) {
-            loadBoardList(0);
-            return;
-        }
+    const searchBoards = async (page = 1) => {
         try {
+            if (!searchKeyword.trim()) {
+                setIsSearching(false);
+                loadBoardList(0);
+                return;
+            }
+
+            
             const response = await api.get('/user/boardSearch', {
                 params: {
-                    page: 0,
+                    page: page - 1,
                     size: 10,
                     sort: 'boardId,DESC',
                     boardTitle: searchKeyword,
@@ -108,7 +111,8 @@ const NoticeList = () => {
 
             setBoardList(response.data.content);
             setTotalPages(response.data.totalPages);
-            setCurrentPage(page + 1);
+            setCurrentPage(page);
+            setIsSearching(true);
         }
         catch (error) {
             console.error('Error searching board:', error);
@@ -191,10 +195,8 @@ const NoticeList = () => {
         }
 
     }
-    // useEffect(() => {
-    //     loadBoardList(currentPage);
-    // }, [currentPage]);
-    // 권한 확인 후 공지글 불러오기
+
+    // 권한 확인 후 게시글 불러오기
     useEffect(() => {
         if (!initializedRef.current) {
             initializedRef.current = true;
@@ -210,7 +212,9 @@ const NoticeList = () => {
         getUserRole().then(role => setRole(role));
     }, [hasPermission]);
 
-
+    const noticeNumber = (index) => {
+        return(currentPage - 1 ) * 10 + index + 1;
+    }
 
 
     if (isLoading) {
@@ -224,28 +228,21 @@ const NoticeList = () => {
     if (!hasPermission) {
         return null;
     }
-    // =============================================================================
-    //검색---------------------------
-    // const handleSearchInput = e => setSearchInput(e.target.value);
-    // const [searchInput,setSearchInput] = useState('');
-
-    // useEffect(() => {
-    //     window.addEventListener('click', function (e) {
-    //         if (e.target.contains !== searchWrapper) {
-    //             setSearchInput('');
-    //         }
-    //     });
-    // }, []);
 
 
     //페이지네이션 ---------------------------
 
     // 페이지 변경 핸들러
     const handlePageChange = (pageNumber) => {
+        console.log("click page:", pageNumber);
+
         setCurrentPage(pageNumber);
+        // 검색할 때
         if (isSearching) {
             searchBoards(pageNumber);
-        } else {
+        }
+        // 기본 상태 
+        else {
             loadBoardList(pageNumber);
         }
     };
@@ -264,12 +261,13 @@ const NoticeList = () => {
 
     // 초기 데이터 로딩
 
+
     return (
 
         <Wrap>
             <WriteSection>
                 {/* 검색창 */}
-                <button onClick={searchBoards}><img src={search} alt="검색창" /></button>
+                <button onClick={() => searchBoards(1)}><img src={search} alt="검색창" /></button>
                 <SearchInput
                     type="text"
                     className="bottom_search_text"
@@ -306,41 +304,26 @@ const NoticeList = () => {
                 <span className="gradation-blue"></span>
             </div>
 
-            {role === 'ADMIN' ? (            
+            {role === 'ADMIN' ? (
                 <CommonTable headersName={[
-                <input
-                    type='checkbox'
-                    checked={checkboxSelectAll}
-                    onChange={handleAllcheck}
-                />,
-                '글번호', '제목', '등록일', '조회수']}>
-                {boardList.length > 0 ? boardList.map((item, index) => (
-                    <CommonTableRow key={index}>
-                        <CommonTableColumn>
-                            <input
-                                type='checkbox'
-                                checked={selectCheckbox[index] || false}
-                                onChange={() => handleCheckbox(index)}
-                                name='selectedBoards'
-                                value={item.boardId}
-                            />
-                        </CommonTableColumn>
-                        <CommonTableColumn>{(currentPage - 2) * 10 + index + 1}</CommonTableColumn>
-                        <CommonTableColumn>
-                            <Link to={`/user/notice/${item.boardId}`}>{item.boardTitle}</Link>
-                        </CommonTableColumn>
-                        <CommonTableColumn>{item.modifyDate}</CommonTableColumn>
-                        <CommonTableColumn>{item.boardViewCount}</CommonTableColumn>
-                    </CommonTableRow>
-                )) : '공지글이 없습니다'}
-            </CommonTable>
-            ) : 
-            (
-                <CommonTable headersName={[
+                    <input
+                        type='checkbox'
+                        checked={checkboxSelectAll}
+                        onChange={handleAllcheck}
+                    />,
                     '글번호', '제목', '등록일', '조회수']}>
                     {boardList.length > 0 ? boardList.map((item, index) => (
                         <CommonTableRow key={index}>
-                            <CommonTableColumn>{(currentPage - 2) * 10 + index + 1}</CommonTableColumn>
+                            <CommonTableColumn>
+                                <input
+                                    type='checkbox'
+                                    checked={selectCheckbox[index] || false}
+                                    onChange={() => handleCheckbox(index)}
+                                    name='selectedBoards'
+                                    value={item.boardId}
+                                />
+                            </CommonTableColumn>
+                            <CommonTableColumn>{noticeNumber(index)}</CommonTableColumn>
                             <CommonTableColumn>
                                 <Link to={`/user/notice/${item.boardId}`}>{item.boardTitle}</Link>
                             </CommonTableColumn>
@@ -349,7 +332,22 @@ const NoticeList = () => {
                         </CommonTableRow>
                     )) : '공지글이 없습니다'}
                 </CommonTable>
-            )}
+            ) :
+                (
+                    <CommonTable headersName={[
+                        '글번호', '제목', '등록일', '조회수']}>
+                        {boardList.length > 0 ? boardList.map((item, index) => (
+                            <CommonTableRow key={index}>
+                                <CommonTableColumn>{noticeNumber(index)}</CommonTableColumn>
+                                <CommonTableColumn>
+                                    <Link to={`/user/notice/${item.boardId}`}>{item.boardTitle}</Link>
+                                </CommonTableColumn>
+                                <CommonTableColumn>{item.modifyDate}</CommonTableColumn>
+                                <CommonTableColumn>{item.boardViewCount}</CommonTableColumn>
+                            </CommonTableRow>
+                        )) : '공지글이 없습니다'}
+                    </CommonTable>
+                )}
 
 
             {/* 페이지네이션 컴포넌트 */}
@@ -359,12 +357,10 @@ const NoticeList = () => {
                 itemsCountPerPage={10} // 한 페이지당 아이템 수
                 totalItemsCount={totalPages * 10} // 총 아이템 수
                 pageRangeDisplayed={5} // 페이지네이션의 페이지 범위
-                prevPageText={"‹"}
-                nextPageText={"›"}
+                prevPageText={"‹"}// "이전"을 나타낼 텍스트
+                nextPageText={"›"}// "다음"을 나타낼 텍스트
                 firstPageText={"«"}
                 lastPageText={"»"}
-                // prevPageText={"‹"} // "이전"을 나타낼 텍스트
-                // nextPageText={"›"} // "다음"을 나타낼 텍스트
                 onChange={handlePageChange} // 페이지 변경을 핸들링하는 함수
             />
         </Wrap>
