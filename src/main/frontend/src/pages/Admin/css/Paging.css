@@ -4,12 +4,13 @@
     -webkit-box-pack: center;
     justify-content: center;
     display: flex;
-    margin: 0;
+    margin: 0 auto;
     padding: 0;
     width: 1044px;
     color: #d1d6db;
 
-    margin: 40px auto;
+    /* 관리자 페이지의 pagination 때문에 수정 */
+    /* margin: 40px auto; */
     box-sizing: border-box;
 
     /*폰트 관련*/
@@ -21,7 +22,7 @@
     line-height: 20px;
     font-weight: 500;
     font-family: 'SUIT-Regular' !important;
-    padding: 40px 40px;
+    /* padding: 40px 40px; */
     letter-spacing: 0.5px;
     padding: 10px;
     /*border-top: 3px solid #186ead;*/

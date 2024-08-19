@@ -1,7 +1,7 @@
 /* 리스트 전체 영역 */
 .list_div{
 	width: 80%;
-	border: 1px solid black;
+	/* border: 1px solid black; */
 	display: flex;
 	flex-direction: column;
 }
@@ -11,13 +11,14 @@
 	text-align: center;
 }
 .admin_member_haed{
+	text-align: center;
 	font-size: 2rem;
 }
 
 /* 리스트 영역 */
 .list{
 	width: 100%;
-	border-bottom: 1px dashed rgb(158, 158, 158);
+	/* border-bottom: 1px dashed rgb(158, 158, 158); */
 	display: flex;
 	justify-content: center;
 
@@ -31,7 +32,8 @@
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	border-right: 1px solid rgb(158, 158, 158);
+
+	/* border-right: 1px solid rgb(158, 158, 158); */
 
 }
 
@@ -39,9 +41,11 @@
 /* 세부 요소 */
 .checkbox{
 	width: 5%;
+
 }
 .mem_no{
 	width: 10%;
+
 }
 .mem_id{
 	width: 20%;

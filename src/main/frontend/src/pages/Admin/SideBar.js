@@ -88,7 +88,8 @@ const Img = styled.img`
 const MenuWrap = styled.div`
     float: left;
     width: 240px;
-    height: 100vh;
+    // height: 100vh;
+    height: 100%;
     //position: fixed;
     //margin-top: 180px;
     z-index: 999999999;
@@ -133,7 +134,8 @@ const Side = styled.div`
 // 마이페이지- 바디
 const SideWrap = styled.div`
     width: 240px;
-    height: 100vh;
+    // height: 100vh;
+    height: 100%;
     padding-top: 120px;
     padding-bottom: 40px;
     border-top-left-radius: 20px;

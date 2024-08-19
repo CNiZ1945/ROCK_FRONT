@@ -7,12 +7,13 @@ import SideBar from "./SideBar";
 
 //img
 import home from "./images/home.svg";
+import Pagination from "react-js-pagination";
 
 function AdminMemberListPage() {
 
     const [members, setMembers] = useState([]);
 
-    const [currentPage, setCurrentPage] = useState(0);
+    const [currentPage, setCurrentPage] = useState(1);
 
     const [totalPages, setTotalPages] = useState(0);
 
@@ -22,32 +23,54 @@ function AdminMemberListPage() {
 
     const [selectAll, setSelectAll] = useState(false);
 
+
     useEffect(() => {
         fetchMembers();
-    }, [currentPage]);
+    }, [currentPage, searchTerm]);
 
     // 회원 목록 가져오는 로직
+    // const fetchMembers = async () => {
+    //     try {
+    //         const response = await api.get(`/admin/members?page=${currentPage - 1}&size=15`);
+    //         setMembers(response.data.content);
+    //         setTotalPages(response.data.totalPages); // 전체 페이지 수 업데이트
+    //     } catch (error) {
+    //         console.error("Error fetching members:", error);
+    //     }
+    // };
+
     const fetchMembers = async () => {
         try {
-            const response = await api.get(`/admin/members?page=${currentPage}&size=15`);
-            setMembers(response.data.content);
-            setTotalPages(response.data.totalPages);
+            const response = await api.get(`/admin/members/search?term=${searchTerm}`);
+            const allMembers = response.data; // 전체 검색 결과를 가져옴
+    
+            // 페이지네이션 처리
+            const startIndex = (currentPage - 1) * 10;
+            const endIndex = startIndex + 10;
+            const pagedMembers = allMembers.slice(startIndex, endIndex);
+    
+            setMembers(pagedMembers); // 현재 페이지의 회원 목록 업데이트
+            setTotalPages(Math.ceil(allMembers.length / 10)); // 총 페이지 수 업데이트
         } catch (error) {
             console.error("Error fetching members:", error);
         }
     };
+    
+
 
     // 회원 검색 로직
     const handleSearch = async (e) => {
         e.preventDefault();
         try {
             const response = await api.get(`/admin/members/search?term=${searchTerm}`);
-            setMembers(response.data);
-        } catch (error) {
+            setMembers(response.data);    
+        } 
+        catch (error) {
             console.error("Error searching members:", error);
-            alert("회원 검색 중 에러가 발생했습니다");
         }
-    };
+
+    }
+    
 
     // 전체 선택 체크박스 핸들러
     const handleSelectAll = (e) => {
@@ -106,6 +129,15 @@ function AdminMemberListPage() {
             }
         }
     };
+    // pagination 핸들러
+    // const handlePageChange = (pageNumber) => {
+    //     setCurrentPage(pageNumber);
+    // };
+    const handlePageChange = (pageNumber) => {
+        setCurrentPage(pageNumber);
+        fetchMembers(); // 페이지 변경 시 데이터 새로 요청
+    };
+    
 
     return (
         <>
@@ -125,31 +157,15 @@ function AdminMemberListPage() {
                     {/*<span className="s">></span>*/}
                 </div>
 
-                <div className="admmin_member_search_div">
-                    <div className="member_search_form">
-                        <form onSubmit={handleSearch}>
-                            <input
-                                type="text"
-                                placeholder="회원 검색"
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                            />
-                            <Button type="submit" value="검색" />
-                        </form>
-                    </div>
-                    <div className="member_edit_btn">
-                        <DeleteButton onClick={handleDeleteMembers}>회원 삭제</DeleteButton>
-                    </div>
-                </div>
-
-                {/* 검색 */}
-                <FormBox onSubmit="">
+                {/* 회원 검색 */}
+                <FormBox onSubmit={handleSearch}>
                     {/* 검색창 */}
                     <SearchInput
                         type="text"
                         className="bottom_search_text"
                         placeholder="검색어 입력"
-                        // onChange={handleSearchInput}
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
                     />
                     {/* 검색 버튼 */}
                     <Button
@@ -157,17 +173,21 @@ function AdminMemberListPage() {
                         type="submit">
                             검색
                         </Button>
-
+                        {/* 삭제 버튼 */}
+                        
+                        <DeleteButton onClick={handleDeleteMembers}>회원 삭제</DeleteButton>
+                    
                 </FormBox>
 
-
                 <div className="list_div">
+                    {/* 회원 관리 제목*/}
                     <div className="admin_member_haed">
                         <h2>회원 관리</h2>
                     </div>
-                    <div className="admin_member_list">
+                    <AdminMemberList>
                         <div>
-                            <ul className="list content">
+                            {/* 회원 관리 목차 */}
+                            <ul className="AdminMemberIndex">
                                 <li className="checkbox">
                                     <input
                                         type="checkbox"
@@ -185,9 +205,10 @@ function AdminMemberListPage() {
                                 <li className="mem_role">권한</li>
                             </ul>
                         </div>
+                        {/* 회원 정보 */}
                         <div>
                             {members.map((member) => (
-                                <ul className="list" key={member.memNum}>
+                                <ul className="AdminMemberContent" key={member.memNum}>
                                     <li className="checkbox">
                                         <input
                                             type="checkbox"
@@ -206,19 +227,22 @@ function AdminMemberListPage() {
                                 </ul>
                             ))}
                         </div>
-                    </div>
+                    </AdminMemberList>
 
-                    <div className="list_number">
-                        <ul className="list_number_ul">
-                            <li onClick={() => setCurrentPage(prev => Math.max(prev - 1, 0))}>&lt;</li>
-                            {[...Array(totalPages).keys()].map((number) => (
-                                <li key={number} onClick={() => setCurrentPage(number)}>{number + 1}</li>
-                            ))}
-                            <li onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages - 1))}>&gt;</li>
-                        </ul>
-                    </div>
-
-
+                    {/* 페이지네이션 컴포넌트 */}
+                    {/* <div className="pagination"> */}
+                        <Pagination
+                            activePage={currentPage}
+                            itemsCountPerPage={10}
+                            totalItemsCount={totalPages * 10}
+                            pageRangeDisplayed={10}
+                            onChange={handlePageChange}
+                            prevPageText={"‹"}
+                            nextPageText={"›"}
+                            firstPageText={"«"}
+                            lastPageText={"»"}
+                        />
+                    {/* </div> */}
                 </div>
             </div>
 
@@ -234,25 +258,21 @@ export default AdminMemberListPage;
 
 const DeleteButton = styled.button`
 
-        display: flex;
-        justify-content: center;
-    align-items: center;
-    font-family: 'SUIT-Regular' !important;
-    font-size: 20px;
-    font-weight: 600;
-    // padding-top: 74px;
-    text-align: center;
-    margin: 0 auto;
-    // margin-bottom: 48px;
-        color: white;
-        width: 90px;
-        height: 50px;
-        // margin-right: 20px;
-        border: 1px solid #cccccc;
-        border-radius: 2px;
-        background-color: red;
-        // position: relative;
-        
+    width: 140px;
+    height: 45px;
+    border: 1px solid #cccccc;
+    border-radius: 2px;
+    background-color: #e5e8eb;
+    float: right;
+    font-size: 14px;
+    margin-left: 20px;
+    background-color: red;
+    color: #fff;
+    &:hover{
+        font-weight: 800;
+                background-color: #1351f9;
+        }
+    
 `
 
 
@@ -261,6 +281,9 @@ const DeleteButton = styled.button`
 const FormBox = styled.form`
   width: 1044px;
     display: flex;
+    margin: 0 auto;
+    margin-bottom: 20px;
+    padding-top: 72px;
 `;
 
 //Select
@@ -319,5 +342,48 @@ const Button = styled.button`
     }
     
 `;
+
+const AdminMemberList = styled.div`
+    width: 1044px;
+    margin: 0 auto;
+    /*text-align: left;*/
+    border-spacing: 0;
+    /*height: 500px;*/
+    background-color: #fff;
+    margin-top: 20px;
+    /*margin-bottom: 40px;*/
+    text-align: center;
+    
+    .AdminMemberIndex{
+    display: flex;
+    border-top: 1px solid rgba(201, 201, 201, 0.6);
+    border-bottom: 1px solid rgba(201, 201, 201, 0.6);
+    font-size: 13px;
+    padding: 10px 5px;
+    font-weight: 500;
+    /*text-align: left;*/
+    /*padding-left: 20px;*/
+    background-color: #e5e8eb;
+    color: #0f2027;
+    -webkit-font-smoothing: antialiased;
+    text-indent: 10px;
+    
+    }
+
+    .AdminMemberContent{
+    display: flex;
+    // border-top: 1px solid rgba(201, 201, 201, 0.6);
+    border-bottom: 1px solid rgba(201, 201, 201, 0.6);
+    font-size: 13px;
+    padding: 10px 5px;
+    font-weight: 500;
+    /*text-align: left;*/
+    /*padding-left: 20px;*/
+    background-color: #fff;
+    color: #0f2027;
+    -webkit-font-smoothing: antialiased;
+    text-indent: 10px;
+    }
+`
 
 

@@ -1,15 +1,20 @@
 /* ================================ 공지글 영역 ================================== */
 .noticeView{
-    width: 80%;
+    width: 100%;
     /* height: 100vh; */
     margin-top: 20px;
     /* border: 1px solid red; */
+    display: flex;
+    flex-direction: column;
+    justify-self: center;
+    background: white;
 }
 
 /* 공지글 제목 */
 .noticeViewHead{
+    display: flex;
+    flex-direction: column;
     text-align: center;
-
 }
 
 .noticeViewTitle{
@@ -17,12 +22,47 @@
 }
 
 .noticeViewInfo{
-    width: 80%;
+    width: 10%;
     /* border: 1px solid red; */
     text-align: right;
 
 }
 
+.post_title{
+    width: 935px;
+    height: 40px;
+    border: none;
+    outline: none;
+    float: right;
+    margin-right: auto;
+    padding: 15px 5px;
+    text-indent: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    background-color: #fff;
+    -webkit-font-smoothing: antialiased;
+    text-align: left;
+    border: 1px solid #ccc;
+}
+.post_text{
+    float: right;
+    width: 935px;
+    height: 500px;
+    resize: none;
+    border: none;
+    outline: none;
+    border: 1px solid #ccc;
+    margin-top: 10px;
+    margin-left: 5px;
+    margin-right: auto;
+    text-indent: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    background-color: #fff;
+    -webkit-font-smoothing: antialiased;
+    text-align: left;
+    padding: 15px 5px;
+}
 .noticeViewInfo span{
     margin-left: 10px;
 }
@@ -33,6 +73,7 @@
     width: 80%;
 
 }
+
 .noticeText{
     width: 95%;
     height: 500px;

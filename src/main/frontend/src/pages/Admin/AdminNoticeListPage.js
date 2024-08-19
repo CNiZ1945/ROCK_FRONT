@@ -11,6 +11,8 @@ import search from "./images/search.svg"
 import { api } from '../../api/axios';
 import SideBar from './SideBar';
 
+import './css/AdminMemberList.css';
+
 import home from "./images/home.svg";
 function AdminNoticeListPage() {
 
@@ -30,13 +32,7 @@ function AdminNoticeListPage() {
     const [selectCheckbox, setSelectCheckbox] = useState([]);
 
     // 검색 상태 변수
-    const [isSearching, setIsSearching] = useState(false); // 검색 상태 추가
-
-    // pagenation useState
-    const [page, setPage] = useState(1);
-
-    // const pagenation
-
+    const [isSearching, setIsSearching] = useState(false);
 
     // 로그인 및 권한 상태 확인
     const checkPermission = async () => {
@@ -263,93 +259,79 @@ function AdminNoticeListPage() {
 
 
     return (
-        <div className='wrap'>
+        <>
+            <div className='wrap'>
+                {/* sidebar */}
+                <SideBar />
+                {/*3.상단 브레드스크럼 메뉴바*/}
+                {/*3-1.상단 브레드스크럼 메뉴바*/}
+                <div className="admin_head">
+                    <img src={home}></img>
+                    <h2>관리자페이지</h2>
+                </div>
+                {/*3-2.상단 브레드스크럼 메뉴바*/}
+                <div className="admin_movie_head">
+                    <span>Admin&nbsp;&nbsp;{">"}&nbsp;&nbsp;공지 사항&nbsp;&nbsp;</span>
+                    {/*<span className="s">></span>*/}
+                </div>
+                <WriteSection>
+                    {/* 검색창 */}
+                    <button onClick={() => searchBoards(1)}><img src={search} alt="검색창" /></button>
+                    <SearchInput
+                        type="text"
+                        className="bottom_search_text"
+                        placeholder="무엇이든 찾아보세요"
+                        value={searchKeyword}
+                        onChange={e => setSearchKeyword(e.target.value)}
+                    />
+                </WriteSection>
+                <div className='list_div'>
 
-            <SideBar />
-            {/*3.상단 브레드스크럼 메뉴바*/}
-            {/*3-1.상단 브레드스크럼 메뉴바*/}
-            <div className="admin_head">
-                <img src={home}></img>
-                <h2>관리자페이지</h2>
-            </div>
-            {/*3-2.상단 브레드스크럼 메뉴바*/}
-            <div className="admin_movie_head">
-                <span>Admin&nbsp;&nbsp;{">"}&nbsp;&nbsp;공지 사항&nbsp;&nbsp;</span>
-                {/*<span className="s">></span>*/}
-            </div>
-            <WriteSection>
-                {/* 검색창 */}
-                <button onClick={() => searchBoards(1)}><img src={search} alt="검색창" /></button>
-                <SearchInput
-                    type="text"
-                    className="bottom_search_text"
-                    placeholder="무엇이든 찾아보세요"
-                    value={searchKeyword}
-                    onChange={e => setSearchKeyword(e.target.value)}
-                />
-            </WriteSection>
+                <Header>
 
-            <Header>
-                공지사항
-                {/* 글쓰기 버튼 */}
-                {role === 'ADMIN' && (
-                    <>
-                        <button
-                            className="botom_write"
-                            type="button"
-                            onClick={() => navigate(`/admin/notice/write`)}
-                        >
-                            <NoticeWriteButton>글쓰기</NoticeWriteButton>
-                        </button>
-                        <button
-                            className="botom_write"
-                            type="button"
-                            onClick={deleteSelectedPosts}
-                        >
-                            <NoticeWriteButton>삭제</NoticeWriteButton>
-                        </button>
-                    </>
-                )}
-            </Header>
+                        공지사항
 
-            <div className="step-bar">
-                <span className="gradation-blue"></span>
-            </div>
+                    {/* 글쓰기 버튼 */}
+                    {role === 'ADMIN' && (
+                        <>
+                            <button
+                                className="botom_write"
+                                type="button"
+                                onClick={() => navigate(`/admin/notice/write`)}
+                            >
+                                <a>글쓰기</a>
+                            </button>
 
-            {role === 'ADMIN' ? (
-                <CommonTable headersName={[
-                    <input
-                        type='checkbox'
-                        checked={checkboxSelectAll}
-                        onChange={handleAllcheck}
-                    />,
-                    '글번호', '제목', '등록일', '조회수']}>
-                    {boardList.length > 0 ? boardList.map((item, index) => (
-                        <CommonTableRow key={index}>
-                            <CommonTableColumn>
-                                <input
-                                    type='checkbox'
-                                    checked={selectCheckbox[index] || false}
-                                    onChange={() => handleCheckbox(index)}
-                                    name='selectedBoards'
-                                    value={item.boardId}
-                                />
-                            </CommonTableColumn>
-                            <CommonTableColumn>{noticeNumber(index)}</CommonTableColumn>
-                            <CommonTableColumn>
-                                <Link to={`/user/notice/${item.boardId}`}>{item.boardTitle}</Link>
-                            </CommonTableColumn>
-                            <CommonTableColumn>{item.modifyDate}</CommonTableColumn>
-                            <CommonTableColumn>{item.boardViewCount}</CommonTableColumn>
-                        </CommonTableRow>
-                    )) : '공지글이 없습니다'}
-                </CommonTable>
-            ) :
-                (
+                            <button
+                                className="botom_write noticeDelete"
+                                type="button"
+                                onClick={deleteSelectedPosts}
+                            >
+                                <a>삭제</a>
+                            </button>
+                        </>
+                    )}
+                </Header>
+
+                {role === 'ADMIN' ? (
                     <CommonTable headersName={[
+                        <input
+                            type='checkbox'
+                            checked={checkboxSelectAll}
+                            onChange={handleAllcheck}
+                        />,
                         '글번호', '제목', '등록일', '조회수']}>
                         {boardList.length > 0 ? boardList.map((item, index) => (
                             <CommonTableRow key={index}>
+                                <CommonTableColumn>
+                                    <input
+                                        type='checkbox'
+                                        checked={selectCheckbox[index] || false}
+                                        onChange={() => handleCheckbox(index)}
+                                        name='selectedBoards'
+                                        value={item.boardId}
+                                    />
+                                </CommonTableColumn>
                                 <CommonTableColumn>{noticeNumber(index)}</CommonTableColumn>
                                 <CommonTableColumn>
                                     <Link to={`/user/notice/${item.boardId}`}>{item.boardTitle}</Link>
@@ -359,25 +341,43 @@ function AdminNoticeListPage() {
                             </CommonTableRow>
                         )) : '공지글이 없습니다'}
                     </CommonTable>
-                )}
+                ) :
+                    (
+                        <CommonTable headersName={[
+                            '글번호', '제목', '등록일', '조회수']}>
+                            {boardList.length > 0 ? boardList.map((item, index) => (
+                                <CommonTableRow key={index}>
+                                    <CommonTableColumn>{noticeNumber(index)}</CommonTableColumn>
+                                    <CommonTableColumn>
+                                        <Link to={`/user/notice/${item.boardId}`}>{item.boardTitle}</Link>
+                                    </CommonTableColumn>
+                                    <CommonTableColumn>{item.modifyDate}</CommonTableColumn>
+                                    <CommonTableColumn>{item.boardViewCount}</CommonTableColumn>
+                                </CommonTableRow>
+                            )) : '공지글이 없습니다'}
+                        </CommonTable>
+                    )}
 
 
-            {/* 페이지네이션 컴포넌트 */}
-            <Pagination
-                className="noticepagination"
-                activePage={currentPage} // 현재 페이지
-                itemsCountPerPage={10} // 한 페이지당 아이템 수
-                totalItemsCount={totalPages * 10} // 총 아이템 수
-                pageRangeDisplayed={5} // 페이지네이션의 페이지 범위
-                prevPageText={"‹"}// "이전"을 나타낼 텍스트
-                nextPageText={"›"}// "다음"을 나타낼 텍스트
-                firstPageText={"«"}
-                lastPageText={"»"}
-                onChange={handlePageChange} // 페이지 변경을 핸들링하는 함수
-            />
-    
-        </div>
-        
+                {/* 페이지네이션 컴포넌트 */}
+                <Pagination
+                    className="noticepagination"
+                    activePage={currentPage} // 현재 페이지
+                    itemsCountPerPage={10} // 한 페이지당 아이템 수
+                    totalItemsCount={totalPages * 10} // 총 아이템 수
+                    pageRangeDisplayed={5} // 페이지네이션의 페이지 범위
+                    prevPageText={"‹"}// "이전"을 나타낼 텍스트
+                    nextPageText={"›"}// "다음"을 나타낼 텍스트
+                    firstPageText={"«"}
+                    lastPageText={"»"}
+                    onChange={handlePageChange} // 페이지 변경을 핸들링하는 함수
+                />
+                </div>
+
+
+            </div>
+        </>
+
     );
 };
 
@@ -419,6 +419,7 @@ const SearchInput = styled.input`
     line-height: 130%;
     color: #333;
     min-height: 32px;
+    background: #eee;
 `;
 
 
@@ -428,12 +429,12 @@ const Header = styled.div`
     color: rgb(51, 61, 75);
     font-size: 36px;
     font-weight: 800;
-    margin-bottom: 48px;
+    // margin-bottom: 48px;
     padding-top: 74px;
     text-align: left;
     width: 1044px;
     margin: 0 auto;
-    margin-bottom: 48px;
+    // margin-bottom: 48px;
 
     .name-notice {
         display: flex;
@@ -441,36 +442,45 @@ const Header = styled.div`
     }
     //글쓰기 버튼
     .botom_write{
-        width: 90px;
+        width: 120px;
         height: 45px;
         border: 1px solid #cccccc;
         border-radius: 2px;
-        background-color: #e5e8eb;
-
+        background-color: #3182f6;
+        font-size: 14px;
         float: right;
-
-        margin-top: 2px;
-
+        color: #fff;
+        // margin-top: 2px;
+        margin-left: 50px;
         position: relative;
-        bottom: -10px;
+        // bottom: -10px;
 
 
         &:hover {
+            font-weight: 800;
             cursor: pointer;
             //border: 2px solid rgb(51, 61, 75);
             background-color:  #3182f6;;
         }
     }
-
+    // 글 삭제 버튼
+    .noticeDelete{
+                background-color: red;
+                        &:hover {
+            cursor: pointer;
+            //border: 2px solid rgb(51, 61, 75);
+            background-color:  #3182f6;;
+        }
+    }
     .botom_write a{
         font-size: 14px;
-        color: #0f2027;
+        color: #fff;
         //padding: 10px 25px;
         text-align: center;
         display: flex;
         justify-content: center;
         cursor: pointer;
-        color: rgb(51, 61, 75);
+        // color: rgb(51, 61, 75);
 
         &:hover {
             cursor: pointer;
@@ -480,8 +490,12 @@ const Header = styled.div`
     }
 `;
 
+
+
 const NoticeWriteButton = styled.div`
     font-size: 15px;
+
+
 `;
 
 const Wrap = styled.div`
