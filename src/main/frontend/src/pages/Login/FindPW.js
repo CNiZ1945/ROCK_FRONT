@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import styled from "styled-components";
+import { api } from '../../api/axios';
 
 
 
@@ -29,7 +30,7 @@ function FindLogin() {
         e.preventDefault();
 
         try {
-            const response = await axios.post('/auth/find-password', findPasswordForm);
+            const response = await api.post('/auth/find-password', findPasswordForm);
             setMessage("비밀번호 재설정 이메일 발송 완료");
             alert("비밀번호 재설정 이메일 발송 완료");
 
@@ -70,7 +71,7 @@ function FindLogin() {
 
                 {/*아이디찾기 버튼*/}
                 <CommonButton
-                    type="button"
+                    type="submit"
                     onClick={() => {
                     }}
                 >

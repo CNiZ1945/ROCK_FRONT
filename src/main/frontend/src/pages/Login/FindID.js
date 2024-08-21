@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import styled from "styled-components";
+import { api } from '../../api/axios';
 
 
 
@@ -29,7 +30,7 @@ function FindID() {
         e.preventDefault();
 
         try {
-            const response = await axios.post('/auth/find-id', findIdForm);
+            const response = await api.post('/auth/find-id', findIdForm);
             alert(`아이디: ${response.data}`);
         } catch (error) {
             alert('회원정보를 찾지 못했습니다.');

@@ -4,6 +4,7 @@ package com.movie.rock.chat.service;
 import com.movie.rock.chat.data.ChatRoomEntity;
 import com.movie.rock.chat.data.ChatRoomRepository;
 import com.movie.rock.chat.data.ChatRoomResponseDTO;
+import com.movie.rock.chat.data.MessageRepository;
 import com.movie.rock.member.data.MemberEntity;
 import com.movie.rock.member.data.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -97,4 +98,6 @@ public class ChatRoomService {
                 .orElseThrow(() -> new RuntimeException("Chat room not found"));
         return ChatRoomResponseDTO.fromEntity(chatRoom);
     }
+
+
 }

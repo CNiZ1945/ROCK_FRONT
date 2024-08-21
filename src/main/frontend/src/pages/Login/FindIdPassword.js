@@ -4,7 +4,7 @@ import {useNavigate} from "react-router-dom";
 import axios from "axios";
 import FindID from "./FindID";
 import FindPassword from "./FindPW";
-
+import { api } from '../../api/axios';
 
 //아이디/비번 재설정 최종 url
 const FindIdPassword = () => {
@@ -20,58 +20,6 @@ const FindIdPassword = () => {
         setTab(index);
     };
 
-
-    //네비
-    const navigate = useNavigate();
-
-    //findIdForm
-    const [findIdForm, setFindIdForm] = useState({
-        memName: '', memEmail: ''
-    });
-
-    //findPasswordForm
-    const [findPasswordForm, setFindPasswordForm] = useState({
-        memId: '', memEmail: ''
-    });
-
-    //message
-    const [message, setMessage] = useState('');
-
-    //handleFindIdChange
-    const handleFindIdChange = (e) => {
-        setFindIdForm({...findIdForm, [e.target.name]: e.target.value});
-    };
-
-    //handleFindPasswordChange
-    const handleFindPasswordChange = (e) => {
-        setFindPasswordForm({...findPasswordForm, [e.target.name]: e.target.value});
-    };
-
-    const handleFindId = async (e) => {
-        e.preventDefault();
-
-        try {
-            const response = await axios.post('/auth/find-id', findIdForm);
-            alert(`아이디: ${response.data}`);
-        } catch (error) {
-            alert('회원정보를 찾지 못했습니다.');
-        }
-    };
-
-    //handleFindPassword - axios.post
-    const handleFindPassword = async (e) => {
-        e.preventDefault();
-        try {
-            const response = await axios.post('/auth/find-password', findPasswordForm);
-
-            setMessage('비밀번호 재설정 이메일 발송완료');
-            alert('비밀번호 재설정 이메일 발송완료');
-
-        } catch (error) {
-            setMessage('요청을 처리하는 동안 오류가 발생했습니다');
-            alert('요청을 처리하는 동안 오류가 발생했습니다');
-        }
-    };
 
 
     //html -----------------------------------
