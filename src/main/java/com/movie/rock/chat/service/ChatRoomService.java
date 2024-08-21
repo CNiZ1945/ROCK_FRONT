@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 public class ChatRoomService {
 
     private final ChatRoomRepository chatRoomRepository;
-
+    private final MessageRepository messageRepository; //
     private final MemberRepository memberRepository;
 
     //채팅방 생성

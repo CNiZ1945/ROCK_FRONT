@@ -1,8 +1,7 @@
 package com.movie.rock.config;
 
-import com.movie.rock.member.service.CustomOAuth2UserService;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -11,7 +10,10 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.io.IOException;
+import com.movie.rock.member.service.CustomOAuth2UserService;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Component
 public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
@@ -34,7 +36,7 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
         // 링크에 토큰 로그인방법 설정
         String targetUrl = UriComponentsBuilder.fromUriString(frontendUrl)
                 .fragment("token=" + token + "&loginMethod=google")
-                        .build().toUriString();
+                .build().toUriString();
 
         // 클라이언트에 JWT 토큰과 로그인 방식을 전달 (URL 파라미터로)
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
