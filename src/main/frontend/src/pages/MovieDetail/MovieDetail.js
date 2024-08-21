@@ -9,16 +9,12 @@ import like from './images/like.svg'
 import likes from './images/likes.svg'
 import share from './images/share.svg'
 
-import CharmingGraph from './CharmingGraph';
-import MovieTab from './MovieTab.js'
-
-//탭 메뉴
 import MoviePlay from './MoviePlay';
+
 import MovieInformation from './MovieInformation'
+import CharmingGraph from './CharmingGraph';
 import MovieReview from './MovieReview';
-import Recommend from './Recommend';
-
-
+import MovieTab from './MovieTab.js'
 
 
 //MovieDetail --------------------------
@@ -31,7 +27,8 @@ const MovieDetail = () => {
         {name: '상세정보', content: <MovieInformation />},
         {name: '예고편', content: <MoviePlay />},
         {name: '리뷰', content: <MovieReview />},
-        {name: '추천', content: <Recommend />},
+        {name: '추천', content: ""},
+        // {name: '추천', content: <MovieReview />},
     ];
     const selectMenuHandler = (index: any) => {
         setTab(index);
@@ -264,9 +261,9 @@ const MovieDetail = () => {
     </Div>);
 };
 
+export default MovieDetail;
 
 // STYLE -----------------------
-
 
 //1.전체박스-배경이미지
 const Div = styled.div`
@@ -634,7 +631,7 @@ const MoviePoster = styled.img`
 const Detail_LIST = [{id: 1, title: '감독'}, {id: 2, title: '출연'}, {id: 3, title: '국가'}, {id: 4, title: '등급'}, {
     id: 5, title: '상영시간'
 }, {id: 6, title: '장르'}, {id: 7, title: '개봉일'},];
-export default MovieDetail;
+
 
 
 

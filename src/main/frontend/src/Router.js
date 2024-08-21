@@ -17,12 +17,13 @@ import NoticeWrite from "./pages/Notice/NoticeWrite";
 import MemberInfo from "./pages/Login/MemberInfo";
 import MyPage from "./pages/Login/Mypage/MyPage";
 import Chart from './pages/Chart/Chart';
-import MovieDetail from './pages/MovieDetail/MovieDetail';
+
 import AdminApp from './pages/Admin/AdminApp';
 import AdminMovieList from './pages/Admin/AdminMovieList';
 import SearchKeyword from './pages/SearchKeyword/SearchKeyword';
 import AdminNoticeListPage from './pages/Admin/AdminNoticeListPage';
 import AdminMemberListPage from './pages/Admin/AdminMemberListPage';
+import MovieDetail from './pages/MovieDetail/MovieDetail';
 
 
 //Router
@@ -54,9 +55,10 @@ const Router = () => {
 
 
                 {/*영화 - 상세페이지*/}
-                <Route path="/chart" element={<Chart/>}/>
-                <Route path='/user/moviepage/:movieId' element={<MovieDetail/>}/>
-                <Route path='/chart/detail/:id' element={<MovieDetail/>}/>
+                {/* <Route path="/chart" element={<Chart/>}/> */}
+                {/* <Route path='/user/moviepage/:movieId' element={<MovieDetail />}/> */}
+                <Route path='/user/moviepage' element={<MovieDetail />}/>
+                {/* <Route path='/chart/detail/:id' element={<MovieDetail/>}/> */}
 
 
 

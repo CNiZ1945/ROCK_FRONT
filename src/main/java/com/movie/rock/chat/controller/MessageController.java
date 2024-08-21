@@ -41,7 +41,7 @@ public class MessageController {
 
     // 관리자가 유저 메시지 받기위한 컨트롤러
     @GetMapping("/chatroom/{chatRoomId}/messages")
-    public ResponseEntity<List<MessageResponseDto>> getChatRoomMessages(@PathVariable Long chatRoomId) {
+    public ResponseEntity<List<MessageResponseDto>> getChatRoomMessages(@PathVariable("chatRoomId") Long chatRoomId) {
         List<MessageResponseDto> messages = messageService.getChatRoomMessages(chatRoomId);
         return ResponseEntity.ok(messages);
     }

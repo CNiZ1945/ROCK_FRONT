@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "chat")
@@ -32,12 +33,16 @@ public class ChatRoomEntity extends BaseTimeEntity {
     @Column(name = "closed_time")
     private LocalDateTime closedTime;
 
+    @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<MessageEntity> messages;
+
     @Builder
-    public ChatRoomEntity(Long chatRoomId, MemberEntity member, String status,LocalDateTime closedTime) {
+    public ChatRoomEntity(Long chatRoomId, MemberEntity member, String status,LocalDateTime closedTime,List<MessageEntity> messages) {
         this.chatRoomId = chatRoomId;
         this.member = member;
         this.status = status;
         this.closedTime = closedTime;
+        this.messages = messages;
     }
 
     //상태변경메서드

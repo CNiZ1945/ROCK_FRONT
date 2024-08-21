@@ -14,8 +14,18 @@
     bottom: 20px;
     right: 20px;
     z-index: 1000;
+    border-radius: 5px;
+    /* border: 2px solid #007bff; */
+    
 }
 
+.chatbot-button button{
+    width: 200px;
+    height: 50px;
+    border-radius: 5px;
+    background-color: #fff;
+    border: 2px solid #007bff;
+}
 /* 챗봇 창 */
 .chatbot-window {
     position: fixed;
@@ -111,15 +121,19 @@
 /* 관리자 채팅 패널 */
 .admin-chat-panel {
     position: fixed;
-    bottom: 80px;
+
+    bottom: 20px;
     right: 20px;
     width: 300px;
     background-color: white;
-    border: 1px solid #ddd;
+    border: 2px solid #007bff;
     border-radius: 5px;
     padding: 10px;
     z-index: 1000;
+
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
+
+
 }
 
 .admin-chat-panel h2 {
@@ -142,7 +156,9 @@
 }
 
 .admin-chat-panel button {
+    margin-right: 20px;
     margin-top: 5px;
+    margin: 0px 10px 10px 10px;
     padding: 5px 10px;
     background-color: #007bff;
     color: white;
@@ -155,41 +171,6 @@
     background-color: #0056b3;
 }
 
-/* 관리자 채팅방 css*/
-.admin-chat-panel {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: 300px;
-    background-color: white;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 10px;
-    z-index: 1000;
-}
-
-.admin-chat-panel h2 {
-    margin-top: 0;
-    margin-bottom: 10px;
-}
-
-.admin-chat-panel ul {
-    list-style-type: none;
-    padding: 0;
-    max-height: 200px;
-    overflow-y: auto;
-}
-
-.admin-chat-panel li {
-    margin-bottom: 5px;
-    padding: 5px;
-    background-color: #f1f1f1;
-    border-radius: 3px;
-}
-
-.admin-chat-panel button {
-    margin-top: 5px;
-}
 
 
 

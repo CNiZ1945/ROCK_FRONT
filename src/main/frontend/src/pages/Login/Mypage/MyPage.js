@@ -11,6 +11,7 @@ import WithdrawMember from "../WithdrawMember";
 import { api } from '../../../api/axios';
 import {DogImg, BirdImg, FishImg, CatImg, TurtleImg, 
     profile1, profile2, profile3, profile4, profile5} from './ProfileImg'
+import ChatBot from '../../ChatBot/ChatBot';
 
 
 //MyPage header
@@ -119,6 +120,7 @@ const MyPage = () => {
                     </div>
                 </TabMenu>
             </WrapBody>
+            <ChatBot />
         </Wrap>
     </>);
 }

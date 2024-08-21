@@ -27,20 +27,20 @@ public class AdminChatRoomController {
     }
 
     @GetMapping("/{chatRoomId}")
-    public ResponseEntity<ChatRoomResponseDTO> getChatRoom(@PathVariable Long chatRoomId) {
+    public ResponseEntity<ChatRoomResponseDTO> getChatRoom(@PathVariable("chatRoomId") Long chatRoomId) {
         ChatRoomResponseDTO chatRoom = chatRoomService.getChatRoomById(chatRoomId);
         return ResponseEntity.ok(chatRoom);
     }
 
     @GetMapping("/{chatRoomId}/messages")
-    public ResponseEntity<List<MessageResponseDto>> getChatRoomMessages(@PathVariable Long chatRoomId) {
+    public ResponseEntity<List<MessageResponseDto>> getChatRoomMessages(@PathVariable("chatRoomId") Long chatRoomId) {
         List<MessageResponseDto> messages = messageService.getChatRoomMessages(chatRoomId);
         return ResponseEntity.ok(messages);
     }
 
     @PostMapping("/{chatRoomId}/reply")
     public ResponseEntity<MessageResponseDto> adminReply(
-            @PathVariable Long chatRoomId,
+            @PathVariable("chatRoomId") Long chatRoomId,
             @RequestBody MessageRequestDto messageRequestDto,
             @RequestHeader("Authorization") String authHeader) {
         String token = authHeader.substring(7);

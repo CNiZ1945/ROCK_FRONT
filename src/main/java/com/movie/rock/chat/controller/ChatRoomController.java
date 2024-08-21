@@ -34,7 +34,7 @@ public class ChatRoomController {
     }
 
     @PostMapping("/{chatRoomId}/close")
-    public ResponseEntity<ChatRoomResponseDTO> closeChatRoom(@PathVariable Long chatRoomId) {
+    public ResponseEntity<ChatRoomResponseDTO> closeChatRoom(@PathVariable("chatRoomId") Long chatRoomId) {
         ChatRoomResponseDTO closedRoom = chatRoomService.closeChatRoom(chatRoomId);
         return ResponseEntity.ok(closedRoom);
     }
