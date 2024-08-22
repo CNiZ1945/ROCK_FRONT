@@ -23,6 +23,7 @@ import CommonTable from './AdminTable/CommonTable';
 import CommonTableColumn from './AdminTable/CommonTableColumn';
 import CommonTableRow from './AdminTable/CommonTableRow';
 import {postList} from '../../Admin';
+import ChatBot from "../ChatBot/ChatBot";
 
 
 
@@ -410,6 +411,7 @@ const AdminMovieList = ({postsPerPage, totalPosts, paginate}) => {
                     />
 
                 </div>
+                <ChatBot />
             </div>
         </div>
     );

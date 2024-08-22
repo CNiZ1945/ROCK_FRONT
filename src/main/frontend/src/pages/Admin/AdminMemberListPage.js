@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 // import axios from "axios";
 import './css/AdminMemberList.css';
 import { api } from "../../api/axios";
@@ -8,6 +8,9 @@ import SideBar from "./SideBar";
 //img
 import home from "./images/home.svg";
 import Pagination from "react-js-pagination";
+import ChatBot from "../ChatBot/ChatBot";
+import { Navigate, useNavigate } from "react-router-dom";
+
 
 function AdminMemberListPage() {
 
@@ -22,23 +25,58 @@ function AdminMemberListPage() {
     const [selectedMembers, setSelectedMembers] = useState([]);
 
     const [selectAll, setSelectAll] = useState(false);
+    
+    const [hasPermission, setHasPermission] = useState(false);
+
+    const [isLoading, setIsLoading] = useState(true);
+
+    const navigate = useNavigate();
+
+    const initializedRef = useRef(false);
 
 
     useEffect(() => {
         fetchMembers();
     }, [currentPage, searchTerm]);
 
-    // 회원 목록 가져오는 로직
-    // const fetchMembers = async () => {
-    //     try {
-    //         const response = await api.get(`/admin/members?page=${currentPage - 1}&size=15`);
-    //         setMembers(response.data.content);
-    //         setTotalPages(response.data.totalPages); // 전체 페이지 수 업데이트
-    //     } catch (error) {
-    //         console.error("Error fetching members:", error);
-    //     }
-    // };
+    // 로그인 및 권한 상태 확인
+    const checkPermission = async () => {
+        const token = localStorage.getItem('accessToken');
+        const response = await api.get('auth/memberinfo', {
+            headers: {
+                "Authorization" : `Bearer ${token}`,
+            }
+        });
+        const role = response.data.memRole;
+        try {
+            // 로그인을 하지 않을 시
+            if (!token) {
+                alert('로그인이 필요한 페이지입니다.');
+                navigate("/login");
+                // return;
+            }
+            // 관리자가 아닐 시
+            if(role !== 'ADMIN'){
+                alert("관리자만 들어갈 수 있는 페이지입니다.");
+                navigate(-1);
+            }
+            else {
+                setHasPermission(true);
 
+            }
+        }
+        catch (error) {
+            console.error('PostList user info error:', error);
+            alert("오류가 발생했습니다. 다시 로그인해주세요")
+            navigate('/login');
+        }
+        finally {
+            setIsLoading(false);
+        }
+
+    }
+
+    // 회원 목록 가져오는 로직
     const fetchMembers = async () => {
         try {
             const response = await api.get(`/admin/members/search?term=${searchTerm}`);
@@ -137,12 +175,51 @@ function AdminMemberListPage() {
         setCurrentPage(pageNumber);
         fetchMembers(); // 페이지 변경 시 데이터 새로 요청
     };
+
+        // 권한 확인 후 게시글 불러오기
+        useEffect(() => {
+            if (!initializedRef.current) {
+                initializedRef.current = true;
+                checkPermission();
+                console.log("hasPermission: ", hasPermission);
     
+            }
+            if (hasPermission) {
+                fetchMembers(currentPage);
+            }
+
+    
+
+        }, [hasPermission]);
+
+    // 검색 엔터키 기능
+    const handleEnterKey = (e) => {
+        e.preventDefault();
+        if(e.key === 'Enter'){
+            console.log("input enter key:", searchTerm)
+        }
+    }
+
+
+    // 로딩 상태
+    if (isLoading) {
+        return (
+            <div>
+                Loading ...
+            </div>
+        );
+    }
+
+    // 권한없을시 페이지 없음
+    if (!hasPermission) {
+        return null;
+    }
 
     return (
         <>
             {/* 배경 wrap*/}
             <div className="wrap" >
+                
                 {/* sidebar */}
                 <SideBar />
                 {/*3.상단 브레드스크럼 메뉴바*/}
@@ -193,6 +270,7 @@ function AdminMemberListPage() {
                                         type="checkbox"
                                         checked={selectAll}
                                         onChange={handleSelectAll}
+                                        onKeyDown={handleEnterKey}
                                     />
                                 </li>
                                 <li className="mem_no">회원 번호</li>
@@ -243,9 +321,10 @@ function AdminMemberListPage() {
                             lastPageText={"»"}
                         />
                     {/* </div> */}
+
                 </div>
             </div>
-
+            <ChatBot />
         </>
     );
 }

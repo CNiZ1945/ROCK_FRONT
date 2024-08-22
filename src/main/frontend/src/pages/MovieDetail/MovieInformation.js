@@ -1,10 +1,12 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import {useParams, useNavigate} from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import poster from './images/poster.jpg'
 
 import Actor from './images/Actor.jpg'
 import Director from './images/Director.jpg'
+import { useCallback } from 'react';
+import { api } from '../../api/axios';
 
 // import authorship1 from './images/authorship1.jpg'
 // import authorship2 from './images/authorship2.jpg'
@@ -13,147 +15,298 @@ import Director from './images/Director.jpg'
 
 //영화,상세정보 탭
 const MovieInformation = () => {
-    const [movieData, setMovieData] = useState({});
-    const [scrollPosition, setScrollPosition] = useState(0);
-    const [toggleBtn, setToggleBtn] = useState(true);
-    const params = useParams();
+    // useState 설정
+    const [movieDetail, setMovieDetail] = useState(null);
+    const [isFavorite, setIsFavorite] = useState(false);
+    const [totalFavorites, setTotalFavorites] = useState(0);
+    const [isLoading, setIsLoading] = useState(true);
+    const [memberInfo, setMemberInfo] = useState(null);
+    const [memRole, setMemRole] = useState(null);
+    const [error, setError] = useState(null);
     const navigate = useNavigate();
+    const { movieId } = useParams();
 
-    const {
-        movieThumbNailImg,
-        movieName,
-        director,
-        movieActors,
-        country,
-        movieAgeRating,
-        movieRunningTime,
-        movieGenre,
-        movieOpeningDate,
-        movieDetailDescription,
-        movieStillCut,
-        movieTrailer,
-    } = movieData;
-
-    const stillCutList = movieData.movieStillCut;
-
-    const handleScroll = () => {
-        const {scrollY} = window;
-        scrollY > 200 && setToggleBtn(!toggleBtn);
-    };
-
-    const goToTop = () => {
-        window.scrollTo({top: 0, behavior: 'smooth'});
-        setToggleBtn(false);
-    };
-
-    const updateScroll = () => {
-        setScrollPosition(window.scrollY || document.documentElement.scrollTop);
-    };
-
-    //백엔드 서버
     useEffect(() => {
-        fetch(`/movies/detail?movieId=${params.id}`, {
-            // fetch(`http://43.200.63.91:3000/movies/detail?movieId=${params.id}`, {
-            method: 'GET', headers: {'Content-Type': 'application/json;charset=utf-8'},
-        })
-            .then(response => response.json())
-            .then(data => {
-                setMovieData(data.getMovieDetail[0]);
-            });
+        if (error) {
+            alert(error);
+            setError(null);
+        }
+    }, [error]);
 
-        window.addEventListener('scroll', updateScroll);
-        window.addEventListener('scroll', handleScroll);
-        return () => {
-            window.removeEventListener('scroll', handleScroll);
+    // 로그인 정보 확인 후 작업
+    useEffect(() => {
+        const fetchData = async () => {
+            const token = localStorage.getItem('accessToken');
+            if (!token) {
+                alert("로그인이 필요합니다.");
+                navigate('/login');
+                return;
+            }
+
+            try {
+                const memberInfo = await fetchMemberInfo(token);
+                setMemberInfo(memberInfo);
+                setMemRole(memberInfo.role);
+                await fetchMovieDetail(token, movieId);
+                // await fetchReviews(token, movieId);
+                setIsLoading(false);
+            } catch (error) {
+                console.error("데이터 로딩 중 오류 발생:", error);
+                if (error.response && error.response.status === 401) {
+                    alert("로그인 세션이 만료되었습니다. 다시 로그인해주세요.");
+                    localStorage.removeItem('accessToken');
+                    navigate('/login');
+                } else {
+                    setError("데이터를 불러오는데 실패했습니다.")
+                }
+                setIsLoading(false);
+            }
         };
-    }, []);
+        fetchData();
+    }, [movieId, navigate]);
+
+    // 로그인 정보 
+    const fetchMemberInfo = async (token) => {
+        try {
+            const response = await api.get('/auth/memberinfo', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            return {
+                role: response.data.memRole,
+                memName: response.data.memName,
+                memNum: response.data.memNum
+            };
+        } catch (error) {
+            console.error('사용자 정보를 가져오는 중 오류 발생:', error);
+            if (error.response) {
+                if (error.response.status === 401) {
+                    setError("로그인 세션이 만료되었습니다. 다시 로그인해주세요.");
+                    navigate('/login');
+                } else {
+                    setError(error.response.data || "사용자 정보를 가져오는데 실패했습니다.");
+                }
+            } else {
+                setError("서버와의 연결에 실패했습니다.");
+            }
+            throw error;
+        }
+    };
+
+    // 영화 상세 정보
+    const fetchMovieDetail = useCallback(async (token) => {
+        try {
+            const response = await api.get(`/user/movies/detail/${movieId}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            setMovieDetail(response.data);
+            console.log("영화정보", response.data);
+        } catch (error) {
+            console.error('영화 상세 정보를 가져오는 중 오류 발생:', error);
+            setMovieDetail(null);
+
+            if (error.response) {
+                const errorData = error.response.data;
+                if (typeof errorData === 'string') {
+                    setError(errorData);
+                } else if (errorData.errCode) {
+                    switch (errorData.errCode) {
+                        case "ERR_R_RATED_MOVIE":
+                            alert("청소년 관람 불가 등급의 영화입니다.");
+                            break;
+                        case "ERR_UNAUTHORIZED":
+                            alert("접근 권한이 없습니다.");
+                            navigate('/login');
+                            break;
+                        case "ERR_MEMBER_NOT_FOUND":
+                            alert("회원 정보를 찾을 수 없습니다.");
+                            navigate('/login');
+                            break;
+                        case "ERR_MOVIE_NOT_FOUND":
+                            alert("영화를 찾을 수 없습니다.");
+                            break;
+                        case "ERR_TOKEN_EXPIRED":
+                            alert("로그인 세션이 만료되었습니다. 다시 로그인해주세요.");
+                            navigate('/login');
+                            break;
+                        default:
+                            alert(errorData.message || "영화 정보를 불러오는 데 실패했습니다.");
+                    }
+                } else {
+                    alert("영화 정보를 불러오는 데 실패했습니다.");
+                }
+            } else if (error.request) {
+                setError("서버로부터 응답이 없습니다. 네트워크 연결을 확인해주세요.");
+            } else {
+                setError("요청 설정 중 오류가 발생했습니다.");
+            }
+        }
+    }, [movieId, navigate, setError]);
+
+
+    if (error) {
+        return (
+            <div className="error-container">
+                <button onClick={() => navigate('/')}>홈으로 돌아가기</button>
+            </div>
+        );
+    }
+
+    if (isLoading) {
+        return <div>Loading...</div>;
+    }
+
+    if (!movieDetail) {
+        return <div>영화 정보를 불러오는 중 오류가 발생했습니다.</div>;
+    }
+
 
 
     //html  ---------------------------------------------------
     return (
 
         <Div>
-            {movieData && (<div>
+            {fetchMovieDetail && (<div>
                 <WholeContainer>
-                    <div className="logoplace"/>
+                    <div className="logoplace" />
+
+                    <ArrayContent>
+                        <ThumbBox>
+                            {/*포스터-연습용*/}
+                            <MoviePoster
+                            // src={movieDetail.posters && movieDetail.posters.length > 0 ? movieDetail.posters[0].posterUrls : ''}
+                            // alt={`${movieDetail.movieTitle} 포스터`}
+                            />
+
+                            {/*포스터-data/*/}
+                            {/*<MoviePoster src={movieData.movieThumbNailImg} alt="포스터" />*/}
+                        </ThumbBox>
 
 
+                        {/*2.줄거리*/}
+                        <DesBox className="description">
+
+                            <Destitle>줄거리</Destitle>
+                            <DesContent>
+                                {movieDetail.movieDescription || '줄거리를 불러올 수 없습니다'}
+                            </DesContent>
+                        </DesBox>
+                    </ArrayContent>
                     {/*1.썸네일*/}
-                    <ThumbBox>
-                        {/*포스터-연습용*/}
-                        <MoviePoster src={poster} alt="포스터"/>
-
-                        {/*포스터-data/*/}
-                        {/*<MoviePoster src={movieData.movieThumbNailImg} alt="포스터" />*/}
-                    </ThumbBox>
-
-
-                    {/*2.줄거리*/}
-                    <DesBox className="description">
-
-                        <Destitle>줄거리</Destitle>
-                        <DesContent>
-                            {/*줄거리-연습용*/}
-                            <span className="Destitle_span">
-고담시에 사는 광대 아서 플렉은 착하게 살아보려 하지만
-인생의 부조리함과 쓴 맛이 끊임없이 그를 압도한다.짝사랑도,
-커리어도 마음대로 되지 않고 자신을 향한 세상의 더러움을
-견디다 못한 그는 결국 최악의 악당 조커로 재탄생한다.
-내 인생이 비극인줄 알았는데, 코미디였어"
-고담시의 광대 아서 플렉은 코미디언을 꿈꾸는 남자.
-하지만 모두가 미쳐가는 코미디 같은 세상에서 맨 정신으로는 그가 설 자리가 없음을 깨닫게 되는데...
-                            </span>
-
-                            {/*줄거리-data*/}
-                            {/*<span>{movieDetailDescription}</span>*/}
-                        </DesContent>
-                    </DesBox>
 
 
 
+                    <ArrayContent className='colum'>
+                        <Txt><a className="txt">감독</a></Txt>
+                        <DirectorBox>
+                            <ul>
+                                {movieDetail.directors?.map(director => (
+                                    <>
+                                        <li key={director.directorId}>
+                                            {director.directorPhoto && director.directorPhoto.length > 0 && (
+                                                <Link to={`https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=0&ie=utf8&query=${director.directorName}`} target="_blank" >
+
+                                                    <DirectorPoster
+                                                        src={director.directorPhoto[0].photoUrl}
+                                                        alt={`${director.directorName} 사진`}
+                                                        className="directorImg"
+                                                    />
+                                                </Link>
+                                            )}
+                                        </li>
+                                        <li key={director.directorId}>
+                                            {director.directorName}
+                                        </li>
+                                    </>
+
+                                ))}
+                            </ul>
+                        </DirectorBox>
+                    </ArrayContent>
                     {/*3.감독*/}
-                    <Txt><a className="txt">감독</a></Txt>
-                    <DirectorBox>
-                        {/*포스터-연습용*/}
-                        <DirectorPoster src={Director} alt="감독1"/>
-                        <DirectorPoster src={Director} alt="원작자2"/>
-                        <DirectorPoster src={Director} alt="원작자3"/>
-                        {/*포스터-data/*/}
-                        {/*<MoviePoster src={movieData.movieThumbNailImg} alt="포스터" />*/}
-                    </DirectorBox>
 
 
-                    <Txt><a className="txt">출연</a></Txt>
-                    <ActorBox>
-                        {/*포스터-연습용*/}
-                        <ActorPoster src={Actor} alt="출연배우1"/>
-                        <ActorPoster src={Actor} alt="출연배우1"/>
-                        <ActorPoster src={Actor} alt="출연배우1"/>
-                        {/*포스터-data/*/}
-                        {/*<MoviePoster src={movieData.movieThumbNailImg} alt="포스터" />*/}
-                    </ActorBox>
+                    <ArrayContent className='colum'>
+                        <Txt><a className="txt">출연</a></Txt>
+                        <ActorBox>
+                            {/*포스터-연습용*/}
+
+                            {/*포스터-data/*/}
+                            {/*<MoviePoster src={movieData.movieThumbNailImg} alt="포스터" />*/}
+                            <PhotoArray>
+                                {movieDetail.actors?.map(actor => (
+
+                                    <li key={actor.actorId}>
+                                        <div>
+                                            {actor.actorPhoto && actor.actorPhoto.length > 0 && (
+                                                <Link to={`https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=0&ie=utf8&query=${actor.actorName}`} target="_blank" >
+
+                                                    <ActorPoster
+                                                        src={actor.actorPhoto[0].photoUrl}
+                                                        alt={`${actor.actorName} 사진`}
+                                                        className="actorImg"
+                                                    />
+                                                </Link>
+                                            )}
+
+                                            {actor.actorName}
+                                        </div>
+                                    </li>
 
 
-                    <Txt><a className="txt">영화 정보</a></Txt>
 
-                    <DetailBox>
-                        <ul className="DetailTitle">
-                            {Detail_LIST.map(category => {
-                                return (<DetailTitle key={category.id}>
-                                    {category.title}
-                                </DetailTitle>);
-                            })}
-                        </ul>
-                        <ul className="DetailContext">
-                            <DetailContext>{director}토드 필립스</DetailContext>
-                            <DetailContext>{movieActors?.join(' ')}호야킨 피닉스</DetailContext>
-                            <DetailContext>{country}미국</DetailContext>
-                            <DetailContext>{movieAgeRating} 15세 관람가</DetailContext>
-                            <DetailContext>{movieRunningTime}2시간 1분</DetailContext>
-                            <DetailContext>{movieGenre?.join(' ')}스릴러</DetailContext>
-                            <DetailContext>{movieOpeningDate}2019년</DetailContext>
-                        </ul>
-                    </DetailBox>
+                                ))}
+                            </PhotoArray>
+                        </ActorBox>
+                    </ArrayContent>
+
+
+                    <ArrayContent className='colum'>
+                        <Txt><a className="txt">영화 정보</a></Txt>
+
+                        <DetailBox>
+                            <ul className="DetailTitle">
+                                {Detail_LIST.map(category => {
+                                    return (<DetailTitle key={category.id}>
+                                        {category.title}
+                                    </DetailTitle>);
+                                })}
+                            </ul>
+
+                            <ul className="DetailContext" key="index">
+
+                                {/* 배우 */}
+                                <MovieDetailBoxUl>
+                                    {movieDetail.directors?.map(director => (
+                                        <DetailContext key={director.directorId}>
+                                            {director.directorName}
+                                        </DetailContext>
+
+                                    ))}
+                                </MovieDetailBoxUl>
+
+                                {/* 배우 */}
+                                <MovieDetailBoxUl>
+                                    {movieDetail.actors?.map(actor => (
+                                        <DetailContext key={actor.actorId}>
+                                            {actor.actorName}
+                                        </DetailContext>
+
+                                    ))}
+                                </MovieDetailBoxUl>
+                                {/* 장르 */}
+                                <DetailContext>{movieDetail.genres?.map(genre => genre.genreName).join(', ') || "정보 없음"}</DetailContext>
+                                {/* 등급 */}
+                                <DetailContext>{movieDetail.movieRating || "정보 없음"}</DetailContext>
+                                {/* 상영 시간 */}
+                                <DetailContext>{movieDetail.runTime || "정보 없음"}</DetailContext>
+                                {/* 개봉일 */}
+                                <DetailContext>{movieDetail.openYear || "정보 없음"}</DetailContext>
+                            </ul>
+
+
+                        </DetailBox>
+
+                    </ArrayContent>
 
                 </WholeContainer>
             </div>)}
@@ -163,6 +316,15 @@ export default MovieInformation;
 
 
 // STYLE -----------------------
+const ArrayContent = styled.div`
+    display: flex;
+    margin-bottom: 30px;
+
+    &.colum{
+        flex-direction: column;
+    }
+`
+
 
 //1.전체박스
 const Div = styled.div`
@@ -186,13 +348,13 @@ const ThumbBox = styled.div`
     flex: none;
     position: relative;
     overflow: hidden;
-    width: 185px;
+    // width: 185px;
     height: 278px;
     border-radius: 12px;
 `;
 //포스터 - 이미지
 const MoviePoster = styled.img`
-    width: 185px;
+    // width: 185px;
     height: 278px;
 `;
 
@@ -203,8 +365,9 @@ const DirectorBox = styled.div`
     flex-wrap: wrap;
     align-items: center;
    
+
     //디자인
-    margin-top: 30px;
+    // margin-bottom: 30px;
     margin-left: 10px;
     display: flex;
     justify-content: left;
@@ -219,13 +382,18 @@ const ActorBox = styled.div`
     align-items: center;
 
     //디자인
-    margin-top: 30px;
+    margin-bottom: 30px;
     margin-left: 10px;
     display: flex;
     justify-content: left;
 `;
 
+// 사진 정렬 ul
+const PhotoArray = styled.ul`
+    display: flex;
+    flex-wrap: wrap'
 
+    `
 
 //텍스트
 const Txt = styled.div`
@@ -239,6 +407,7 @@ const Txt = styled.div`
     margin-top: 40px;
     
     .txt{
+        margin-bottom: 10px;
         color: #fff;
         margin-left: 20px;
         font-size: 16px;
@@ -249,38 +418,48 @@ const Txt = styled.div`
 
 //감독 포스터(이미지)
 const DirectorPoster = styled.img`
+
     float: left;
     width: 200px;
     border-radius: 12px;
     margin-right: 20px;
-   
+
 `;
 //배우 포스터(이미지)
 const ActorPoster = styled.img`
-    float: left;
+    // float: left;
+    // display: flex;
     width: 200px;
     border-radius: 12px;
     margin-right: 20px;
 `;
 
-
+// 영화 상세 설명
 const DetailBox = styled.div`
     
     width: 785px;
     display: flex;
     flex-wrap: wrap;
     margin-top: 30px;
+
     
 
     .DetailTitle {
-        
+        // border: 1px solid red;
     }
 
     .DetailContext {
+
+
     }
 `;
 
-
+// 감독 출연진 정렬 박스
+const MovieDetailBoxUl = styled.ul`
+    display: flex;
+    // border: 1px solid white;
+    // width: 700px;
+`
 
 
 
@@ -288,7 +467,7 @@ const DetailBox = styled.div`
 const DesBox = styled.div`
     display: flex;
     flex-wrap: wrap;
-    width: 580px;
+    width: 680px;
     height: 200px;
     margin-left: 20px;
     line-height: 30px;
@@ -377,9 +556,14 @@ const DetailContext = styled.li`
 `;
 
 //데이터-연습용
-const Detail_LIST = [{id: 1, title: '감독'}, {id: 2, title: '출연'}, {id: 3, title: '국가'}, {id: 4, title: '등급'}, {
-    id: 5, title: '상영시간'
-}, {id: 6, title: '장르'}, {id: 7, title: '개봉일'},];
+const Detail_LIST = [
+    { id: 1, title: '감독' },
+    { id: 2, title: '출연' },
+    { id: 3, title: '장르' },
+    { id: 4, title: '등급' },
+    { id: 5, title: '상영시간' },
+    { id: 6, title: '개봉일' }
+];
 
 
 

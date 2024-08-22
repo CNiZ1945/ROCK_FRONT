@@ -9,6 +9,7 @@ import { api } from '../../api/axios';
 import styled from 'styled-components';
 
 import notice from "./images/notice_write.png";
+import ChatBot from '../ChatBot/ChatBot';
 
 //공지사항 보기
 const NoticeView = () => {
@@ -278,8 +279,7 @@ const NoticeView = () => {
                 </div>
             </div>
 
-
-
+            <ChatBot />
         </>
     );
 

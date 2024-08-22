@@ -57,8 +57,9 @@ function Main() {
 		fetchAllData();
 	}, []);
 
-    // 로딩 중이거나 에러가 있는 경우 처리
+    // 로딩 중
     if (loading) return (<div>Loading...</div>);
+    // 에러가 떴을 경우
     if (error) return (<div>Error: {error.message}</div>);
 
 
@@ -70,9 +71,13 @@ function Main() {
 			</SectionANav>
 
 			<SectionA>
+        {/* 최근에 본 영화 */}
 				<PosterSwiper data={recentWatched} />
+        {/* 영화 이어보기 */}
 				<PosterSwiper data={continueWatching} />
+        {/* 영화 랭킹 */}
 				<PosterSwiper data={rankingMovie} />
+        {/* 최근 업로드 된 영화  */}
 				<PosterSwiper data={updatedMovie} />
 				{/* <MainTop4 /> */}
 			</SectionA>

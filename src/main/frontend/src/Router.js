@@ -56,8 +56,8 @@ const Router = () => {
 
                 {/*영화 - 상세페이지*/}
                 {/* <Route path="/chart" element={<Chart/>}/> */}
-                {/* <Route path='/user/moviepage/:movieId' element={<MovieDetail />}/> */}
-                <Route path='/user/moviepage' element={<MovieDetail />}/>
+                <Route path='/user/moviepage/:movieId' element={<MovieDetail />}/>
+                {/* <Route path='/user/moviepage' element={<MovieDetail />}/> */}
                 {/* <Route path='/chart/detail/:id' element={<MovieDetail/>}/> */}
 
 

@@ -5,7 +5,7 @@ import { Stomp } from '@stomp/stompjs';
 import { api } from '../../api/axios';
 
 //css
-import './css/Mainpage.css';
+import './css/Chatbot.css';
 import styled from "styled-components";
 
 

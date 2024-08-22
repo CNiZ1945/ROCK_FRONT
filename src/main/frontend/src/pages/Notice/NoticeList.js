@@ -9,6 +9,7 @@ import Pagination from "react-js-pagination";
 import './css/Paging.css';
 import search from "./images/search.svg"
 import { api } from '../../api/axios';
+import ChatBot from '../ChatBot/ChatBot';
 
 
 //일반 회원 공지사항(게시판) 리스트
@@ -363,6 +364,7 @@ const NoticeList = () => {
                 lastPageText={"»"}
                 onChange={handlePageChange} // 페이지 변경을 핸들링하는 함수
             />
+        <ChatBot />
         </Wrap>
     );
 };

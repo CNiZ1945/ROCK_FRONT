@@ -5,19 +5,13 @@ import styled from "styled-components";
 // import SelectorEngine from "bootstrap/js/src/dom/selector-engine";
 import { Link } from "react-router-dom";
 import { useNavigate } from 'react-router-dom';
-
+import {api} from '../../api/axios'
 
 
 // SignUp-회원가입
 function SignUp() {
     const navigate = useNavigate();
 
-    const api = axios.create({
-        baseURL: "http://localhost:8080",
-        headers: {
-            'Content-Type': 'application/json',
-        }
-    })
     const [formData, setFormData] = useState({
         memId: '',
         memPassword: '',
@@ -25,7 +19,7 @@ function SignUp() {
         memName: '',
         memEmail: '',
         memBirthdate: '',
-        memGender: '',
+        memGender: '남성',
         memTel: '',
     });
 
@@ -451,13 +445,15 @@ function SignUp() {
                             <FormBlockBody>
                                 {/*  성별 옵션 변경  */}
                                 <CustomSelect
+                                    key={formData}
                                     name="memGender"
+                                    defaultValue={"남성"}
                                     value={formData.memGender}
                                     // data-auth=""
                                     onChange={handleChange}
                                     required>
 
-                                    <CustomOption value="남성" defaultValue={"남성"}>남성</CustomOption>
+                                    <CustomOption value="남성" >남성</CustomOption>
                                     <CustomOption value="여성">여성</CustomOption>
 
                                 </CustomSelect>

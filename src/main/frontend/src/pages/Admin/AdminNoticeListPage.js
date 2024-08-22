@@ -14,6 +14,9 @@ import SideBar from './SideBar';
 import './css/AdminMemberList.css';
 
 import home from "./images/home.svg";
+import ChatBot from '../ChatBot/ChatBot';
+// import handleEnterKey from '../../components/handleEnterKey';
+
 function AdminNoticeListPage() {
 
     const navigate = useNavigate();
@@ -36,12 +39,24 @@ function AdminNoticeListPage() {
 
     // 로그인 및 권한 상태 확인
     const checkPermission = async () => {
+        const token = localStorage.getItem('accessToken');
+        const response = await api.get('auth/memberinfo', {
+            headers: {
+                "Authorization" : `Bearer ${token}`,
+            }
+        });
+        const role = response.data.memRole;
         try {
-            const token = localStorage.getItem('accessToken');
+            // 로그인을 하지 않을 시
             if (!token) {
                 alert('로그인이 필요한 페이지입니다.');
                 navigate("/login");
                 // return;
+            }
+            // 관리자가 아닐 시
+            if(role !== 'ADMIN'){
+                alert("관리자만 들어갈 수 있는 페이지입니다.");
+                navigate(-1);
             }
             else {
                 setHasPermission(true);
@@ -116,6 +131,15 @@ function AdminNoticeListPage() {
             navigate(-1);
         }
     };
+
+    // 엔터키 기능
+    const handleEnterKey = (e) => {
+
+        if(e.key === 'Enter'){
+            console.log("input enter key:")
+            // activeButton();
+        }
+    }
 
     // 체크 박스 초기화
     useEffect(() => {
@@ -212,7 +236,7 @@ function AdminNoticeListPage() {
         return (currentPage - 1) * 10 + index + 1;
     }
 
-
+    // 로딩 페이지
     if (isLoading) {
         return (
             <div>
@@ -258,6 +282,7 @@ function AdminNoticeListPage() {
     // 초기 데이터 로딩
 
 
+
     return (
         <>
             <div className='wrap'>
@@ -276,13 +301,17 @@ function AdminNoticeListPage() {
                 </div>
                 <WriteSection>
                     {/* 검색창 */}
-                    <button onClick={() => searchBoards(1)}><img src={search} alt="검색창" /></button>
+                    <button 
+                        onClick={() => searchBoards(1)} 
+                        type='submit'
+                        ><img src={search} alt="검색창" /></button>
                     <SearchInput
                         type="text"
                         className="bottom_search_text"
                         placeholder="무엇이든 찾아보세요"
                         value={searchKeyword}
                         onChange={e => setSearchKeyword(e.target.value)}
+                        onKeyDown={handleEnterKey}
                     />
                 </WriteSection>
                 <div className='list_div'>
@@ -376,6 +405,7 @@ function AdminNoticeListPage() {
 
 
             </div>
+            <ChatBot />
         </>
 
     );

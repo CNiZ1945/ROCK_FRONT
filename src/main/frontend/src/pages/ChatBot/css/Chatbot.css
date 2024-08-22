@@ -1,12 +1,4 @@
 
-.wrap{
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    z-index: 999999999999999999999999999;
-    width: 500px;
-    background-color: red;
-}
 
 /* 챗봇 버튼 */
 .chatbot-button {

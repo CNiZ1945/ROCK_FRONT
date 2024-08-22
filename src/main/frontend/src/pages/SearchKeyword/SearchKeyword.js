@@ -7,6 +7,7 @@ import bullet from "./images/bullet.svg"
 
 import Pagination from "react-js-pagination";
 import './css/Paging.css';
+import ChatBot from '../ChatBot/ChatBot';
 
 
 
@@ -107,6 +108,7 @@ const SearchKeyword = ({postsPerPage, totalPosts, paginate}) => {
                 />
 
             </MainContainer>
+            <ChatBot />
         </Wrap>
     );
 }
