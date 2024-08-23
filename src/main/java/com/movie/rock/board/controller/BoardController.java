@@ -23,7 +23,7 @@ import java.util.List;
 public class BoardController {
 
     private final BoardService boardService;
-    
+
     //리스트보기 페이지 이동
     @GetMapping("/admin/board")
     public String adminBoardPage() {
@@ -49,14 +49,14 @@ public class BoardController {
         Page<BoardListResponseDTO> adminListDto = boardService.getAllBoards(pageable);
         return ResponseEntity.status(HttpStatus.OK).body(adminListDto);
     }
-    
+
 
     //검색
     @GetMapping("/admin/boardSearch")
     public ResponseEntity<Page<BoardListResponseDTO>> adminBoardSearch(
             @PageableDefault(size = 5, sort = "boardId", direction = Sort.Direction.DESC) Pageable pageable,
-            @RequestParam(name = "boardTitle") String boardTitle,
-            @RequestParam(name = "boardContent") String boardContent) {
+            @RequestParam("boardTitle") String boardTitle,
+            @RequestParam("boardContent") String boardContent) {
         BoardSearchRequestDTO boardSearchData = BoardSearchRequestDTO.BoardSearchData(boardTitle,boardContent);
         Page<BoardListResponseDTO> boardSearch = boardService.boardSearch(boardSearchData, pageable);
 

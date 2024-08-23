@@ -34,9 +34,6 @@ public interface MovieFavorRepository extends JpaRepository<MovieFavorEntity, Mo
     //마이페이지 회원찜
     Page<MovieFavorEntity> findByMemberMemNum(Long memNum, Pageable pageable);
 
-
-//    Optional<MovieFavorEntity> findByMovieMovieIdAndMemberMemNum(Long movieId, Long memNum);
-
     //마이페이지 찜하기 메인포스터 가져오기
     @Query("SELECT new com.movie.rock.member.data.MyPageFavorResponseDTO(m.movieId, m.movieTitle, " +
             "p.posters.posterId, p.posters.posterUrls, p.posters.mainPoster, mf.member.memNum, true) " +

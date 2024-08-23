@@ -24,7 +24,7 @@ public class BoardDetailsResponseDTO {
 
     //파일 list = 여러개의 파일을 uploac할 수있어서
     private List<BoardDetailsFileResponseDTO> files;
-    
+
     //생성자 초기화
     @Builder
     public BoardDetailsResponseDTO(Long boardId, String boardTitle, String boardContent,
@@ -37,7 +37,7 @@ public class BoardDetailsResponseDTO {
         this.modifyDate = modifyDate;
         this.files = files;
     }
-    
+
     //생성자에 들어갈 데이터
     public static BoardDetailsResponseDTO fromEntity(BoardEntity boardEntity) {
         return BoardDetailsResponseDTO.builder()

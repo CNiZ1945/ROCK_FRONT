@@ -21,7 +21,7 @@ public class AdminDirectorAddRequestDTO {
 
     //생성자
     public AdminDirectorAddRequestDTO(Long directorId, String directorName,
-                                   Integer directorBirth, List<String> directorPhotos){
+                                      Integer directorBirth, List<String> directorPhotos){
         this.directorId = directorId;
         this.directorName = directorName;
         this.directorBirth =directorBirth;
@@ -59,5 +59,3 @@ public class AdminDirectorAddRequestDTO {
         return directorsEntity;
     }
 }
-
-

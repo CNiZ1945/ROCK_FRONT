@@ -15,7 +15,7 @@ public class BoardWriteResponseDTO {
     private String boardTitle;
     private String boardContent;
     public String createDate;
-    
+
     //생성자 초기화
     @Builder
     public BoardWriteResponseDTO(Long boardId, String boardTitle, String boardContent, String createDate) {

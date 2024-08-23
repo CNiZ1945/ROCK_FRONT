@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
 public interface ActorsPhotosRepository extends JpaRepository<ActorsPhotosEntity, Long> {
 //    @Query("SELECT ap FROM ActorsPhotosEntity ap WHERE ap.actor.actorId IN :actorIds")
 //    List<ActorsPhotosEntity> findByActorIdIn(List<Long> actorIds);
-        boolean existsByPhotos_PhotoUrls(String photoUrl);
+    boolean existsByPhotosPhotoUrls(String photoUrl);
 }

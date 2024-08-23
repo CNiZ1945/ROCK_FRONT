@@ -36,7 +36,7 @@ public class BoardListResponseDTO {
                 .boardTitle(boardEntity.getBoardTitle())
                 .boardContent(boardEntity.getBoardContent())
                 .boardViewCount(boardEntity.getBoardViewCount())
-                .createDate(boardEntity.getCreateDate()) 
+                .createDate(boardEntity.getCreateDate())
                 .modifyDate(boardEntity.getModifyDate())
                 .build();
         //createDate,modifyDate는 BoardEntity에 없지만 BoardEntity가 BaseTimeEntity를 상속받기 떄문에 쓸수 있음

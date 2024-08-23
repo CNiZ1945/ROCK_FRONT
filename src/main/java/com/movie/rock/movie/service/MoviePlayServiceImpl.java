@@ -7,8 +7,7 @@ import com.movie.rock.movie.data.repository.MovieWatchHistoryRepository;
 import com.movie.rock.movie.data.response.MoviePlayResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import static com.movie.rock.common.CommonException.MovieNotFoundException;
+import static com.movie.rock.common.CommonException.*;
 
 @Service
 @RequiredArgsConstructor

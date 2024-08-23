@@ -20,10 +20,10 @@ public class PostersEntity {
     private String posterUrls;
 
     @Column(name = "main_poster")
-    private Boolean mainPoster;
+    private Boolean mainPoster = false;
 
     @Builder
-    public PostersEntity(Long posterId, String posterUrls,Boolean mainPoster) {
+    public PostersEntity(Long posterId, String posterUrls, Boolean mainPoster) {
         this.posterId = posterId;
         this.posterUrls = posterUrls;
         this.mainPoster = mainPoster;

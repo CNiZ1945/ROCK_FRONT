@@ -15,5 +15,5 @@ public interface MainService {
 
     double calculateIMDBScore(MovieEntity movie, double averageRating);
 
-    List<MainResponseDTO> getTopRatedMovies(int limit);
+    List<MainResponseDTO> getTopRatedMovies();
 }

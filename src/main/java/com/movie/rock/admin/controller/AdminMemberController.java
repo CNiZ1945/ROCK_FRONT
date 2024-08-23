@@ -1,11 +1,9 @@
 package com.movie.rock.admin.controller;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
+import com.movie.rock.member.data.MemberEntity;
+import com.movie.rock.member.data.MemberListDTO;
+import com.movie.rock.member.service.MemberService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -15,16 +13,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.movie.rock.member.data.MemberEntity;
-import com.movie.rock.member.data.MemberListDTO;
-import com.movie.rock.member.service.MemberService;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/admin")
@@ -36,8 +31,8 @@ public class AdminMemberController {
     // 회원 리스트
     @GetMapping("/members")
     public ResponseEntity<Page<MemberListDTO>> getAllMembers(
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "15") int size) {
+            @RequestParam(defaultValue = "0", name = "page") int page,
+            @RequestParam(defaultValue = "15", name = "size") int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("memNum").ascending());
         Page<MemberEntity> membersPage = memberService.getAllMembersPageable(pageable);
         Page<MemberListDTO> memberDTOs = membersPage.map(MemberListDTO::new);

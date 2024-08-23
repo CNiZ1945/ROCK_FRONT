@@ -1,8 +1,5 @@
 package com.movie.rock.member.data;
 
-import com.movie.rock.movie.data.entity.MovieEntity;
-import com.movie.rock.movie.data.entity.PostersEntity;
-import com.movie.rock.movie.data.response.MovieInfoResponseDTO;
 import com.movie.rock.movie.data.response.MovieInfoResponseDTO.PosterResponseDTO;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,12 +24,4 @@ public class MyPageFavorResponseDTO {
         this.isFavorite = isFavorite;
     }
 }
-//    public static MyPageFavorResponseDTO fromEntity(MovieEntity movieEntity, PostersEntity postersEntity, MemberEntity memberEntity){
-//        return MyPageFavorResponseDTO.builder()
-//                .movieId(movieEntity.getMovieId())
-//                .movieTitle(movieEntity.getMovieTitle())
-//                .posterUrls(postersEntity.getPosterUrls())
-//                .memNum(memberEntity.getMemNum())
-//                .build();
-//    }
 

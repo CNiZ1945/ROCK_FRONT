@@ -22,7 +22,7 @@ public class MainServiceImpl implements MainService {
     //출력갯수 설정
     private final MainRepository mainRepository;
     private static final int MINIMUM_REVIEWS = 5;
-    private static final int TOP_FIVE = 5;
+    private static final int TOP_TEN = 10;
 
 
     @Override
@@ -34,8 +34,8 @@ public class MainServiceImpl implements MainService {
 //        log.debug("Updated movies within 30 days: {}", updatedMoviesWithTrailers.size());
 
         if (updatedMoviesWithTrailers.isEmpty()) {
-            Pageable pageable = PageRequest.of(0, TOP_FIVE);
-            updatedMoviesWithTrailers = mainRepository.findTop5ByOrderByMovieIdDesc(pageable);
+            Pageable pageable = PageRequest.of(0, TOP_TEN);
+            updatedMoviesWithTrailers = mainRepository.findTop10ByOrderByMovieIdDesc(pageable);
 //            log.debug("Top 5 recent movies: {}", recentMovies.size());
         }
 
@@ -51,26 +51,39 @@ public class MainServiceImpl implements MainService {
 //        log.debug("Updated movies within 30 days: {}", updatedMovies.size());
 
         if (updatedMovies.isEmpty()) {
-            Pageable pageable = PageRequest.of(0, TOP_FIVE);
-            updatedMovies = mainRepository.findTop5ByOrderByMovieIdDesc(pageable);
+            Pageable pageable = PageRequest.of(0, TOP_TEN);
+            updatedMovies = mainRepository.findTop10ByOrderByMovieIdDesc(pageable);
 //            log.debug("Top 5 recent movies: {}", recentMovies.size());
         }
 
         return removeDuplicatePosters(updatedMovies);
     }
 
-    @Override
-    public List<MainResponseDTO> getTopRatedMovies(int limit) {
-        List<MovieEntity> allMovies = mainRepository.findAll();
-        double overallAverageRating = calculateOverallAverageRating(allMovies);
-//        log.info("Overall average rating: {}", overallAverageRating);
+//    @Override
+//    public List<MainResponseDTO> getTopRatedMovies(int limit) {
+//        List<MovieEntity> allMovies = mainRepository.findAll();
+//        double overallAverageRating = calculateOverallAverageRating(allMovies);
+////        log.info("Overall average rating: {}", overallAverageRating);
+//
+//        return allMovies.stream()
+//                .filter(movie -> movie.getReviews().size() >= MINIMUM_REVIEWS)
+//                .map(movie -> createMainResponseDTO(movie, calculateIMDBScore(movie, overallAverageRating)))
+//                .sorted(Comparator.comparingDouble(MainResponseDTO::getImdbScore).reversed())
+//                .limit(limit)
+//                .collect(Collectors.toList());
+//    }
 
-        return allMovies.stream()
-                .filter(movie -> movie.getReviews().size() >= MINIMUM_REVIEWS)
-                .map(movie -> createMainResponseDTO(movie, calculateIMDBScore(movie, overallAverageRating)))
+    @Override
+    public List<MainResponseDTO> getTopRatedMovies() {
+        Pageable pageable = PageRequest.of(0, TOP_TEN);
+        List<MainResponseDTO> topRatedMovies = mainRepository.findTopRatedMovies(pageable);
+
+        List<MainResponseDTO> sortedMovies = topRatedMovies.stream()
                 .sorted(Comparator.comparingDouble(MainResponseDTO::getImdbScore).reversed())
-                .limit(limit)
+                .limit(TOP_TEN)
                 .collect(Collectors.toList());
+
+        return removeDuplicatePosters(sortedMovies);
     }
 
     private List<MainResponseDTO> removeDuplicatePosters(List<MainResponseDTO> movies) {

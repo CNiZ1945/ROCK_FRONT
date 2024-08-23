@@ -153,8 +153,8 @@ public class AdminMovieServiceImpl implements AdminMovieService {
         MovieEntity movie = movieRepository.findById(movieId)
                 .orElseThrow(MovieNotFoundException::new);
 
-        List<MovieTrailersEntity> trailers = movieTrailersRepository.findByMovie_MovieId(movieId);
-        List<MoviePostersEntity> posters = moviePostersRepository.findByMovie_MovieId(movieId);
+        List<MovieTrailersEntity> trailers = movieTrailersRepository.findByMovieMovieId(movieId);
+        List<MoviePostersEntity> posters = moviePostersRepository.findByMovieMovieId(movieId);
 
         // 포스터 처리
         List<PosterResponseDTO> sortedPosters = posters.stream()
@@ -336,8 +336,8 @@ public class AdminMovieServiceImpl implements AdminMovieService {
         MovieEntity savedMovie = movieRepository.save(movie);
         log.info("Saved complete movie: {}", savedMovie);
 
-        List<MovieTrailersEntity> updatedTrailers = movieTrailersRepository.findByMovie_MovieId(savedMovie.getMovieId());
-        List<MoviePostersEntity> updatedPosters = moviePostersRepository.findByMovie_MovieId(savedMovie.getMovieId());
+        List<MovieTrailersEntity> updatedTrailers = movieTrailersRepository.findByMovieMovieId(savedMovie.getMovieId());
+        List<MoviePostersEntity> updatedPosters = moviePostersRepository.findByMovieMovieId(savedMovie.getMovieId());
 
         return AdminMovieSecondInfoResponseDTO.fromEntity(savedMovie, updatedTrailers, updatedPosters);
     }
@@ -347,7 +347,7 @@ public class AdminMovieServiceImpl implements AdminMovieService {
     public ActorResponseDTO addActor(AdminActorAddRequestDTO adminActorAddRequestDTO) {
         // 중복 URL 검사 (배우 사진 URL끼리만 비교)
         List<String> duplicateUrls = adminActorAddRequestDTO.getActorPhotos().stream()
-                .filter(url -> actorsPhotosRepository.existsByPhotos_PhotoUrls(url))
+                .filter(url -> actorsPhotosRepository.existsByPhotosPhotoUrls(url))
                 .collect(Collectors.toList());
 
         if (!duplicateUrls.isEmpty()) {
@@ -366,7 +366,7 @@ public class AdminMovieServiceImpl implements AdminMovieService {
     public DirectorResponseDTO addDirector(AdminDirectorAddRequestDTO adminDirectorAddRequestDTO) {
         // 중복 URL 검사 (감독 사진 URL끼리만 비교)
         List<String> duplicateUrls = adminDirectorAddRequestDTO.getDirectorPhotos().stream()
-                .filter(url -> directorsPhotosRepository.existsByPhotos_PhotoUrls(url))
+                .filter(url -> directorsPhotosRepository.existsByPhotosPhotoUrls(url))
                 .collect(Collectors.toList());
 
         if (!duplicateUrls.isEmpty()) {
@@ -459,8 +459,8 @@ public class AdminMovieServiceImpl implements AdminMovieService {
         MovieEntity updatedMovie = movieRepository.findById(movieId)
                 .orElseThrow(MovieNotFoundException::new);
 
-        List<MovieTrailersEntity> trailers = movieTrailersRepository.findByMovie_MovieId(movieId);
-        List<MoviePostersEntity> posters = moviePostersRepository.findByMovie_MovieId(movieId);
+        List<MovieTrailersEntity> trailers = movieTrailersRepository.findByMovieMovieId(movieId);
+        List<MoviePostersEntity> posters = moviePostersRepository.findByMovieMovieId(movieId);
 
         return AdminMovieSecondInfoResponseDTO.fromEntity(updatedMovie, trailers, posters);
     }

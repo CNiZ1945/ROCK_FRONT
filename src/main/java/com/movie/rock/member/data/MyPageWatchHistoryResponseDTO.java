@@ -39,18 +39,4 @@ public class MyPageWatchHistoryResponseDTO {
         //        this.runtimeDuration = runtimeDuration;
         this.totalDuration = totalDuration;
     }
-
-//    public static MyPageWatchHistoryResponseDTO fromEntity(MovieWatchHistoryEntity movieWatchHistoryEntity, PostersEntity postersEntity,
-//                                                           MovieEntity movieEntity, MemberEntity memberEntity) {
-//        return MyPageWatchHistoryResponseDTO.builder()
-//                .watchId(movieWatchHistoryEntity.getWatchId())
-//                .watchTime(movieWatchHistoryEntity.getWatchTime())
-//                .watchDate(movieWatchHistoryEntity.getWatchDate())
-//                .movieId(movieEntity.getMovieId())
-//                .movieTitle(movieEntity.getMovieTitle())
-//                .memNum(memberEntity.getMemNum())
-//                .poster(PosterResponseDTO.fromEntity(postersEntity))
-//                .totalDuration(movieWatchHistoryEntity.getTotalDuration())
-//                .build();
-//    }
 }

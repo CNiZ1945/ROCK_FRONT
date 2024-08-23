@@ -113,8 +113,6 @@ public class MovieReviewServiceImpl implements MovieReviewService {
                 .hasNext(page < totalPages)
                 .totalReviews(totalReviews)
                 .averageRating(getAverageRating(movieId))
-                .attractionPointRatios(movieReviewPointsService.getAttractionPointRatios(movieId))
-                .emotionPointRatios(movieReviewPointsService.getEmotionPointRatios(movieId))
                 .sortBy(sortBy)
                 .build();
     }
@@ -229,16 +227,16 @@ public class MovieReviewServiceImpl implements MovieReviewService {
     @Override
     @Transactional
     public ReviewLikesResponseDTO addLikes(Long memNum, ReviewLikesRequestDTO reviewLikesRequestDTO) {
-        MovieReviewEntity review = movieReviewRepository.findById(reviewLikesRequestDTO.getReviewId())
-                .orElseThrow(ReviewNotFoundException::new);
+       MovieReviewEntity review = movieReviewRepository.findById(reviewLikesRequestDTO.getReviewId())
+               .orElseThrow(ReviewNotFoundException::new);
 
-        MemberEntity member = memberRepository.findByMemNum(memNum)
-                .orElseThrow(MemberNotFoundException::new);
+       MemberEntity member = memberRepository.findByMemNum(memNum)
+               .orElseThrow(MemberNotFoundException::new);
 
-        if (!isLikedBy(memNum, review.getReviewId())) {
-            ReviewLikesEntity reviewLikes = new ReviewLikesEntity(member,review);
-            reviewLikesRepository.save(reviewLikes);
-        }
+       if (!isLikedBy(memNum, review.getReviewId())) {
+           ReviewLikesEntity reviewLikes = new ReviewLikesEntity(member,review);
+           reviewLikesRepository.save(reviewLikes);
+       }
 
         return getLikesStatus(memNum, review.getReviewId());
     }

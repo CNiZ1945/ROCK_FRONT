@@ -69,45 +69,4 @@ public class JwtUtil implements Serializable {
     private Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
-
-
-
-    //토큰에서 사용자 이름 찾기
-//    public String getUserNameFromToken(String token){
-//        try{
-//            Claims claims = Jwts.parserBuilder()
-//                    .setSigningKey(secretKey)
-//                    .build()
-//                    .parseClaimsJws(token)
-//                    .getBody();
-//            // JWT의 'sub' (subject) 클레임에서 사용자 이름을 가져옵니다.
-//            // JWT를 생성할 때 사용자 이름을 'sub' 클레임에 넣었다고 가정합니다.
-//            return claims.getSubject();
-//        } catch (Exception e) {
-//            // 토큰 파싱에 실패하면 null을 반환하거나 예외를 던질 수 있습니다.
-//            return null;
-//        }
-//    }
-
-//    public boolean isValidToken(String token) {
-//        try {
-//            Jws<Claims> claims = Jwts.parserBuilder()
-//                    .setSigningKey(secretKey)
-//                    .build()
-//                    .parseClaimsJws(token);
-//
-//            if (isTokenExpired(token)) {
-//                return false;
-//            }
-//
-//            List<String> roles = (List<String>) claims.getBody().get("roles");
-//            if (roles == null || roles.isEmpty()) {
-//                return false;
-//            }
-//
-//            return true;
-//        } catch (Exception e) {
-//            return false;
-//        }
-//    }
 }

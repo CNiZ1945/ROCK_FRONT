@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
-@Setter
 @NoArgsConstructor
 public class MainResponseDTO {
     //포스터, 제목, 줄거리, 장르, 런타임

@@ -19,7 +19,7 @@ public class MyPageReviewResponseDTO {
     private Long reviewId;
     private Long movieId;
     private String movieTitle;
-//    private Long posterId;    //영화 포스터
+    //    private Long posterId;    //영화 포스터
 //    private String posterUrls;
     private PosterResponseDTO poster;
     private String reviewContent;
@@ -33,7 +33,7 @@ public class MyPageReviewResponseDTO {
     @Builder
     public MyPageReviewResponseDTO(Long reviewId, Long movieId, String movieTitle,Long posterId, String posterUrl, Boolean mainPoster, String reviewContent
             , String createDate, String modifyDate, double reviewRating, Long memNum,
-                                    MovieReviewEmotionPointsResponseDTO emotionPointsResponseDTO, MovieReviewAttractionPointsResponseDTO attractionPointsResponseDTO) {
+                                   MovieReviewEmotionPointsResponseDTO emotionPointsResponseDTO, MovieReviewAttractionPointsResponseDTO attractionPointsResponseDTO) {
         this.reviewId = reviewId;
         this.movieId = movieId;
         this.movieTitle = movieTitle;
@@ -50,20 +50,4 @@ public class MyPageReviewResponseDTO {
     }
 }
 
-//    public static MyPageReviewResponseDTO fromEntity(MovieEntity movieEntity,
-//                                                     MovieReviewEntity reviewEntity,
-//                                                     PostersEntity postersEntity,
-//                                                     MemberEntity memberEntity) {
-//        return MyPageReviewResponseDTO.builder()
-//                .reviewId(reviewEntity.getReviewId())
-//                .movieId(movieEntity.getMovieId())
-//                .movieTitle(movieEntity.getMovieTitle())
-//                .posterId(postersEntity.getPosterId())
-//                .posterUrls(postersEntity.getPosterUrls())
-//                .reviewContent(reviewEntity.getReviewContent())
-//                .createDate(reviewEntity.getCreateDate())
-//                .modifyDate(reviewEntity.getModifyDate())
-//                .reviewRating(reviewEntity.getReviewRating())
-//                .memNum(memberEntity.getMemNum())
-//                .build();
-//    }
+

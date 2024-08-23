@@ -5,6 +5,9 @@ import com.movie.rock.board.data.BoardEntity;
 import com.movie.rock.chat.data.ChatRoomEntity;
 import com.movie.rock.chat.data.MessageEntity;
 import com.movie.rock.chat.data.SessionEntity;
+import com.movie.rock.movie.data.entity.MovieFavorEntity;
+import com.movie.rock.movie.data.entity.MovieReviewEntity;
+import com.movie.rock.movie.data.entity.MovieWatchHistoryEntity;
 import jakarta.mail.Message;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -66,10 +69,21 @@ public class MemberEntity {
     @OneToMany(mappedBy = "member")
     private List<SessionEntity> session;
 
+    @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<MovieFavorEntity> favorites;
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<MovieReviewEntity> reviews;
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<MovieWatchHistoryEntity> movieWatch;
+
+
 
     @Builder
     public MemberEntity(String memId, String memPassword, String memEmail, String memTel, String memGender, LocalDate memBirth, String memName, RoleEnum memRole
-                        ,List<MessageEntity> message,List<ChatRoomEntity> member,List<SessionEntity> session) {
+            ,List<MessageEntity> message,List<ChatRoomEntity> member,List<SessionEntity> session,List<MovieFavorEntity> favorites,
+                        List<MovieReviewEntity> reviews,List<MovieWatchHistoryEntity> movieWatch) {
         this.memId = memId;
         this.memPassword = memPassword;
         this.memEmail = memEmail;
@@ -81,6 +95,9 @@ public class MemberEntity {
         this.message = message;
         this.member = member;
         this.session =session;
+        this.favorites = favorites;
+        this.reviews = reviews;
+        this.movieWatch = movieWatch;
     }
 
     // 비밀번호 변경을 위한 메서드

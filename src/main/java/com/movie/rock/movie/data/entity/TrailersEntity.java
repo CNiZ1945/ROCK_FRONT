@@ -20,10 +20,10 @@ public class TrailersEntity {
     private String trailerUrls;
 
     @Column(name = "main_trailer")
-    private Boolean mainTrailer;
+    private Boolean mainTrailer = false;
 
     @Builder
-    public TrailersEntity(Long trailerId, String trailerUrls, boolean mainTrailer) {
+    public TrailersEntity(Long trailerId, String trailerUrls, Boolean mainTrailer) {
         this.trailerId = trailerId;
         this.trailerUrls = trailerUrls;
         this.mainTrailer = mainTrailer;

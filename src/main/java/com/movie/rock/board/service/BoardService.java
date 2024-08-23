@@ -43,7 +43,7 @@ public class BoardService {
         List<BoardListResponseDTO> list =result.getContent().stream().map(
                 BoardListResponseDTO::fromEntity
         ).collect(Collectors.toList());
-        
+
         return new PageImpl<>(list,pageable,result.getTotalElements());
     }
 
@@ -53,7 +53,7 @@ public class BoardService {
         // BoardWriteDto boardWriteRequestDto = new BoardWriteDto()를 생략가능
         BoardEntity boardEntity = BoardWriteRequestDTO.ofEntity(boardWriteRequestDto);
         BoardEntity boardSave = boardRepository.save(boardEntity);
-        
+
         //BoardWriteResponseDto의 fromEntity의 형식으로 boardSave데이터 넣고 반환
         return BoardWriteResponseDTO.fromEntity(boardSave);
     }
@@ -65,10 +65,10 @@ public class BoardService {
                 .orElseThrow(//예외처리 boardId를 못찾았을때
                         () -> new ResourceNotFoundException("Board","Board Id",String.valueOf(boardId))
                 );
-        
+
         //조회수 증가
         findBoard.upViewCount();
-        
+
         //BoardDetailsResponseDto의 fromEntity를  findBoard데이터 넣고 반환
         return BoardDetailsResponseDTO.fromEntity(findBoard);
     }
@@ -88,7 +88,7 @@ public class BoardService {
     public void boardDelete(Long boardId) {
         boardRepository.deleteById(boardId);
     }
-    
+
     //게시글 삭제(여러개 삭제)
     public void boardListDelete(List<Long> boardId) {
         boardRepository.deleteAllById(boardId);

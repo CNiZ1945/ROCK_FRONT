@@ -10,9 +10,7 @@ import com.movie.rock.movie.data.repository.MovieReviewEmotionPointsRepository;
 import com.movie.rock.movie.data.repository.MovieReviewRepository;
 import com.movie.rock.movie.data.request.MovieReviewAttractionPointsRequestDTO;
 import com.movie.rock.movie.data.request.MovieReviewEmotionPointsRequestDTO;
-import com.movie.rock.movie.data.response.MovieReviewAttractionPointsRatioResponseDTO;
 import com.movie.rock.movie.data.response.MovieReviewAttractionPointsResponseDTO;
-import com.movie.rock.movie.data.response.MovieReviewEmotionPointsRatioResponseDTO;
 import com.movie.rock.movie.data.response.MovieReviewEmotionPointsResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,19 +26,6 @@ public class MovieReviewPointsServiceImpl implements MovieReviewPointsService {
     private final MovieReviewAttractionPointsRepository attractionPointsRepository;
     private final MovieReviewEmotionPointsRepository emotionPointsRepository;
     private final MovieReviewRepository movieReviewRepository;
-
-    //영화별 선호 그래프 데이터
-    @Override
-    @Transactional(readOnly = true)
-    public MovieReviewAttractionPointsRatioResponseDTO getAttractionPointRatios(Long movieId) {
-        return attractionPointsRepository.getAttractionPointRatios(movieId);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public MovieReviewEmotionPointsRatioResponseDTO getEmotionPointRatios(Long movieId) {
-        return emotionPointsRepository.getEmotionPointRatios(movieId);
-    }
 
     @Override
     public MovieReviewAttractionPointsResponseDTO getAttractionPoints(Long reviewId) {

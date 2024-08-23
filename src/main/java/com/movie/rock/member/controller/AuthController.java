@@ -146,7 +146,6 @@ public class AuthController {
 
         // 필요한 정보만 포함하는 DTO 생성
         MemberInfoDTO memberInfo = new MemberInfoDTO();
-
         memberInfo.setMemNum(member.getMemNum()); //추가부분
 
         memberInfo.setMemEmail(member.getMemEmail());

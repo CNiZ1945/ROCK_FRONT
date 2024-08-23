@@ -20,8 +20,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.movie.rock.movie.data.response.MovieWatchHistoryResponseDTO.WatchHistoryListResponseDTO;
-import static com.movie.rock.movie.data.response.MovieWatchHistoryResponseDTO.WatchHistoryResponseDTO;
+import static com.movie.rock.movie.data.response.MovieWatchHistoryResponseDTO.*;
 
 @Service
 @RequiredArgsConstructor
@@ -91,38 +90,6 @@ public class MovieWatchHistoryServiceImpl implements MovieWatchHistoryService {
                 .movie(movie)
                 .build();
     }
-
-//    private WatchHistoryResponseDTO createWatchHistoryResponseDTO(MovieWatchHistoryEntity movieWatchHistoryEntity) {
-//        MovieEntity movie = movieWatchHistoryEntity.getMovie();
-//        MoviePostersEntity mainPoster = movie.getPoster().stream()
-//                .filter(poster -> poster.getPosters().getMainPoster())
-//                .findFirst()
-//                .orElse(null);
-//
-//        Long totalDuration = movieWatchHistoryEntity.getTotalDuration(); // 파일의 총 길이 (영화와 파일 길이가 다를 수 있으므로 파일 길이로 계산)
-//        Long watchTime = movieWatchHistoryEntity.getWatchTime();
-//
-//        // 파일 길이 기준 진행률 계산
-//        double progressPercentage = totalDuration > 0 ? ((double) watchTime / totalDuration) : 0;
-//        boolean isCompleted = progressPercentage >= 1.0;
-//
-//        log.info("Movie: {}, watchTime: {}, progressPercentage: {}",
-//                movie.getMovieTitle(), watchTime,  progressPercentage);
-//
-//        return WatchHistoryResponseDTO.builder()
-//                .watchId(movieWatchHistoryEntity.getWatchId())
-//                .watchTime(watchTime)
-//                .watchDate(movieWatchHistoryEntity.getWatchDate())
-//                .movieId(movie.getMovieId())
-//                .movieTitle(movie.getMovieTitle())
-//                .posterId(mainPoster != null ? mainPoster.getPosters().getPosterId() : null)
-//                .posterUrl(mainPoster != null ? mainPoster.getPosters().getPosterUrls() : null)
-//                .mainPoster(mainPoster != null && mainPoster.getPosters().getMainPoster())
-//                .totalDuration(totalDuration)
-//                .progressPercentage(progressPercentage)
-//                .isCompleted(isCompleted)
-//                .build();
-//    }
 
     private WatchHistoryResponseDTO createWatchHistoryResponseDTO(MovieWatchHistoryEntity movieWatchHistoryEntity) {
         MovieEntity movie = movieWatchHistoryEntity.getMovie();

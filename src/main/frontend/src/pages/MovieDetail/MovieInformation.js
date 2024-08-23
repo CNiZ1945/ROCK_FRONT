@@ -298,7 +298,7 @@ const MovieInformation = () => {
                                 {/* 등급 */}
                                 <DetailContext>{movieDetail.movieRating || "정보 없음"}</DetailContext>
                                 {/* 상영 시간 */}
-                                <DetailContext>{movieDetail.runTime || "정보 없음"}</DetailContext>
+                                <DetailContext>{movieDetail.runTime || "정보 없음"}분</DetailContext>
                                 {/* 개봉일 */}
                                 <DetailContext>{movieDetail.openYear || "정보 없음"}</DetailContext>
                             </ul>

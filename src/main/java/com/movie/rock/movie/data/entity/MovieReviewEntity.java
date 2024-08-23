@@ -49,14 +49,6 @@ public class MovieReviewEntity extends BaseTimeEntity {
         this.movie = movie;
     }
 
-//    public static MovieReviewEntity createWithPoints(String reviewContent, double reviewRating, MemberEntity member,
-//                                                     MovieEntity movie, MovieReviewPointsRequestDTO pointsDTO) {
-//        MovieReviewEntity review = new MovieReviewEntity(null, reviewContent, reviewRating, member, movie, null);
-//        MovieReviewPointsEntity points = MovieReviewPointsEntity.createFromDTO(pointsDTO, review);
-//
-//        return new MovieReviewEntity(review.reviewId, review.reviewContent, review.reviewRating, review.member, review.movie, points);
-//    }
-
     public static MovieReviewEntity createWithPoints(String reviewContent, double reviewRating, MemberEntity member, MovieEntity movie,
                                                      MovieReviewAttractionPointsRequestDTO attractionPointsDTO, MovieReviewEmotionPointsRequestDTO emotionPointsDTO) {
         MovieReviewEntity review = new MovieReviewEntity(reviewContent, reviewRating, member, movie);

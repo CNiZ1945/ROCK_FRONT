@@ -7,6 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface DirectorsPhotosRepository extends JpaRepository<DirectorsPhotosEntity, Long> {
 //    List<DirectorsPhotosEntity> findByDirectorIdIn(List<Long> directorIds);
-
-    boolean existsByPhotos_PhotoUrls(String photoUrl);
+    boolean existsByPhotosPhotoUrls(String photoUrl);
 }

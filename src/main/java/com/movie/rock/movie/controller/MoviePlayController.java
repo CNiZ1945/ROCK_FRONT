@@ -21,7 +21,7 @@ public class MoviePlayController {
 
     @GetMapping("/{movieId}/play")
     public ResponseEntity<MoviePlayResponseDTO> getMoviePlay(
-            @PathVariable Long movieId,
+            @PathVariable("movieId") Long movieId,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         if (userDetails == null) {

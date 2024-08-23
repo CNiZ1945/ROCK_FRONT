@@ -160,7 +160,7 @@ align-items: center;
 color: #000;
 font-weight: 300;
 text-align: center;
-font-size: 16px;
+font-size: 23px;
 
     .focused{
         color: #fff !important;

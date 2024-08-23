@@ -32,5 +32,4 @@ public interface MemberRepository extends JpaRepository<MemberEntity, Long> {
     // 페이지네이션을 위함
     Page<MemberEntity> findAll(Pageable pageable);
 
-
 }

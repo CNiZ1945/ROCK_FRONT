@@ -26,7 +26,7 @@ public class MainController {
 
     @GetMapping("/ranking")
     public ResponseEntity<List<MainResponseDTO>> getTopRatedMovies() {
-        List<MainResponseDTO> topRatedMovies = mainService.getTopRatedMovies(5);
+        List<MainResponseDTO> topRatedMovies = mainService.getTopRatedMovies();
         //갯수 회의
         return ResponseEntity.ok(topRatedMovies);
     }

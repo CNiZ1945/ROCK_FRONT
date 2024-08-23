@@ -24,8 +24,6 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    private final CustomUserDetailsService customUserDetailsService;
-
     private final CorsConfigurationSource corsConfigurationSource;
 
     private final CustomOAuth2UserService customOAuth2UserService;

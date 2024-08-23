@@ -1,25 +1,33 @@
 import React from 'react';
 import styled from 'styled-components';
+import CheckBoxContext from './CheckBoxContext';
 
 
 
 //ReviewLists
 const ReviewLists = props => {
     //변수
-    const { userName, charmingPoint, emotionalPoint, userReview } = props;
-
+    const { userName, reviewRating ,charmingPoint, emotionalPoint, userReview, reviewTime } = props;
+    
     //HTML
     return (
         <ReviewCommentBox>
             <UserName>🟣 {userName}</UserName>
             <CheckboxGraphTitle>
-                ✨ 이 영화의 매력은 {charmingPoint.join(',')}
+                🌟 별점 {reviewRating}
             </CheckboxGraphTitle>
+           {/* charmingPoint가 존재할 경우에만 렌더링 */}
+           {charmingPoint && (
+                <CheckboxGraphTitle>
+                    ✨ 이 영화의 매력은 {charmingPoint.join(', ')}
+                </CheckboxGraphTitle>
+            )}
+            
             <CheckboxGraphTitle>
                 ✨ {emotionalPoint.join(', ')} 대박!
             </CheckboxGraphTitle>
             <ReviewText>&#10077; {userReview} &#10078;</ReviewText>
-            <DateFooter>2023-02-01</DateFooter>
+            <DateFooter>{reviewTime}</DateFooter>
         </ReviewCommentBox>
     );
 };
@@ -36,9 +44,11 @@ const CheckboxGraphTitle = styled.footer`
   margin-top: 10px;
 `;
 const ReviewCommentBox = styled.div`
-  padding: 20px;
+  background: white;
+  // padding: 5px;
+  padding: 10px;
   width: 380px;
-  height: 250px;
+  // height: 210px;
   border: 2px solid #9971ff;
   border-radius: 10px;
   margin: 10px 10px 20px 10px;

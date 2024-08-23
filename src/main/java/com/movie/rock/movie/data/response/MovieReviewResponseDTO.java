@@ -85,18 +85,13 @@ public class  MovieReviewResponseDTO {
         private List<Integer> pageNumbers;
         private long totalReviews;
         private double averageRating;
-        private MovieReviewAttractionPointsRatioResponseDTO attractionPointRatios;
-        private MovieReviewEmotionPointsRatioResponseDTO emotionPointRatios;
         private String sortBy;
 
 
         @Builder
         public ReviewPageResponseDTO(List<ReviewResponseDTO> reviews, ReviewResponseDTO ownReview, int currentPage,
                                      int startPage, int endPage, int totalPages, boolean hasPrevious, boolean hasNext,
-                                     List<Integer> pageNumbers, long totalReviews, double averageRating,
-                                     MovieReviewAttractionPointsRatioResponseDTO attractionPointRatios,
-                                     MovieReviewEmotionPointsRatioResponseDTO emotionPointRatios,
-                                     String sortBy) {
+                                     List<Integer> pageNumbers, long totalReviews, double averageRating, String sortBy) {
             this.reviews = reviews;
             this.ownReview = ownReview;
             this.currentPage = currentPage;
@@ -108,8 +103,6 @@ public class  MovieReviewResponseDTO {
             this.pageNumbers = pageNumbers;
             this.totalReviews = totalReviews;
             this.averageRating = averageRating;
-            this.attractionPointRatios = attractionPointRatios;
-            this.emotionPointRatios = emotionPointRatios;
             this.sortBy = sortBy;
         }
     }

@@ -1,16 +1,12 @@
 package com.movie.rock.movie.controller;
 
-import com.movie.rock.common.CommonException;
 import com.movie.rock.common.CommonException.UnauthorizedAccessException;
 import com.movie.rock.member.data.MemberEntity;
 import com.movie.rock.member.service.CustomUserDetails;
-import com.movie.rock.movie.data.repository.MovieReviewAttractionPointsRepository;
 import com.movie.rock.movie.data.repository.MovieReviewEmotionPointsRepository;
 import com.movie.rock.movie.data.request.MovieFavorRequestDTO;
 import com.movie.rock.movie.data.request.MovieReviewRequestDTO;
 import com.movie.rock.movie.data.request.ReviewLikesRequestDTO;
-import com.movie.rock.movie.data.response.MovieReviewAttractionPointsRatioResponseDTO;
-import com.movie.rock.movie.data.response.MovieReviewEmotionPointsRatioResponseDTO;
 import com.movie.rock.movie.data.response.MovieReviewResponseDTO.ReviewPageResponseDTO;
 import com.movie.rock.movie.data.response.MovieReviewResponseDTO.ReviewResponseDTO;
 import com.movie.rock.movie.data.response.ReviewLikesResponseDTO;
@@ -32,7 +28,6 @@ import java.util.List;
 public class MovieReviewController {
 
     private final MovieReviewService movieReviewService;
-    private final MovieReviewAttractionPointsRepository movieReviewAttractionPointsRepository;
     private final MovieReviewEmotionPointsRepository movieReviewEmotionPointsRepository;
 
     private Long getMemNumFromAuthentication(Authentication authentication) {
@@ -47,8 +42,8 @@ public class MovieReviewController {
     @GetMapping("/{movieId}/reviews")
     public ResponseEntity<ReviewPageResponseDTO> getMovieReviews(
             @PathVariable("movieId") Long movieId,
-            @RequestParam(name = "page", defaultValue = "1") int page,
-            @RequestParam(name = "sortBy", defaultValue = "latest") String sortBy,
+            @RequestParam(defaultValue = "1", name = "page") int page,
+            @RequestParam(defaultValue = "latest", name = "sortBy") String sortBy,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         MemberEntity member = userDetails.memberEntity();
@@ -94,18 +89,6 @@ public class MovieReviewController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/{movieId}/attraction-point-ratios")
-    public ResponseEntity<MovieReviewAttractionPointsRatioResponseDTO> getMovieReviewAttractionPointRatios(@PathVariable Long movieId) {
-        MovieReviewAttractionPointsRatioResponseDTO pointRatios = movieReviewAttractionPointsRepository.getAttractionPointRatios(movieId);
-        return ResponseEntity.ok(pointRatios);
-    }
-
-    @GetMapping("/{movieId}/emotion-point-ratios")
-    public ResponseEntity<MovieReviewEmotionPointsRatioResponseDTO> getMovieReviewEmotionPointRatios(@PathVariable Long movieId) {
-        MovieReviewEmotionPointsRatioResponseDTO pointRatios = movieReviewEmotionPointsRepository.getEmotionPointRatios(movieId);
-        return ResponseEntity.ok(pointRatios);
-    }
-
     @PostMapping("/{movieId}/reviews/{reviewId}/likes")
     public ResponseEntity<ReviewLikesResponseDTO> addReviewLike(@RequestBody ReviewLikesRequestDTO requestDTO, Authentication authentication) {
         Long memNum = getMemNumFromAuthentication(authentication);
@@ -116,8 +99,8 @@ public class MovieReviewController {
     }
 
     @DeleteMapping("/{movieId}/reviews/{reviewId}/likes")
-    public ResponseEntity<ReviewLikesResponseDTO> removeReviewLike(@PathVariable Long movieId,
-                                                                   @PathVariable Long reviewId,
+    public ResponseEntity<ReviewLikesResponseDTO> removeReviewLike(@PathVariable("movieId") Long movieId,
+                                                                   @PathVariable("reviewId") Long reviewId,
                                                                    Authentication authentication) {
         Long memNum = getMemNumFromAuthentication(authentication);
 
@@ -127,8 +110,8 @@ public class MovieReviewController {
     }
 
     @GetMapping("/{movieId}/reviews/{reviewId}/likes")
-    public ResponseEntity<ReviewLikesResponseDTO> getReviewLikeStatus(@PathVariable Long movieId,
-                                                                      @PathVariable Long reviewId,
+    public ResponseEntity<ReviewLikesResponseDTO> getReviewLikeStatus(@PathVariable("movieId") Long movieId,
+                                                                      @PathVariable("reviewId") Long reviewId,
                                                                       Authentication authentication) {
         Long memNum = getMemNumFromAuthentication(authentication);
 
@@ -139,7 +122,7 @@ public class MovieReviewController {
 
 
     @GetMapping("/{movieId}/reviews/likes")
-    public ResponseEntity<List<ReviewLikesResponseDTO>> getReviewLikes( @PathVariable Long movieId,
+    public ResponseEntity<List<ReviewLikesResponseDTO>> getReviewLikes( @PathVariable("movieId") Long movieId,
                                                                         Authentication authentication) {
         Long memNum = getMemNumFromAuthentication(authentication);
 
@@ -147,17 +130,5 @@ public class MovieReviewController {
 
         return ResponseEntity.ok(likesReviews);
     }
-
-
-//    @GetMapping("/{movieId}/reviews/likes")
-//    public ResponseEntity<ReviewLikesResponseDTO> getReviewLikes(@PathVariable Long movieId,
-//                                                                 @PathVariable Long reviewId,
-//                                                                 Authentication authentication) {
-//        Long memNum = getMemNumFromAuthentication(authentication);
-//
-//        List<ReviewLikesResponseDTO> likesReviews = movieReviewService.getLikesReviews(memNum);
-//
-//        return ResponseEntity.ok((ReviewLikesResponseDTO) likesReviews);
-//    }
 }
 

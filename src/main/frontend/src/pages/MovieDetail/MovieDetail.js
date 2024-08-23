@@ -23,16 +23,11 @@ import { api } from '../../api/axios.js';
 //MovieDetail --------------------------
 const MovieDetail = () => {
 
+
     //탭 폼-----------------
     const [currentTab, setTab] = useState(0);
 
-    const menuArr = [
-        { name: '상세정보', content: <MovieInformation /> },
-        // { name: '예고편', content: <MoviePlay /> },
-        // { name: '리뷰', content: <MovieReview /> },
-        // {name: '추천', content: ""},
-        // {name: '추천', content: <MovieReview />},
-    ];
+
     const selectMenuHandler = (index: any) => {
         setTab(index);
     };
@@ -54,6 +49,20 @@ const MovieDetail = () => {
     const navigate = useNavigate();
     const { movieId } = useParams();
 
+    const menuArr = [
+        { name: '상세정보', content: <MovieInformation /> },
+        // { name: '예고편', content: <MoviePlay /> },
+        { name: '리뷰', content: (<MovieReview
+                        movieId={movieId}
+                        movieDetail={movieDetail}
+                        memRole={memberInfo?.role}
+                        correspondMemName={memberInfo?.memName}
+                        correspondMemNum={memberInfo?.memNum} 
+                        />) },
+        // {name: '추천', content: ""},
+        // {name: '추천', content: <MovieReview />},
+    ];
+    
     const handleScroll = () => {
         const { scrollY } = window;
         scrollY > 200 && setToggleBtn(!toggleBtn);
@@ -211,8 +220,13 @@ const MovieDetail = () => {
     
 
             const response = newIsFavorite
-            ? await api.post(`/user/movies/detail/${movieId}/favorites`, { movieId }, { headers: { 'Authorization': `Bearer ${token}` } })
-            : await api.delete(`/user/movies/detail/${movieId}/favorites`, { headers: { 'Authorization': `Bearer ${token}` } });
+            ? await api.post(`/user/movies/detail/${movieId}/favorites`, 
+                { movieId }, 
+                { headers: { 'Authorization': `Bearer ${token}` } 
+            })
+            : await api.delete(`/user/movies/detail/${movieId}/favorites`, 
+                { headers: { 'Authorization': `Bearer ${token}` } 
+            });
 
             if (response && response.data) {
                 setIsFavorite(response.data.isFavorite);
@@ -230,7 +244,8 @@ const MovieDetail = () => {
             } else {
                 setIsFavorite(!isFavorite);
             }
-
+            
+        // 찜 버튼 에러
         } catch (error) {
             console.error('찜하기 토글 중 오류 발생:', error);
             if (error.response && error.response.data) {

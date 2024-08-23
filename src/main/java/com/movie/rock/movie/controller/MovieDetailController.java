@@ -32,30 +32,4 @@ public class MovieDetailController {
         MovieDetailResponseDTO movieResponseDTO = movieDetailService.getMovieDetail(movieId, memNum);
         return ResponseEntity.ok(movieResponseDTO);
     }
-
-//    @GetMapping("/{movieId}/reviews")
-//    public ResponseEntity<MovieReviewPageResponseDTO> getMovieReviews(
-//            @PathVariable("movieId") Long movieId,
-//            @RequestParam(defaultValue = "1") int page,
-//            @AuthenticationPrincipal CustomUserDetails userDetails) {
-//
-//        MovieReviewPageResponseDTO reviewPage = movieReviewService.getMovieReviews(movieId, page, userDetails.getMember());
-//        return ResponseEntity.ok(reviewPage);
-//    }
-//
-//    @GetMapping("/{movieId}/favor")
-//    public ResponseEntity<MovieFavorResponseDTO> getFavoriteStatus(
-//            @PathVariable("movieId") Long movieId,
-//            @AuthenticationPrincipal CustomUserDetails userDetails) {
-//
-//        MovieFavorResponseDTO favorStatus = movieFavorService.getFavoritesStatus(userDetails.getMemNum(), movieId);
-//        return ResponseEntity.ok(favorStatus);
-//    }
-
-//    @ExceptionHandler(UnauthorizedAccessException.class)
-//    public ModelAndView handleUnauthorizedAccess() {
-//        ModelAndView mav = new ModelAndView();
-//        mav.setViewName("redirect:/login");
-//        return mav;
-//    }
 }

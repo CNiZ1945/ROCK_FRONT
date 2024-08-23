@@ -2,6 +2,7 @@ package com.movie.rock.movie.controller;
 
 import com.movie.rock.common.CommonException.UnauthorizedAccessException;
 import com.movie.rock.member.service.CustomUserDetails;
+import com.movie.rock.movie.data.request.MovieWatchHistoryRequestDTO;
 import com.movie.rock.movie.service.MovieWatchHistoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

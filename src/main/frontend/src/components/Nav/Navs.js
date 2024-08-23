@@ -104,7 +104,7 @@ function Navs() {
 
 				<MenuName
 					onClick={() => {
-						goToPage('/movie');
+						goToPage('/user/moviepage/12');
 					}}
 					scrollposition={scrollPosition}
 				>

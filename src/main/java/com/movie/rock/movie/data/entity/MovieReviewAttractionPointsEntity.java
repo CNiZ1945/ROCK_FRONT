@@ -38,7 +38,7 @@ public class MovieReviewAttractionPointsEntity {
 
     @Builder
     public MovieReviewAttractionPointsEntity(Long reviewId, boolean directingPoint, boolean actingPoint,
-                                             boolean visualPoint, boolean storyPoint, boolean ostPoint) {
+                                   boolean visualPoint, boolean storyPoint, boolean ostPoint) {
         this.reviewId = reviewId;
         this.directingPoint = directingPoint;
         this.actingPoint = actingPoint;

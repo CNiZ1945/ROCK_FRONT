@@ -2,7 +2,7 @@ import styled, { createGlobalStyle } from "styled-components";
 import reset from "styled-reset";
 import Slider from "react-slick";
 
-const GlobalStyles = createGlobalStyle`
+const GlobalStyle = createGlobalStyle`
     ${reset}
     
     //영문 폰트 - Montserrat
@@ -134,4 +134,4 @@ const GlobalStyles = createGlobalStyle`
     }
 `;
 
-export default GlobalStyles;
+export default GlobalStyle;
