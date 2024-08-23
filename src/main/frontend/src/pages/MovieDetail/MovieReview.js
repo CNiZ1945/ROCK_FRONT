@@ -153,13 +153,16 @@ const MovieReview = ({ movieId, movieDetail, memRole, correspondMemName, corresp
 
     // 리뷰 매력 포인트 구성
     const handleAttractionPointChange = (e) => {
-        setAttractionPoints({ ...attractionPoints, [e.target.name]: e.target.checked });
+        setAttractionPoints({...attractionPoints, [e.target.name]: e.target.checked});
     };
-
-    // 리뷰 감점 포인트 구성
-    const handleEmotionPointChange = (e) => {
-        setEmotionPoints({ ...emotionPoints, [e.target.name]: e.target.checked });
+    
+    const handleEmotionPointChange = (name, checked) => {
+        setEmotionPoints(prevPoints => ({
+            ...prevPoints,
+            [name]: checked
+        }));
     };
+    
 
     // 리뷰 submit 관리
     const handleSubmitReview = async () => {
@@ -382,7 +385,7 @@ const MovieReview = ({ movieId, movieDetail, memRole, correspondMemName, corresp
                                 {/*체크박스 컨테이너*/}
                                 <CheckboxContainer>
                                     <CheckboxWrap>
-                                        <CheckboxGroup
+                                        {/* <CheckboxGroup
                                             className="CheckboxGroup"
                                             values={charmingPoint}
                                             onChange={setCharmingPoint}>
@@ -403,7 +406,25 @@ const MovieReview = ({ movieId, movieDetail, memRole, correspondMemName, corresp
                                                     </label>
                                                 );
                                             })}
-                                        </CheckboxGroup>
+                                        </CheckboxGroup> */}
+                                    <div className="points-checkboxes">
+                                        <label><input type="checkbox" name="directingPoint"
+                                                      checked={attractionPoints.directingPoint}
+                                                      onChange={handleAttractionPointChange}/> 감독연출</label>
+                                        <label><input type="checkbox" name="actingPoint"
+                                                      checked={attractionPoints.actingPoint}
+                                                      onChange={handleAttractionPointChange}/> 배우연기</label>
+                                        <label><input type="checkbox" name="visualPoint"
+                                                      checked={attractionPoints.visualPoint}
+                                                      onChange={handleAttractionPointChange}/> 영상미</label>
+                                        <label><input type="checkbox" name="storyPoint"
+                                                      checked={attractionPoints.storyPoint}
+                                                      onChange={handleAttractionPointChange}/> 스토리</label>
+                                        <label><input type="checkbox" name="ostPoint"
+                                                      checked={attractionPoints.ostPoint}
+                                                      onChange={handleAttractionPointChange}/> OST</label>
+                                    </div>
+                                
                                     </CheckboxWrap>
                                     <br />
 
@@ -420,6 +441,7 @@ const MovieReview = ({ movieId, movieDetail, memRole, correspondMemName, corresp
                                                         <Checkbox
                                                             key={emotionalList.id}
                                                             value={emotionalList.title}
+                                                            name = {emotionalList.point}
                                                             checked={emotionPoints[emotionalList.point]}
                                                             onChange={handleEmotionPointChange}
 

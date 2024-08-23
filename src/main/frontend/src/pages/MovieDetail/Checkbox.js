@@ -4,7 +4,7 @@ import styled from 'styled-components';
 
 
 //Checkbox
-const Checkbox = ({ children, disabled, value, checked, onChange }) => {
+const Checkbox = ({ children, disabled, value, checked, onChange, name }) => {
     const context = useContext(CheckBoxContext);
 
     if (!context) {
@@ -12,9 +12,10 @@ const Checkbox = ({ children, disabled, value, checked, onChange }) => {
             <label>
                 <input
                     type="checkbox"
+                    name={name}
                     disabled={disabled}
                     checked={checked}
-                    onChange={({ target: { checked } }) => onChange(checked)}
+                    onChange={({ target: { checked } }) => onChange(name, checked)}
                 />
                 {children}
             </label>
@@ -26,6 +27,7 @@ const Checkbox = ({ children, disabled, value, checked, onChange }) => {
         <CheckBoxSelectBox>
             <input
                 type="checkbox"
+                name={name}
                 disabled={isDisabled(disabled)}
                 checked={isChecked(value)}
                 onChange={({ target: { checked } }) => toggleValue({ checked, value })}
@@ -34,6 +36,7 @@ const Checkbox = ({ children, disabled, value, checked, onChange }) => {
         </CheckBoxSelectBox>
     );
 };
+
 
 const CheckBoxSelectBox = styled.div`
   margin: 10px 0 5px 20px;
