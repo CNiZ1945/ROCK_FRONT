@@ -44,7 +44,7 @@ const MovieReview = ({ movieId, movieDetail, memRole, correspondMemName, corresp
     const [isLike, setIsLike] = useState(false);
     const [likeCounts, setLikeCounts] = useState({});
     const [reviewLikes, setReviewLikes] = useState({});
-    const [sortBy, setSortBy] = useState('latest');
+    const [sortBy, setSortBy] = useState('likes');
     const [chartImages, setChartImages] = useState({
         gender: null,
         age: null,
@@ -136,6 +136,10 @@ const MovieReview = ({ movieId, movieDetail, memRole, correspondMemName, corresp
             setPageNumbers(response.data.pageNumbers);
             setHasPrevious(response.data.hasPrevious);
             setHasNext(response.data.hasNext);
+
+            console.log("correspondMemNum:", correspondMemNum);
+            console.log("reviews.memNum:", reviews?.memNum);
+
         } catch (error) {
             console.error('리뷰를 가져오는 중 오류 발생:', error);
             setError('리뷰를 불러오는데 실패했습니다.');
@@ -153,16 +157,38 @@ const MovieReview = ({ movieId, movieDetail, memRole, correspondMemName, corresp
 
     // 리뷰 매력 포인트 구성
     const handleAttractionPointChange = (e) => {
-        setAttractionPoints({...attractionPoints, [e.target.name]: e.target.checked});
+        setAttractionPoints({ ...attractionPoints, [e.target.name]: e.target.checked });
     };
-    
-    const handleEmotionPointChange = (name, checked) => {
-        setEmotionPoints(prevPoints => ({
-            ...prevPoints,
-            [name]: checked
-        }));
+
+    // 리뷰 감정 포인트 구성
+    const handleEmotionPointChange = (e) => {
+        setEmotionPoints({ ...emotionPoints, [e.target.name]: e.target.checked });
     };
-    
+
+
+    // 매력 포인트 label
+    const getAttractionPointLabel = (key) => {
+        const labels = {
+            directingPoint: "감독연출",
+            actingPoint: "배우연기",
+            visualPoint: "영상미",
+            storyPoint: "스토리",
+            ostPoint: "OST"
+        };
+        return labels[key] || key;
+    };
+
+    // 감정 포인트 label
+    const getEmotionPointLabel = (key) => {
+        const labels = {
+            stressReliefPoint: "스트레스 해소",
+            scaryPoint: "무서움",
+            realityPoint: "현실감",
+            immersionPoint: "몰입감",
+            tensionPoint: "긴장감"
+        };
+        return labels[key] || key;
+    };
 
     // 리뷰 submit 관리
     const handleSubmitReview = async () => {
@@ -216,7 +242,7 @@ const MovieReview = ({ movieId, movieDetail, memRole, correspondMemName, corresp
         }
     };
 
-    
+
 
     // 리뷰 delete 관리
     const handleDeleteReview = async (reviewId) => {
@@ -319,14 +345,30 @@ const MovieReview = ({ movieId, movieDetail, memRole, correspondMemName, corresp
         }
     };
 
+    const graphIndex = ["성별", "나이", "매력 포인트", "감정 포인트"];
     //HTML
     return (
         <>
 
             {/*그래프 자리*/}
-            <Wrap>
-                <CharmingGraph />
-            </Wrap>
+            {/* 그래프를 표시할 자리 */}
+            <ChartWrap>
+                {/* chartImages의 키와 URL을 이용하여 CharmingGraph 컴포넌트에 데이터 전달 */}
+                {Object.keys(chartImages).map((type, index) => (
+                    <CharmingGraph key={type} index={graphIndex[index]}>
+                        {/* 각 차트 이미지 표시 */}
+                        <ReviewChartImg src={chartImages[type]} alt={`${graphIndex[index]} 차트`} />
+                    </CharmingGraph>
+                ))}
+
+                {/* <div className="chart-container">
+                    {chartImages.gender && <img src={chartImages.gender} alt="Gender Chart" />}
+                    {chartImages.age && <img src={chartImages.age} alt="Age Chart" />}
+                    {chartImages.attraction && <img src={chartImages.attraction} alt="Attraction Chart" />}
+                    {chartImages.emotion && <img src={chartImages.emotion} alt="Emotion Chart" />}
+                </div> */}
+
+            </ChartWrap>
             <WholeReviewConstainer>
 
                 <ReviewInfoBox>
@@ -378,19 +420,19 @@ const MovieReview = ({ movieId, movieDetail, memRole, correspondMemName, corresp
                             </ReviewModalInfoBox>
 
                             {/* <form> */}
-                                <form onSubmit={(e) => {
+                            <form onSubmit={(e) => {
                                 e.preventDefault();
                                 handleSubmitReview();
                             }}>
                                 {/*체크박스 컨테이너*/}
                                 <CheckboxContainer>
                                     <CheckboxWrap>
-                                        {/* <CheckboxGroup
+                                        <CheckboxGroup
                                             className="CheckboxGroup"
                                             values={charmingPoint}
                                             onChange={setCharmingPoint}>
                                             <SelectPointTitle>❤️ 매력포인트</SelectPointTitle>
-                                            {CHARMING_DATA_LIST.map(charmingList => {
+                                            {/* {CHARMING_DATA_LIST.map(charmingList => {
                                                 return (
                                                     <label key={charmingList.id}>
 
@@ -405,26 +447,26 @@ const MovieReview = ({ movieId, movieDetail, memRole, correspondMemName, corresp
                                                         </Checkbox>
                                                     </label>
                                                 );
-                                            })}
-                                        </CheckboxGroup> */}
-                                    <div className="points-checkboxes">
-                                        <label><input type="checkbox" name="directingPoint"
-                                                      checked={attractionPoints.directingPoint}
-                                                      onChange={handleAttractionPointChange}/> 감독연출</label>
-                                        <label><input type="checkbox" name="actingPoint"
-                                                      checked={attractionPoints.actingPoint}
-                                                      onChange={handleAttractionPointChange}/> 배우연기</label>
-                                        <label><input type="checkbox" name="visualPoint"
-                                                      checked={attractionPoints.visualPoint}
-                                                      onChange={handleAttractionPointChange}/> 영상미</label>
-                                        <label><input type="checkbox" name="storyPoint"
-                                                      checked={attractionPoints.storyPoint}
-                                                      onChange={handleAttractionPointChange}/> 스토리</label>
-                                        <label><input type="checkbox" name="ostPoint"
-                                                      checked={attractionPoints.ostPoint}
-                                                      onChange={handleAttractionPointChange}/> OST</label>
-                                    </div>
-                                
+                                            })} */}
+                                        </CheckboxGroup>
+                                        <div className="points-checkboxes">
+                                            <label><input type="checkbox" name="directingPoint"
+                                                checked={attractionPoints.directingPoint}
+                                                onChange={handleAttractionPointChange} /> 감독연출</label>
+                                            <label><input type="checkbox" name="actingPoint"
+                                                checked={attractionPoints.actingPoint}
+                                                onChange={handleAttractionPointChange} /> 배우연기</label>
+                                            <label><input type="checkbox" name="visualPoint"
+                                                checked={attractionPoints.visualPoint}
+                                                onChange={handleAttractionPointChange} /> 영상미</label>
+                                            <label><input type="checkbox" name="storyPoint"
+                                                checked={attractionPoints.storyPoint}
+                                                onChange={handleAttractionPointChange} /> 스토리</label>
+                                            <label><input type="checkbox" name="ostPoint"
+                                                checked={attractionPoints.ostPoint}
+                                                onChange={handleAttractionPointChange} /> OST</label>
+                                        </div>
+
                                     </CheckboxWrap>
                                     <br />
 
@@ -435,7 +477,7 @@ const MovieReview = ({ movieId, movieDetail, memRole, correspondMemName, corresp
                                             onChange={setEmotionalPoint}
                                         >
                                             <SelectPointTitle>😳 감정 포인트</SelectPointTitle>
-                                            {EMOTIOMAL_DATA_LIST.map(emotionalList => {
+                                            {/* {EMOTIOMAL_DATA_LIST.map(emotionalList => {
                                                 return (
                                                     <label>
                                                         <Checkbox
@@ -451,142 +493,190 @@ const MovieReview = ({ movieId, movieDetail, memRole, correspondMemName, corresp
 
                                                     </label>
                                                 );
-                                            })}
+                                            })} */}
                                         </CheckboxGroup>
+                                        <div className="points-checkboxes">
+                                            <label><input type="checkbox" name="stressReliefPoint"
+                                                checked={emotionPoints.stressReliefPoint}
+                                                onChange={handleEmotionPointChange} /> 스트레스 해소</label>
+                                            <label><input type="checkbox" name="scaryPoint"
+                                                checked={emotionPoints.scaryPoint}
+                                                onChange={handleEmotionPointChange} /> 무서움</label>
+                                            <label><input type="checkbox" name="realityPoint"
+                                                checked={emotionPoints.realityPoint}
+                                                onChange={handleEmotionPointChange} /> 현실감</label>
+                                            <label><input type="checkbox" name="immersionPoint"
+                                                checked={emotionPoints.immersionPoint}
+                                                onChange={handleEmotionPointChange} /> 몰입감</label>
+                                            <label><input type="checkbox" name="tensionPoint"
+                                                checked={emotionPoints.tensionPoint}
+                                                onChange={handleEmotionPointChange} /> 긴장감</label>
+                                        </div>
+
                                     </CheckboxWrap>
                                 </CheckboxContainer>
 
                                 <WriteReview>
 
-                                <ReviewInput
-                                    onChange={(e) => setNewReview({ ...newReview, content: e.target.value })}
+                                    <ReviewInput
+                                        onChange={(e) => setNewReview({ ...newReview, content: e.target.value })}
 
-                                    //  리뷰 글자 수가 4~50자 이어야 작성 가능
-                                    onKeyDown={(e) => {
-                                        if (e.key === "Enter") {
-                                            e.preventDefault();  // Enter 눌렀을 때 기본 제출 방지
-                                            handleValidationAndSubmit();
-                                        }
-                                    }}
-                                    type="text"
-                                    value={newReview.content}
-                                    placeholder=" 리뷰 작성 (50자 이내로 작성) "
-                                />
+                                        //  리뷰 글자 수가 4~50자 이어야 작성 가능
+                                        onKeyDown={(e) => {
+                                            if (e.key === "Enter") {
+                                                e.preventDefault();  // Enter 눌렀을 때 기본 제출 방지
+                                                handleValidationAndSubmit();
+                                            }
+                                        }}
+                                        type="text"
+                                        value={newReview.content}
+                                        placeholder=" 리뷰 작성 (50자 이내로 작성) "
+                                    />
 
-                                {/* 평점 스핀박스 */}
-                                <InputNumber
-                                    type="number"
-                                    value={newReview.rating}
-                                    onChange={(e) => setNewReview({ ...newReview, rating: parseInt(e.target.value) })}
-                                    min="1"
-                                    max="5"
-                                    required
-                                />
+                                    {/* 평점 스핀박스 */}
+                                    <InputNumber
+                                        type="number"
+                                        value={newReview.rating}
+                                        onChange={(e) => setNewReview({ ...newReview, rating: parseInt(e.target.value) })}
+                                        min="1"
+                                        max="5"
+                                        required
+                                    />
 
-                                {/* 등록 버튼 */}
-                                <UploadBtn type='submit'  disabled={!isValid}>
+                                    {/* 첫 리뷰 작성시 등록 버튼, 리뷰 작성 후는 수정 버튼 */}
+                                    {
+                                        reviews.some(review => Number(review.memNum) === Number(correspondMemNum)) ? (
+                                            <EditBtn type='submit' onClick={handleValidationAndSubmit}>
+                                                수정
+                                            </EditBtn>
+                                        ) : (
+                                            <UploadBtn type='submit' onClick={handleValidationAndSubmit}>
+                                                등록
+                                            </UploadBtn>
+                                        )
+                                    }
+
+
+
+                                    {/* 등록 버튼 */}
+                                    {/* <UploadBtn type='submit'  disabled={!isValid}>
                                     등록
-                                </UploadBtn>
+                                </UploadBtn> */}
 
-                                {/* 수정 버튼 */}
-                                <EditBtn type='submit'  disabled={!isValid}>
+                                    {/* 수정 버튼 */}
+                                    {/* <EditBtn type='submit'  disabled={!isValid}>
                                     수정
-                                </EditBtn>
+                                </EditBtn> */}
 
 
-                            </WriteReview>
-                        </form>
+                                </WriteReview>
+                            </form>
 
 
-                    </ReviewModalContentBox>
+                        </ReviewModalContentBox>
                     </ReviewContainer>
                 )}
 
                 {/* 리뷰 출력 */}
-            {reviews.length > 0 ? (
-                <>
-                    <button onClick={() => handleSortChange('latest')}
-                        className={sortBy === 'latest' ? 'active' : ''}>최신순
-                    </button>
-                    <button onClick={() => handleSortChange('likes')}
-                        className={sortBy === 'likes' ? 'active' : ''}>좋아요순
-                    </button>
-                    <OnlyReviewContainer>
-                        <ReviewTitle> &#62; Review</ReviewTitle>
-                        <ReviewCommentContainer>
-                            {reviews.map((review) => {
+                {reviews.length > 0 ? (
+                    <>
 
-                                // 매력, 감정 포인트를 배열로 만들기
-                                const charmingPoints = Array.isArray(review.attractionPoints) ? review.attractionPoints : review.attractionPoints ? [review.attractionPoints] : [];
-                                const emotionalPoints = Array.isArray(review.emotionPoints) ? review.emotionPoints : review.emotionPoints ? [review.emotionPoints] : [];
+                        <OnlyReviewContainer>
+                            <ReviewArrayBtnWrap>
+                                <ReviewTitle> &#62; Review</ReviewTitle>
+                                <ArrayBtn onClick={() => handleSortChange('latest')}
+                                    className = {sortBy === 'latest' ? 'active' : ''}>최신순
+                                </ArrayBtn>
+                                <ArrayBtn onClick={() => handleSortChange('likes')}
+                                    className={sortBy === 'likes' ? 'active' : ''}>좋아요순
+                                </ArrayBtn>
+                            </ReviewArrayBtnWrap>
+                            <ReviewCommentContainer>
+                                {reviews.map((review) => {
 
-                                return (
-                                    <>
-                                        {/* 리뷰 리스트 */}
-                                        <ReviewLists
-                                            key={review.id}
-                                            userName={review.memName}
-                                            userReview={review.reviewContent}
-                                            reviewRating={review.reviewRating}
-                                            charmingPoint={charmingPoints}
-                                            emotionalPoint={emotionalPoints}
-                                        />
-                                        <div className="review_actions">
-                                            <div className="like_button">
-                                                <button
+                                    return (
+                                        <>
+                                            {/* 리뷰 리스트 */}
+                                            <ReviewLists
+                                                key={review.id}
+                                                userName={review.memName}
+                                                userReview={review.reviewContent}
+                                                reviewRating={review.reviewRating}
+                                                reviewTime={review.modifyDate && review.modifyDate !== review.createDate
+                                                    ? `수정됨: ${review.modifyDate}`
+                                                    : `작성: ${review.createDate}`}
+
+                                                charmingPoint={review.attractionPoints && Object.entries(review.attractionPoints)
+                                                    .filter(([key, value]) => value)
+                                                    .map(([key, value]) => (
+                                                        getAttractionPointLabel(key)
+                                                    ))}
+
+                                                emotionalPoint={review.emotionPoints && Object.entries(review.emotionPoints)
+                                                    .filter(([key, value]) => value)
+                                                    .map(([key, value]) => (
+                                                        getEmotionPointLabel(key)
+                                                    ))}
+                                                // 리뷰 수정 버튼
+                                                editButton={(correspondMemNum && Number(review.memNum) === Number(correspondMemNum)) && (
+                                                    <button onClick={() => handleEditClick(review)}>수정</button>
+                                                )}
+
+                                                // 리뷰 삭제 버튼
+                                                deleteButton={((memRole === 'ADMIN') || (correspondMemNum && Number(review.memNum) === Number(correspondMemNum))) && (
+                                                    <button
+                                                        onClick={() => handleDeleteReview(review.reviewId)}>삭제</button>
+                                                )}
+
+                                                // 리뷰 좋아요 버튼
+                                                reviewLike={<button
                                                     onClick={() => toggleReviewLike(review.reviewId)}
                                                 >
                                                     {reviewLikes[review.reviewId]?.isLike ? '❤️' : '🤍'}
-                                                </button>
-                                                <span>({reviewLikes[review.reviewId]?.likeCount || 0})</span>
-                                            </div>
-                                            {(correspondMemNum && Number(review.memNum) === Number(correspondMemNum)) && (
-                                                <button onClick={() => handleEditClick(review)}>수정</button>
-                                            )}
-                                            {((memRole === 'ADMIN') || (correspondMemNum && Number(review.memNum) === Number(correspondMemNum))) && (
-                                                <button
-                                                    onClick={() => handleDeleteReview(review.reviewId)}>삭제</button>
-                                            )}
-                                        </div>
-                                    </>
-                                );
-                            })}
-                        </ReviewCommentContainer>
-                    </OnlyReviewContainer>
-                    <div className="pagination">
-                        {hasPrevious && (
-                            <button
-                                onClick={() => fetchReviews(localStorage.getItem('accessToken'), currentPage - 1)}>
-                                &lt;
-                            </button>
-                        )}
-                        {pageNumbers && pageNumbers.map(number => (
-                            <button
-                                key={number}
-                                onClick={() => fetchReviews(localStorage.getItem('accessToken'), number)}
-                                className={number === currentPage ? 'active' : ''}
-                            >
-                                {number}
-                            </button>
-                        ))}
-                        {hasNext && (
-                            <button
-                                onClick={() => fetchReviews(localStorage.getItem('accessToken'), currentPage + 1)}>
-                                &gt;
-                            </button>
-                        )}
-                    </div>
-                </>
-            ) : (
-                <div style={{ color: 'white' }}>아직 리뷰가 없습니다. 첫번째 리뷰를 작성해보세요</div>
-            )}
-        </WholeReviewConstainer >
+                                                    <span>({reviewLikes[review.reviewId]?.likeCount || 0})</span>
+                                                </button>}
+
+                                            />
+
+                                        </>
+                                    );
+                                })}
+                            </ReviewCommentContainer>
+                        </OnlyReviewContainer>
+                        <div className="pagination">
+                            {hasPrevious && (
+                                <button
+                                    onClick={() => fetchReviews(localStorage.getItem('accessToken'), currentPage - 1)}>
+                                    &lt;
+                                </button>
+                            )}
+                            {pageNumbers && pageNumbers.map(number => (
+                                <button
+                                    key={number}
+                                    onClick={() => fetchReviews(localStorage.getItem('accessToken'), number)}
+                                    className={number === currentPage ? 'active' : ''}
+                                >
+                                    {number}
+                                </button>
+                            ))}
+                            {hasNext && (
+                                <button
+                                    onClick={() => fetchReviews(localStorage.getItem('accessToken'), currentPage + 1)}>
+                                    &gt;
+                                </button>
+                            )}
+                        </div>
+                    </>
+                ) : (
+                    <div style={{ color: 'white' }}>아직 리뷰가 없습니다. 첫번째 리뷰를 작성해보세요</div>
+                )}
+            </WholeReviewConstainer >
         </>
 
-        
-        
-        
- 
+
+
+
+
     );
 };
 
@@ -594,7 +684,7 @@ const MovieReview = ({ movieId, movieDetail, memRole, correspondMemName, corresp
 
 
 //그래프 전체 박스 - 그래프 자리
-const Wrap = styled.div`
+const ChartWrap = styled.div`
     //사이즈
     width: 100%;
     // height: 500px;
@@ -602,9 +692,10 @@ const Wrap = styled.div`
     margin-top: 80px;
     padding-top: 40px;
     margin-bottom: 40px;
-    
+    display: flex;
     border-radius: 12px;
-    
+    flex-wrap: wrap;
+    justify-content: center;
     //디자인
     //background-color: rgba(255, 255, 255, 0.1);
     background-color:#fff;
@@ -722,12 +813,33 @@ const ReviewInput = styled.input`
   &:focus,
   &:hover {
     border: 2px solid #1351f9;
-      outline: none;
+    outline: none;
   }
 `;
 
+const ReviewArrayBtnWrap = styled.div`
+    display: flex;
 
-const ReviewTitle = styled.p`
+`
+
+// 리뷰 정렬 버튼
+const ArrayBtn = styled.button`
+    width: 100px;
+    border: 2px solid white;
+    background: #1351f9;
+    margin: 30px 10px 10px 10px;
+    border-radius: 12px;
+    color: white;
+
+    &:focus,
+    &:hover {
+    background: white;
+    border: 2px solid #1351f9;
+    color: #1351f9;
+  }
+
+`
+const ReviewTitle = styled.div`
   color: #9971ff;
   font-size: 18px;
   font-weight: 600;
@@ -743,7 +855,7 @@ const ReviewCommentContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   grid-gap: 10px;
-    // display: flex;
+    display: flex;
     align-items: center;
 `;
 
@@ -935,24 +1047,11 @@ const ReviewCounts = styled.p`
   font-weight: 600;
 `;
 
+// 리뷰 차트 이미지
+const ReviewChartImg = styled.img`
+
+width: 100%;
+`
+
+
 export default MovieReview;
-
-
-
-//그래프1
-const CHARMING_DATA_LIST = [
-    { id: 1, title: '감독연출', point: 'directingPoint' },
-    { id: 2, title: '스토리', point: 'storyPoint' },
-    { id: 3, title: '영상미', point: 'visualPoint' },
-    { id: 4, title: '배우연기', point: 'actingPoint' },
-    { id: 5, title: 'OST', point: 'ostPoint' },
-];
-
-//그래프2
-const EMOTIOMAL_DATA_LIST = [
-    { id: 1, title: '스트레스 해소', point: 'stressReliefPoint' },
-    { id: 2, title: '무서움', point: 'scaryPoint' },
-    { id: 3, title: '현실감', point: 'realityPoint' },
-    { id: 4, title: '몰입감', point: 'immersionPoint' },
-    { id: 5, title: '긴장감', point: 'immersionPoint' },
-];

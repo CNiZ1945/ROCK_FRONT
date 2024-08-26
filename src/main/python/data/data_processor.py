@@ -2,7 +2,7 @@ import pandas as pd
 from sqlalchemy import create_engine
 
 def get_database_engine():
-    engine = create_engine('mysql+pymysql://rock_developer:0000@localhost/rock_db')
+    engine = create_engine('mysql+pymysql://root:0000@localhost/rock_db')
     return engine
 
 # 영화별 리뷰 성별 차트 데이터

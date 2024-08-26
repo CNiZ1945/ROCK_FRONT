@@ -124,11 +124,13 @@ const MovieDetail = () => {
             const response = await api.get('/auth/memberinfo', {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
+            console.log("memberInfo: ",memberInfo);
             return {
                 role: response.data.memRole,
                 memName: response.data.memName,
                 memNum: response.data.memNum
             };
+            
         } catch (error) {
             console.error('사용자 정보를 가져오는 중 오류 발생:', error);
             if (error.response) {

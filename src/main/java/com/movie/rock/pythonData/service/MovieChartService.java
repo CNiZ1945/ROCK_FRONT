@@ -13,8 +13,8 @@ public class MovieChartService {
 
     public void runMoviePythonScript(Long movieId) {
 //        String pythonPath = "venv/bin/python";
-        String pythonPath = "C:\\Users\\kwyoo\\Desktop\\Project\\HRERock\\venv\\Scripts\\python.exe";
-        String scriptPath = "C:\\Users\\kwyoo\\Desktop\\Project\\HRERock\\src\\main\\python\\movie_main.py";
+        String pythonPath = "D:\\project\\ROCK-FORNTEND\\venv\\Scripts\\python.exe";
+        String scriptPath = "D:\\project\\ROCK-FORNTEND\\src\\main\\python\\movie_main.py";
 
         ProcessBuilder processBuilder = new ProcessBuilder(pythonPath, scriptPath, movieId.toString());
         processBuilder.redirectErrorStream(true);// 표준 오류와 표준 출력을 결합

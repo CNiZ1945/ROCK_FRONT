@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Children } from 'react';
 
 //chart.js
 import {
@@ -14,18 +14,15 @@ ChartJs.register(LineElement, PointElement, Tooltip, Legend, RadialLinearScale, 
 
 
 //CharmingGraph -그래프
-const CharmingGraph = () => {
+const CharmingGraph = ({index, children}) => {
     return (<GraphContainer>
             <ScoreGraph>
-                <GraphTitle>❤️ 매력 포인트</GraphTitle>
-                <Radar data={charmingData} options={labelFont}/>
+                <GraphTitle>{index}</GraphTitle>
+                {/* <Radar data={charmingData} options={labelFont}/> */}
+                <GraphImage>
+                    {children}
+                </GraphImage>
             </ScoreGraph>
-
-            <ScoreGraph>
-                <GraphTitle>😳 감정 포인트</GraphTitle>
-                <Radar data={emotionData} options={labelFont}/>
-            </ScoreGraph>
-
         </GraphContainer>);
 };
 
@@ -33,27 +30,35 @@ const CharmingGraph = () => {
 
 //타이틀
 const GraphTitle = styled.div`
+    width: 100%;
+    text-align: center;
     font-family: 'SUIT-Regular';
     font-size: 23px;
     font-weight: 600;
     color: #000;
     margin-bottom: 10px;
     //border-bottom: 12px solid #f1f1f3;
-    display: inline-block;
+    // display: inline-block;
 `;
 
+const GraphImage = styled.div`
+// text-align: center;
+    width: 100%;
+    
 
+`
 const ScoreGraph = styled.div`
-    width: 400px;
+    width: 280px;
     height: 400px;
     
-`;
-
-const GraphContainer = styled.div`
-    width: 100%;
+    `;
+    
+    const GraphContainer = styled.div`
+    
     display: flex;
+    // width: 100%;
     justify-content: space-around;
-    margin-bottom: 100px;
+    margin-right: 20px;
 `;
 
 
