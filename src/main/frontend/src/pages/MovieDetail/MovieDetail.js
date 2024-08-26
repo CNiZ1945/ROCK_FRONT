@@ -17,6 +17,7 @@ import MovieReview from './MovieReview';
 // import MovieTab from './MovieTab.js'
 import ChatBot from '../ChatBot/ChatBot.js';
 import { api } from '../../api/axios.js';
+import MovieTrailer from './MovieTrailer.js';
 
 
 
@@ -51,15 +52,17 @@ const MovieDetail = () => {
 
     const menuArr = [
         { name: '상세정보', content: <MovieInformation /> },
-        // { name: '예고편', content: <MoviePlay /> },
         { name: '리뷰', content: (<MovieReview
-                        movieId={movieId}
-                        movieDetail={movieDetail}
-                        memRole={memberInfo?.role}
-                        correspondMemName={memberInfo?.memName}
-                        correspondMemNum={memberInfo?.memNum} 
-                        />) },
-        // {name: '추천', content: ""},
+            movieId={movieId}
+            movieDetail={movieDetail}
+            memRole={memberInfo?.role}
+            correspondMemName={memberInfo?.memName}
+            correspondMemNum={memberInfo?.memNum} 
+            />) },
+        { name: '예고편', content: (<MovieTrailer
+                movieDetail={movieDetail}
+                />) },
+            // {name: '추천', content: ""},
         // {name: '추천', content: <MovieReview />},
     ];
     
@@ -319,9 +322,7 @@ const MovieDetail = () => {
                                             <BoxButton>
                                                 {/*버튼*/}
                                                 <BookingButton
-                                                    onClick={() => {
-                                                        navigate(`/user/moviepage/:movieId`);
-                                                    }}
+                                                    onClick={handleWatchMovie}
                                                 >
                                                     영화 보러가기
                                                 </BookingButton>

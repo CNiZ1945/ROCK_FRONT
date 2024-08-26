@@ -41,78 +41,27 @@ const MovieReview = ({ movieId, movieDetail, memRole, correspondMemName, corresp
         tensionPoint: false
     });
 
-    const [isLike, setIsLike] = useState(false);
-    const [likeCounts, setLikeCounts] = useState({});
     const [reviewLikes, setReviewLikes] = useState({});
     const [sortBy, setSortBy] = useState('likes');
-    const [chartImages, setChartImages] = useState({
-        gender: null,
-        age: null,
-        attraction: null,
-        emotion: null
-    });
 
-    // 차트 이미지
+
+    // movieId, sortBy에 따라 랜더링
     useEffect(() => {
         const token = localStorage.getItem('accessToken');
         if (token) {
-            fetchReviews(token, 1);
-            fetchInitialLikeStatuses(token);
-            fetchMovieChartImages();
-        }
-
-        // 컴포넌트가 언마운트될 때 실행될 cleanup 함수
-        return () => {
-            // 컴포넌트가 언마운트될 때 이미지 삭제 요청을 보냅니다.
-            const token = localStorage.getItem('accessToken');
-            if (token) {
-                api.post(`/user/movies/${movieId}/delete-image`, {
-                    fileNames: [
-                        `age_chart_${movieId}.png`,
-                        `attraction_chart_${movieId}.png`,
-                        `emotion_chart_${movieId}.png`,
-                        `gender_chart_${movieId}.png`
-                    ]
-                }, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                })
-                    .then(response => {
-                        console.log('Images deleted:', response.data);
-                    })
-                    .catch((error) => {
-                        console.error('Error deleting images:', error);
-                    });
+            // movieId각 객체인지 확인
+            if (typeof movieId === 'object' && movieId.movieId) {
+                fetchReviews(token, currentPage);
+                fetchInitialLikeStatuses(token);
+                
+                console.log("movieId:", movieId.movieId, "Type of movieId:", typeof movieId.movieId);
+                console.log("EditingReviewId:", editingReviewId);
+            } else {
+                console.error("movieId가 유효하지 않습니다.", movieId);
             }
-        };
-    }, [movieId, sortBy]);
-
-    // 차트 이미지 불러오기
-    const fetchMovieChartImages = async () => {
-        try {
-            const token = localStorage.getItem('accessToken');
-            if (!token) throw new Error("로그인 토큰이 없습니다.");
-
-            const chartTypes = ['gender', 'age', 'attraction', 'emotion'];
-            const requests = chartTypes.map(type =>
-                api.get(`/user/movies/${movieId}/${type}-chart`, {
-                    responseType: 'arraybuffer',
-                    headers: { 'Authorization': `Bearer ${token}` }
-                }).then(response => {
-                    const blob = new Blob([response.data], { type: 'image/png' });
-                    const url = URL.createObjectURL(blob);
-                    return { type, url };
-                })
-            );
-            const results = await Promise.all(requests);
-            const images = results.reduce((acc, { type, url }) => {
-                acc[type] = url;
-                return acc;
-            }, {});
-            setChartImages(images);
-        } catch (error) {
-            setError('차트 이미지를 불러오는 데 실패했습니다.');
         }
-    };
+    }, [movieId, sortBy, currentPage]);
+
 
 
     // 정렬 방식을 변경하는 함수
@@ -120,14 +69,16 @@ const MovieReview = ({ movieId, movieDetail, memRole, correspondMemName, corresp
         setSortBy(newSortBy);
         // fetchReviews(localStorage.getItem('accessToken'), 1, newSortBy);
     };
+    
 
     // 리뷰 불러오기 
     const fetchReviews = async (token, page = 1) => {
         try {
-            const response = await api.get(`/user/movies/detail/${movieId}/reviews?page=${page}&sortBy=${sortBy}`, {
+            const validMovieId = movieId.movieId;
+            const response = await api.get(`/user/movies/detail/${validMovieId}/reviews?page=${page}&sortBy=${sortBy}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
-            const data = response.data;
+            // const data = response.data;
             // console.log('Fetched review data:', response.data);
             setReviews(response.data.reviews);
             setTotalReviews(response.data.totalReviews);
@@ -192,7 +143,9 @@ const MovieReview = ({ movieId, movieDetail, memRole, correspondMemName, corresp
 
     // 리뷰 submit 관리
     const handleSubmitReview = async () => {
+        const validMovieId = movieId.movieId;
         const token = localStorage.getItem('accessToken');
+
         try {
             const reviewData = {
                 reviewContent: newReview.content,
@@ -203,12 +156,12 @@ const MovieReview = ({ movieId, movieDetail, memRole, correspondMemName, corresp
             if (isValid) {
 
                 if (editingReviewId) {
-                    await api.put(`/user/movies/detail/${movieId}/reviews/${editingReviewId}`, reviewData, {
+                    await api.put(`/user/movies/detail/${validMovieId}/reviews/${editingReviewId}`, reviewData, {
                         headers: { 'Authorization': `Bearer ${token}` }
                     });
                     setEditingReviewId(null);
                 } else {
-                    await api.post(`/user/movies/detail/${movieId}/reviews`, reviewData, {
+                    await api.post(`/user/movies/detail/${validMovieId}/reviews`, reviewData, {
                         headers: { 'Authorization': `Bearer ${token}` }
                     });
                 }
@@ -216,6 +169,8 @@ const MovieReview = ({ movieId, movieDetail, memRole, correspondMemName, corresp
                 setAttractionPoints({ directingPoint: false, actingPoint: false, visualPoint: false, storyPoint: false, ostPoint: false });
                 setEmotionPoints({ stressReliefPoint: false, scaryPoint: false, realityPoint: false, immersionPoint: false, tensionPoint: false });
                 await fetchReviews(token, currentPage);
+                console.log("EditingReviewId after submit:", editingReviewId); // 상태 확인용 로그
+                
                 alert(editingReviewId ? '리뷰가 수정되었습니다.' : '리뷰가 작성되었습니다.');
 
             }
@@ -223,13 +178,15 @@ const MovieReview = ({ movieId, movieDetail, memRole, correspondMemName, corresp
         } catch (error) {
             if (error.response && error.response.data) {
                 console.error("review submit error:", error.response.data);
+                alert("하단의 리뷰의 수정 버튼을 누르고 수정해주세요");
+            }
 
-                alert("review submit error:", error.response.data);
-            } else {
+            else {
                 alert('리뷰 작성/수정에 실패했습니다. 다시 시도해 주세요.');
             }
         }
     };
+
 
     // 리뷰 글자 수 유효성 검사
     const handleValidationAndSubmit = () => {
@@ -247,8 +204,9 @@ const MovieReview = ({ movieId, movieDetail, memRole, correspondMemName, corresp
     // 리뷰 delete 관리
     const handleDeleteReview = async (reviewId) => {
         const token = localStorage.getItem('accessToken');
+        const validMovieId = movieId.movieId;
         try {
-            const response = await api.delete(`/user/movies/detail/${movieId}/reviews/${reviewId}`, {
+            const response = await api.delete(`/user/movies/detail/${validMovieId}/reviews/${reviewId}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
 
@@ -281,10 +239,13 @@ const MovieReview = ({ movieId, movieDetail, memRole, correspondMemName, corresp
         }
     };
 
+
     // 리뷰 좋아요 상태 확인
     const fetchInitialLikeStatuses = async (token) => {
+        const validMovieId = movieId.movieId;
+
         try {
-            const response = await api.get(`/user/movies/detail/${movieId}/reviews/likes`, {
+            const response = await api.get(`/user/movies/detail/${validMovieId}/reviews/likes`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             const likeStatusArray = response.data; // [{reviewId, memNum, likeCount, like}]
@@ -308,6 +269,7 @@ const MovieReview = ({ movieId, movieDetail, memRole, correspondMemName, corresp
 
     // 리뷰 좋아요 버튼
     const toggleReviewLike = async (reviewId) => {
+        const validMovieId = movieId.movieId;
         const token = localStorage.getItem('accessToken');
         if (!token || !reviewId) {
             console.error('AccessToken 또는 ReviewId가 없습니다');
@@ -316,7 +278,7 @@ const MovieReview = ({ movieId, movieDetail, memRole, correspondMemName, corresp
 
         try {
             const currentLikeStatus = reviewLikes[reviewId] || { isLike: false, likeCount: 0 };
-            const url = `/user/movies/detail/${movieId}/reviews/${reviewId}/likes`;
+            const url = `/user/movies/detail/${validMovieId}/reviews/${reviewId}/likes`;
 
             let response;
             if (currentLikeStatus.isLike) {
@@ -345,7 +307,6 @@ const MovieReview = ({ movieId, movieDetail, memRole, correspondMemName, corresp
         }
     };
 
-    const graphIndex = ["성별", "나이", "매력 포인트", "감정 포인트"];
     //HTML
     return (
         <>
@@ -354,12 +315,12 @@ const MovieReview = ({ movieId, movieDetail, memRole, correspondMemName, corresp
             {/* 그래프를 표시할 자리 */}
             <ChartWrap>
                 {/* chartImages의 키와 URL을 이용하여 CharmingGraph 컴포넌트에 데이터 전달 */}
-                {Object.keys(chartImages).map((type, index) => (
+                {/* {Object.keys(chartImages).map((type, index) => (
                     <CharmingGraph key={type} index={graphIndex[index]}>
-                        {/* 각 차트 이미지 표시 */}
+     
                         <ReviewChartImg src={chartImages[type]} alt={`${graphIndex[index]} 차트`} />
                     </CharmingGraph>
-                ))}
+                ))} */}
 
                 {/* <div className="chart-container">
                     {chartImages.gender && <img src={chartImages.gender} alt="Gender Chart" />}
@@ -367,6 +328,10 @@ const MovieReview = ({ movieId, movieDetail, memRole, correspondMemName, corresp
                     {chartImages.attraction && <img src={chartImages.attraction} alt="Attraction Chart" />}
                     {chartImages.emotion && <img src={chartImages.emotion} alt="Emotion Chart" />}
                 </div> */}
+
+                {CharmingGraph(
+                    movieId = { movieId }
+                )}
 
             </ChartWrap>
             <WholeReviewConstainer>
@@ -544,30 +509,15 @@ const MovieReview = ({ movieId, movieDetail, memRole, correspondMemName, corresp
                                     />
 
                                     {/* 첫 리뷰 작성시 등록 버튼, 리뷰 작성 후는 수정 버튼 */}
-                                    {
-                                        reviews.some(review => Number(review.memNum) === Number(correspondMemNum)) ? (
-                                            <EditBtn type='submit' onClick={handleValidationAndSubmit}>
-                                                수정
-                                            </EditBtn>
-                                        ) : (
-                                            <UploadBtn type='submit' onClick={handleValidationAndSubmit}>
-                                                등록
-                                            </UploadBtn>
-                                        )
-                                    }
-
-
-
-                                    {/* 등록 버튼 */}
-                                    {/* <UploadBtn type='submit'  disabled={!isValid}>
-                                    등록
-                                </UploadBtn> */}
-
-                                    {/* 수정 버튼 */}
-                                    {/* <EditBtn type='submit'  disabled={!isValid}>
-                                    수정
-                                </EditBtn> */}
-
+                                    {editingReviewId ? (
+                                        <EditBtn type='submit' onClick={handleValidationAndSubmit}>
+                                            수정
+                                        </EditBtn>
+                                    ) : (
+                                        <UploadBtn type='submit' onClick={handleValidationAndSubmit}>
+                                            등록
+                                        </UploadBtn>
+                                    )}
 
                                 </WriteReview>
                             </form>
@@ -585,7 +535,7 @@ const MovieReview = ({ movieId, movieDetail, memRole, correspondMemName, corresp
                             <ReviewArrayBtnWrap>
                                 <ReviewTitle> &#62; Review</ReviewTitle>
                                 <ArrayBtn onClick={() => handleSortChange('latest')}
-                                    className = {sortBy === 'latest' ? 'active' : ''}>최신순
+                                    className={sortBy === 'latest' ? 'active' : ''}>최신순
                                 </ArrayBtn>
                                 <ArrayBtn onClick={() => handleSortChange('likes')}
                                     className={sortBy === 'likes' ? 'active' : ''}>좋아요순
@@ -617,6 +567,7 @@ const MovieReview = ({ movieId, movieDetail, memRole, correspondMemName, corresp
                                                     .map(([key, value]) => (
                                                         getEmotionPointLabel(key)
                                                     ))}
+
                                                 // 리뷰 수정 버튼
                                                 editButton={(correspondMemNum && Number(review.memNum) === Number(correspondMemNum)) && (
                                                     <button onClick={() => handleEditClick(review)}>수정</button>
@@ -643,11 +594,11 @@ const MovieReview = ({ movieId, movieDetail, memRole, correspondMemName, corresp
                                 })}
                             </ReviewCommentContainer>
                         </OnlyReviewContainer>
-                        <div className="pagination">
+                        <ReviewPagination>
                             {hasPrevious && (
                                 <button
                                     onClick={() => fetchReviews(localStorage.getItem('accessToken'), currentPage - 1)}>
-                                    &lt;
+                                    {"<"}
                                 </button>
                             )}
                             {pageNumbers && pageNumbers.map(number => (
@@ -662,10 +613,10 @@ const MovieReview = ({ movieId, movieDetail, memRole, correspondMemName, corresp
                             {hasNext && (
                                 <button
                                     onClick={() => fetchReviews(localStorage.getItem('accessToken'), currentPage + 1)}>
-                                    &gt;
+                                    {">"}
                                 </button>
                             )}
-                        </div>
+                        </ReviewPagination>
                     </>
                 ) : (
                     <div style={{ color: 'white' }}>아직 리뷰가 없습니다. 첫번째 리뷰를 작성해보세요</div>
@@ -1051,6 +1002,31 @@ const ReviewCounts = styled.p`
 const ReviewChartImg = styled.img`
 
 width: 100%;
+`
+
+// 리뷰 pagination
+const ReviewPagination = styled.div`
+    // border: 1px solid red;
+
+    button{
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+        background: white;
+        margin: 10px;
+        border: 2px solid #1351f9;
+        border-radius: 50%;
+        color: #1351f9;
+        font-weight: 500;
+
+        &:active, 
+        &:hover{
+            background: #1351f9;    
+            color: white;
+            font-weight: 800;
+        }
+    }
+
 `
 
 

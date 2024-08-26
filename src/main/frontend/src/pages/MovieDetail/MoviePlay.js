@@ -3,12 +3,13 @@ import {useLocation, useNavigate} from "react-router-dom";
 import axios from "axios";
 import ReactPlayer from "react-player";
 import { useParams } from 'react-router-dom';
+import { api } from "../../api/axios";
 
 // css
 import "./css/MoviePlay.css"
 
 
-function MoviePlay() {
+function MoviePlayPage() {
     const location = useLocation();
     // const { filmUrl, watchedTime } = location.state;
     const videoRef = useRef(null);
@@ -30,6 +31,8 @@ function MoviePlay() {
     //경로 하드코딩 -> 서버 올릴 시, const url 부분 수정해야함
 
     useEffect(() => {
+        console.log("movieId:", movieId.movieId, "Type of movieId:", typeof movieId.movieId);
+        
         const fetchMovieData = async () => {
             try {
                 // localStorage에서 데이터 가져오기
@@ -44,7 +47,7 @@ function MoviePlay() {
 
                 // API 호출
                 const token = localStorage.getItem('accessToken');
-                const response = await axios.get(`/user/movies/${movieId}/play`, {
+                const response = await api.get(`/user/movies/${movieId}/play`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 setMovieData(response.data);
@@ -69,7 +72,7 @@ function MoviePlay() {
     const updateWatchingProgress = async (playedSeconds) => {
         try {
             const token = localStorage.getItem('accessToken');
-            await axios.post('/user/movies/history/update-progress',
+            await api.post('/user/movies/history/update-progress',
                 {
                     movie: {movieId: movieId},
                     watchTime: Math.floor(playedSeconds),
@@ -118,6 +121,7 @@ function MoviePlay() {
 
 
     return (
+
         <>
             <div className='iframeDiv'>
                 <ReactPlayer
@@ -158,4 +162,4 @@ function MoviePlay() {
     );
 }
 
-export default MoviePlay;
+export default MoviePlayPage;

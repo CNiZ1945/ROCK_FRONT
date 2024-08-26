@@ -24,6 +24,7 @@ import SearchKeyword from './pages/SearchKeyword/SearchKeyword';
 import AdminNoticeListPage from './pages/Admin/AdminNoticeListPage';
 import AdminMemberListPage from './pages/Admin/AdminMemberListPage';
 import MovieDetail from './pages/MovieDetail/MovieDetail';
+import MoviePlay from './pages/MovieDetail/MoviePlay';
 
 
 //Router
@@ -57,9 +58,9 @@ const Router = () => {
                 {/*영화 - 상세페이지*/}
                 {/* <Route path="/chart" element={<Chart/>}/> */}
                 <Route path='/user/moviepage/:movieId' element={<MovieDetail />}/>
-                {/* <Route path='/user/moviepage' element={<MovieDetail />}/> */}
+                {/* <Route path='/user/moviePlay' element={<MovieDetail />}/> */}
                 {/* <Route path='/chart/detail/:id' element={<MovieDetail/>}/> */}
-
+                <Route path="/user/MoviePlay/:movieId" element={<MoviePlay />} />
 
 
                 {/*공지사항*/}

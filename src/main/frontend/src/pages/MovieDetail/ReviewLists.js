@@ -30,7 +30,7 @@ const ReviewLists = props => {
       </ReviewPointInfo>
       <ReviewText>&#10077; {userReview} &#10078;</ReviewText>
       <ReviewButton>
-        {editButton}
+        <EditButton>{editButton}</EditButton>
         {deleteButton}
         {reviewLike}
       </ReviewButton>
@@ -77,6 +77,12 @@ const ReviewText = styled.p`
 `;
 
 const ReviewButton = styled.div`
-
+  margin-right: 5px;
 `
+const EditButton = styled.button`
+  margin-right: 10px;
+`
+
+
+
 export default ReviewLists;
