@@ -268,7 +268,7 @@ const MovieInformation = () => {
                                 {Detail_LIST.map(category => {
                                     return (<DetailTitle key={category.id}>
                                         {category.title}
-                                    </DetailTitle>);
+                                            </DetailTitle>);
                                 })}
                             </ul>
 

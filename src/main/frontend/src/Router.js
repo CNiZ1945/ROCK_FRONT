@@ -25,6 +25,10 @@ import AdminNoticeListPage from './pages/Admin/AdminNoticeListPage';
 import AdminMemberListPage from './pages/Admin/AdminMemberListPage';
 import MovieDetail from './pages/MovieDetail/MovieDetail';
 import MoviePlay from './pages/MovieDetail/MoviePlay';
+import AdminMovieUploadModifyPage from './pages/Admin/AdminMovieUploadModifyPage';
+import AdminMovieUploadFileModifyPage from './pages/Admin/AdminMovieUploadFileModifyPage';
+import AdminMovieUploadFilePage from './pages/Admin/AdminMovieUploadFilePage';
+import AdminMovieUploadPage from './pages/Admin/AdminMovieUploadPage';
 
 
 //Router
@@ -72,10 +76,10 @@ const Router = () => {
                 {/*관리자*/}
                 {/* <Route path="/admin" element={<AdminApp/>}/> */}
                 <Route path="/admin/movieList" element={<AdminMovieList/>}/>
-                {/*<Route path="/admin/movieUpload" element={<AdminMovieUpload/>}/>*/}
-                {/*<Route path="/admin/movie/:movieId/modify" element={<AdminMovieUploadModify/>}/>*/}
-                {/* <Route path="/admin/movieUploadFile" element={<AdminMovieUploadFile/>} /> */}
-                {/* <Route path="/admin/movie/:movieId/modify2" element={<AdminMovieUploadFileModify/>} /> */}
+                <Route path="/admin/movieUpload" element={<AdminMovieUploadPage />}/>
+                <Route path="/admin/movie/:movieId/modify" element={<AdminMovieUploadModifyPage />}/>
+                <Route path="/admin/movieUploadFile" element={<AdminMovieUploadFilePage />} />
+                <Route path="/admin/movie/:movieId/modify2" element={<AdminMovieUploadFileModifyPage />} />
                 <Route path="/admin/memberList" element={<AdminMemberListPage />} />
                 <Route path="/admin/notice" element={<AdminNoticeListPage />}/>
 

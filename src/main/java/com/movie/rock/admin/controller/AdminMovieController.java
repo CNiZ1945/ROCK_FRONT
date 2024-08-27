@@ -27,32 +27,16 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/admin")
-//@PreAuthorize("hasRole('ADMIN')")
 @Slf4j
 public class AdminMovieController {
 
     private final AdminMovieService movieAdminService;
 
-    //페이징 검색
-//    @GetMapping("/movie/list/search")
-//    public ResponseEntity<Page<AdminMovieListResponseDTO>> adminSearch(
-//            @PageableDefault(size = 10, sort = "movieId", direction = Sort.Direction.DESC) Pageable pageable,
-//            @RequestParam String movieTitle,
-//            @RequestParam String movieGenres,
-//            @RequestParam String directorName
-//    ) {
-//        AdminMovieListSearchRequestDTO searchData = AdminMovieListSearchRequestDTO.adminMovieListSearchRequestDTO
-//                (movieTitle, movieGenres, directorName);
-//        Page<AdminMovieListResponseDTO> searchList = movieAdminService.search(searchData, pageable);
-//
-//        return ResponseEntity.status(HttpStatus.OK).body(searchList);
-//    }
-
     //통합검색
     @GetMapping("/movie/list/search")
     public ResponseEntity<Page<AdminMovieListResponseDTO>> findByAllSearch(
             @PageableDefault(size = 10, sort = "movieId", direction = Sort.Direction.DESC) Pageable pageable,
-            @RequestParam(required = false) String searchTerm
+            @RequestParam(required = false,name="searchTerm") String searchTerm
     ) {
         Page<AdminMovieListResponseDTO> searchList = movieAdminService.findByAllSearch(searchTerm, pageable);
         return ResponseEntity.status(HttpStatus.OK).body(searchList);
@@ -83,7 +67,7 @@ public class AdminMovieController {
         return ResponseEntity.ok(responseDTO);
     }
 
-
+    //영화 추가 페이지(1) 정보(감독,배우,장르,줄거리,청소년 관람여부,상영시간,제작년도)
     @PostMapping("/movie/list/addDetail2")
     public ResponseEntity<AdminMovieFirstInfoResponseDTO> addMovie2(@RequestBody AdminMovieFirstInfoRequestDTO adminMovieFirstInfoRequestDTO) {
         if (adminMovieFirstInfoRequestDTO.getMovieId() == null) {
@@ -129,7 +113,7 @@ public class AdminMovieController {
 
     // 영화 정보 조회
     @GetMapping("/movie/{movieId}")
-    public ResponseEntity<AdminMovieFirstInfoResponseDTO> getMovieById(@PathVariable Long movieId) {
+    public ResponseEntity<AdminMovieFirstInfoResponseDTO> getMovieById(@PathVariable("movieId") Long movieId) {
         try {
             AdminMovieFirstInfoResponseDTO movie = movieAdminService.getMovieById(movieId);
             log.info(movie.getOpenYear().toString());
@@ -144,7 +128,7 @@ public class AdminMovieController {
 
     // 영화 첫 번째 정보 수정
     @PutMapping("/movie/{movieId}/updateFirst")
-    public ResponseEntity<?> updateMovieFirst(@PathVariable Long movieId, @RequestBody AdminMovieFirstInfoRequestDTO requestDTO) {
+    public ResponseEntity<?> updateMovieFirst(@PathVariable("movieId") Long movieId, @RequestBody AdminMovieFirstInfoRequestDTO requestDTO) {
         log.info("Received update request for movie ID: {}", movieId);
         log.info("Request DTO: {}", requestDTO);
 
@@ -173,7 +157,7 @@ public class AdminMovieController {
 
     // 영화 두 번째 정보 수정
     @PutMapping("/movie/{movieId}/updateSecond")
-    public ResponseEntity<?> updateMovieSecond(@PathVariable Long movieId, @RequestBody String rawJson) {
+    public ResponseEntity<?> updateMovieSecond(@PathVariable("movieId") Long movieId, @RequestBody String rawJson) {
         log.info("Received update request for movie ID: {}", movieId);
         log.info("Raw JSON: {}", rawJson);
 
@@ -199,7 +183,7 @@ public class AdminMovieController {
 
     // 두번째페이지 정보조회
     @GetMapping("/movie/{movieId}/second")
-    public ResponseEntity<AdminMovieSecondInfoResponseDTO> getMovieByIdForSecondPage(@PathVariable Long movieId) {
+    public ResponseEntity<AdminMovieSecondInfoResponseDTO> getMovieByIdForSecondPage(@PathVariable("movieId") Long movieId) {
         try {
             log.info("Received movieId: {}", movieId);  // 로그 추가
             AdminMovieSecondInfoResponseDTO movie = movieAdminService.getMovieByIdForSecondPage(movieId);
@@ -213,8 +197,6 @@ public class AdminMovieController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-
-
     //영화삭제
     @DeleteMapping("/movie/delete")
     public ResponseEntity<Void> deleteMovies(@RequestBody List<Long> movieIds) {
@@ -227,41 +209,39 @@ public class AdminMovieController {
         }
     }
 
-
-    //자동완성
+    //감독 자동완성
     @GetMapping("/directors/search")
     public ResponseEntity<Page<DirectorResponseDTO>> searchDirectors(
-            @RequestParam String query,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(name = "query") String query,
+            @RequestParam(defaultValue = "0",name = "page") int page,
+            @RequestParam(defaultValue = "10",name = "size") int size) {
         log.info("Searching directors with query: {}, page: {}, size: {}", query, page, size);
         Pageable pageable = PageRequest.of(page, size);
         Page<DirectorResponseDTO> directorsPage = movieAdminService.searchDirectors(query, pageable);
         return ResponseEntity.ok(directorsPage);
     }
-
+    //배우 자동완성
     @GetMapping("/actors/search")
     public ResponseEntity<Page<ActorResponseDTO>> searchActors(
-            @RequestParam String query,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(name = "query") String query,
+            @RequestParam(defaultValue = "0",name = "page") int page,
+            @RequestParam(defaultValue = "10",name = "size") int size) {
         log.info("Searching actors with query: {}, page: {}, size: {}", query, page, size);
         Pageable pageable = PageRequest.of(page, size);
         Page<ActorResponseDTO> actorsPage = movieAdminService.searchActors(query, pageable);
         return ResponseEntity.ok(actorsPage);
     }
-
+    //장르 자동완성
     @GetMapping("/genres/search")
     public ResponseEntity<Page<GenreResponseDTO>> searchGenres(
-            @RequestParam String query,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(name = "query") String query,
+            @RequestParam(defaultValue = "0",name = "page") int page,
+            @RequestParam(defaultValue = "10",name = "size") int size) {
         log.info("Searching genres with query: {}, page: {}, size: {}", query, page, size);
         Pageable pageable = PageRequest.of(page, size);
         Page<GenreResponseDTO> genresPage = movieAdminService.searchGenres(query, pageable);
         return ResponseEntity.ok(genresPage);
     }
-
     //배우 추가
     @PostMapping("/admin/actor/add")
     public ResponseEntity<ActorResponseDTO> addActor(@RequestBody AdminActorAddRequestDTO addActorDTO) {

@@ -1,7 +1,12 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
+import { api } from '../../api/axios';
+import SideBar from './SideBar';
+import home from "./images/home.svg";
+import "./css/AdminMovieUpload.css"
 
+// 영화 수정 1번 페이지
 function AdminMovieUploadModifyPage() {
     const { movieId } = useParams();
     const navigate = useNavigate();
@@ -49,7 +54,7 @@ function AdminMovieUploadModifyPage() {
         if (observer.current) observer.current.disconnect();
         observer.current = new IntersectionObserver(entries => {
             if (entries[0].isIntersecting && hasMore[type]) {
-                setPage(prevPage => ({...prevPage, [type]: prevPage[type] + 1}));
+                setPage(prevPage => ({ ...prevPage, [type]: prevPage[type] + 1 }));
             }
         });
         if (node) observer.current.observe(node);
@@ -58,7 +63,7 @@ function AdminMovieUploadModifyPage() {
     const fetchMovieData = useCallback(async () => {
         try {
             setIsLoading(true);
-            const response = await axios.get(`/admin/movie/${movieId}`);
+            const response = await api.get(`/admin/movie/${movieId}`);
             console.log("Fetched movie data:", response.data); // API 응답 로그
             setMovieData(prevData => {
                 const data = {
@@ -99,8 +104,8 @@ function AdminMovieUploadModifyPage() {
     const fetchAutoCompleteData = async (type, value, pageNum) => {
         if (!value.trim()) return;
         try {
-            const response = await axios.get(`/admin/${type}s/search`, {
-                params: {query: value, page: pageNum, size: 10}
+            const response = await api.get(`/admin/${type}s/search`, {
+                params: { query: value, page: pageNum, size: 10 }
             });
             setAutoCompleteData(prevData => ({
                 ...prevData,
@@ -108,8 +113,8 @@ function AdminMovieUploadModifyPage() {
                     ? response.data.content
                     : [...prevData[type], ...response.data.content]
             }));
-            setHasMore(prevHasMore => ({...prevHasMore, [type]: !response.data.last}));
-            setShowSuggestions(prevShow => ({...prevShow, [type]: true}));
+            setHasMore(prevHasMore => ({ ...prevHasMore, [type]: !response.data.last }));
+            setShowSuggestions(prevShow => ({ ...prevShow, [type]: true }));
         } catch (error) {
             console.error(`Error fetching ${type} data:`, error);
         }
@@ -118,10 +123,10 @@ function AdminMovieUploadModifyPage() {
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         if (['director', 'actor', 'genre'].includes(name)) {
-            setInputValues(prevValues => ({...prevValues, [name]: value}));
-            setPage(prevPage => ({...prevPage, [name]: 0}));
-            setAutoCompleteData(prevData => ({...prevData, [name]: []}));
-            setShowSuggestions(prevShow => ({...prevShow, [name]: !!value.trim()}));
+            setInputValues(prevValues => ({ ...prevValues, [name]: value }));
+            setPage(prevPage => ({ ...prevPage, [name]: 0 }));
+            setAutoCompleteData(prevData => ({ ...prevData, [name]: [] }));
+            setShowSuggestions(prevShow => ({ ...prevShow, [name]: !!value.trim() }));
         } else {
             setMovieData(prevData => {
                 const updatedData = { ...prevData, [name]: value };
@@ -132,15 +137,15 @@ function AdminMovieUploadModifyPage() {
     };
 
     const handleSuggestionClick = (type, item) => {
-        setInputValues(prevValues => ({...prevValues, [type]: ''}));
+        setInputValues(prevValues => ({ ...prevValues, [type]: '' }));
         setMovieData(prevData => ({
             ...prevData,
             [`movie${type.charAt(0).toUpperCase() + type.slice(1)}s`]: [
                 ...prevData[`movie${type.charAt(0).toUpperCase() + type.slice(1)}s`],
-                {[`${type}Id`]: item[`${type}Id`], [`${type}Name`]: item[`${type}Name`]}
+                { [`${type}Id`]: item[`${type}Id`], [`${type}Name`]: item[`${type}Name`] }
             ]
         }));
-        setShowSuggestions(prevShow => ({...prevShow, [type]: false}));
+        setShowSuggestions(prevShow => ({ ...prevShow, [type]: false }));
     };
 
     const handleSubmit = async (e) => {
@@ -151,7 +156,7 @@ function AdminMovieUploadModifyPage() {
                 movieId: movieId // URL에서 가져온 movieId를 포함
             };
             console.log("Submitting data:", dataToSubmit);
-            const response = await axios.put(`/admin/movie/${movieId}/updateFirst`, dataToSubmit);
+            const response = await api.put(`/admin/movie/${movieId}/updateFirst`, dataToSubmit);
             console.log("Movie updated successfully:", response.data);
             navigate(`/admin/movie/${movieId}/modify2`, { state: { movieData: response.data } });
         } catch (error) {
@@ -192,122 +197,136 @@ function AdminMovieUploadModifyPage() {
     }
 
     return (
-        <div className='UploadBody'>
-            <div className="AdminUploadHead">
-                <h2>영화 수정 - 기본 정보</h2>
-            </div>
-            <div className="UploadInfo">
-                <form onSubmit={handleSubmit} className="UploadInfoForm">
-                    <label>
-                        <div>제목:</div>
-                        <div>
-                            <input
-                                type="text"
-                                name="movieTitle"
-                                className='MovieUploadInput'
-                                value={movieData.movieTitle}  // 기본값 추가
-                                onChange={handleInputChange}
-                                required
-                            />
-                        </div>
-                    </label>
+        <>
+            <div className='wrap'>
 
-                    {['director', 'actor', 'genre'].map((type) => (
-                        <label key={type}>
-                            <div>{type.charAt(0).toUpperCase() + type.slice(1)}:</div>
-                            <div className="input-container">
-                                <input
-                                    type="text"
-                                    name={type}
-                                    className='MovieUploadInput'
-                                    value={inputValues[type]}
-                                    onChange={handleInputChange}
-                                    onFocus={() => setShowSuggestions(prev => ({...prev, [type]: true}))}
-                                />
-                                {showSuggestions[type] && autoCompleteData[type] && autoCompleteData[type].length > 0 && (
-                                    <ul className="suggestions-list" style={{
-                                        position: 'absolute',
-                                        zIndex: 1000,
-                                        backgroundColor: 'white',
-                                        border: '1px solid #ddd'
-                                    }}>
-                                        {autoCompleteData[type].map((item, index) => (
-                                            <li
-                                                key={item[`${type}Id`]}
-                                                onClick={() => handleSuggestionClick(type, item)}
-                                                ref={index === autoCompleteData[type].length - 1 ? lastSuggestionElementRef(type) : null}
-                                            >
-                                                {item[`${type}Name`]}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                )}
-                            </div>
-                            {renderSelectedItems(type)}
-                        </label>
-                    ))}
 
-                    <label>
-                        <div>시간:</div>
-                        <div>
-                            <input
-                                type="text"
-                                name="runTime"
-                                className='MovieUploadInput'
-                                value={movieData.runTime}
-                                onChange={handleInputChange}
-                                required
-                            />
-                        </div>
-                    </label>
-
-                    <label>
-                        <div>줄거리:</div>
-                        <div>
-                            <textarea
-                                name="movieDescription"
-                                style={textareaStyle}  // 스타일 적용
-                                value={movieData.movieDescription}  // 기본값 추가
-                                onChange={handleInputChange}
-                                required
-                            />
-                        </div>
-                    </label>
-
-                    <label>
-                        <div>청소년 관람 여부:</div>
-                        <div>
-                            <select
-                                name="movieRating"
-                                value={movieData.movieRating}
-                                onChange={handleInputChange}
-                            >
-                                <option value="ratingTrue">청소년 관람 가능</option>
-                                <option value="ratingFalse">청소년 관람 불가능</option>
-                            </select>
-                        </div>
-                    </label>
-
-                    <label>
-                        <div>제작년도:</div>
-                        <div>
-                            <input
-                                type="text"
-                                name="openYear"
-                                className='MovieUploadInput'
-                                value={movieData.openYear} // null 또는 undefined인 경우 빈 문자열로 설정
-                                onChange={handleInputChange}
-                                required
-                            />
-                        </div>
-                    </label>
-
-                    <div>
-                        <input type="submit" value="다음" className="MovieUploadBtn"/>
+                <SideBar />
+                <div className="admin_head">
+                    <img src={home} alt="Home" />
+                    <h2>관리자페이지</h2>
+                </div>
+                <div className="admin_movie_head">
+                    <span>Admin {">"} 영화 관리 {">"} 영화 수정 - 기본 정보</span>
+                </div>
+                <div className='UploadBody'>
+                    <div className="AdminUploadHead">
+                        <h2>영화 수정 - 기본 정보</h2>
                     </div>
-                </form>
+                    <div className="UploadInfo">
+                        <form onSubmit={handleSubmit} className="movieModifyUploadInfoForm">
+                            <label>
+                                <div>제목:</div>
+                                <div>
+                                    <input
+                                        type="text"
+                                        name="movieTitle"
+                                        className='MovieUploadInput'
+                                        value={movieData.movieTitle}  // 기본값 추가
+                                        onChange={handleInputChange}
+                                        required
+                                    />
+                                </div>
+                            </label>
+
+                            {['director', 'actor', 'genre'].map((type) => (
+                                <label key={type}>
+                                    <div>{type.charAt(0).toUpperCase() + type.slice(1)}:</div>
+                                    <div className="input-container">
+                                        <input
+                                            type="text"
+                                            name={type}
+                                            className='MovieUploadInput'
+                                            value={inputValues[type]}
+                                            onChange={handleInputChange}
+                                            onFocus={() => setShowSuggestions(prev => ({ ...prev, [type]: true }))}
+                                        />
+                                        {showSuggestions[type] && autoCompleteData[type] && autoCompleteData[type].length > 0 && (
+                                            <ul className="suggestions-list" style={{
+                                                position: 'absolute',
+                                                zIndex: 1000,
+                                                backgroundColor: 'white',
+                                                border: '1px solid #ddd'
+                                            }}>
+                                                {autoCompleteData[type].map((item, index) => (
+                                                    <li
+                                                        key={item[`${type}Id`]}
+                                                        onClick={() => handleSuggestionClick(type, item)}
+                                                        ref={index === autoCompleteData[type].length - 1 ? lastSuggestionElementRef(type) : null}
+                                                    >
+                                                        {item[`${type}Name`]}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        )}
+                                    </div>
+                                    {renderSelectedItems(type)}
+                                </label>
+                            ))}
+
+                            <label>
+                                <div>시간:</div>
+                                <div>
+                                    <input
+                                        type="text"
+                                        name="runTime"
+                                        className='MovieUploadInput'
+                                        value={movieData.runTime}
+                                        onChange={handleInputChange}
+                                        required
+                                    />
+                                </div>
+                            </label>
+
+                            <label>
+                                <div>줄거리:</div>
+                                <div>
+                                    <textarea
+                                        name="movieDescription"
+                                        style={textareaStyle}  // 스타일 적용
+                                        value={movieData.movieDescription}  // 기본값 추가
+                                        onChange={handleInputChange}
+                                        required
+                                    />
+                                </div>
+                            </label>
+
+                            <label>
+                                <div>청소년 관람 여부:</div>
+                                <div>
+                                    <select
+                                        name="movieRating"
+                                        value={movieData.movieRating}
+                                        onChange={handleInputChange}
+                                    >
+                                        <option value="ratingTrue">청소년 관람 가능</option>
+                                        <option value="ratingFalse">청소년 관람 불가능</option>
+                                    </select>
+                                </div>
+                            </label>
+
+                            <label>
+                                <div>제작년도:</div>
+                                <div>
+                                    <input
+                                        type="text"
+                                        name="openYear"
+                                        className='MovieUploadInput'
+                                        value={movieData.openYear} // null 또는 undefined인 경우 빈 문자열로 설정
+                                        onChange={handleInputChange}
+                                        required
+                                    />
+                                </div>
+                            </label>
+
+                            <div>
+                                <input type="submit" value="다음" className="MovieUploadBtn" />
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
-        </div>
+        </>
     );
 }
 

@@ -1,53 +1,30 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { api } from '../../api/axios';
+import SideBar from './SideBar';
 
+import "./css/AdminMovieUpload.css";
+import home from "./images/home.svg";
+
+import AddActorModal from './AddActorModal';
+import AddDirectorModal from './AddDirectorModal';
+
+
+//  새 영화 1번째 페이지
 function AdminMovieUploadPage() {
     const navigate = useNavigate();
     const [movieId, setMovieId] = useState(null);
     const [movieTitle, setMovieTitle] = useState('');
+    const [isActorModalOpen, setIsActorModalOpen] = useState(false);
+    const [isDirectorModalOpen, setIsDirectorModalOpen] = useState(false);
 
-    //관리자 권한 인증 확인
+    // 관리자 권한 인증 확인
     const initializedRef = useRef(false);
     const [isLoading, setIsLoading] = useState(true);
     const [hasPermission, setHasPermission] = useState(false);
 
-
-    //인증
-    const checkPermission = async () => {
-        const token = localStorage.getItem('accessToken');
-        if (!token) {
-            alert("로그인이 필요합니다.");
-            navigate('/login');
-            return;
-        }
-
-        try {
-            const response = await axios.get('/auth/memberinfo', {
-                headers: { 'Authorization': 'Bearer ' + token }
-            });
-            const role = response.data.memRole;
-            if (role === 'ADMIN') {
-                setHasPermission(true);
-            } else {
-                alert("권한이 없습니다.");
-                navigate('/');
-            }
-        } catch (error) {
-            console.error('Error fetching user info:', error);
-            alert("오류가 발생했습니다. 다시 로그인해주세요.");
-            navigate('/login');
-        } finally {
-            setIsLoading(false);
-        }
-    };
-    useEffect(() => {
-        if (!initializedRef.current) {
-            initializedRef.current = true;
-            checkPermission();
-        }
-    }, []);
-
+    // 영화 데이터 상태 관리
     const [movieData, setMovieData] = useState({
         movieDirectors: [],
         movieActors: [],
@@ -58,6 +35,9 @@ function AdminMovieUploadPage() {
         openYear: ''
     });
 
+
+
+    // 자동완성 데이터 관리
     const [autoCompleteData, setAutoCompleteData] = useState({
         directors: [],
         actors: [],
@@ -84,20 +64,133 @@ function AdminMovieUploadPage() {
         genre: true
     });
 
+    // 인증 로직
+    const checkPermission = async () => {
+        const token = localStorage.getItem('accessToken');
+        if (!token) {
+            alert("로그인이 필요합니다.");
+            navigate('/login');
+            return;
+        }
+
+        try {
+            const response = await api.get('/auth/memberinfo', {
+                headers: {'Authorization': 'Bearer ' + token}
+            });
+            const role = response.data.memRole;
+            if (role === 'ADMIN') {
+                setHasPermission(true);
+            } else {
+                alert("권한이 없습니다.");
+                navigate('/');
+            }
+        } catch (error) {
+            console.error('Error fetching user info:', error);
+            alert("오류가 발생했습니다. 다시 로그인해주세요.");
+            navigate('/login');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        if (!initializedRef.current) {
+            initializedRef.current = true;
+            checkPermission();
+        }
+    }, []);
+
+    // 무한 스크롤을 위한 Intersection Observer 설정
     const observer = useRef();
     const lastSuggestionElementRef = useCallback((type) => (node) => {
         if (observer.current) observer.current.disconnect();
         observer.current = new IntersectionObserver(entries => {
             if (entries[0].isIntersecting && hasMore[type]) {
-                setPage(prevPage => ({...prevPage, [type]: prevPage[type] + 1}));
+                setPage(prevPage => {
+                    const newPage = prevPage[type] + 1;
+                    fetchAutoCompleteData(type, inputValues[type], newPage);
+                    return {...prevPage, [type]: newPage};
+                });
             }
         });
         if (node) observer.current.observe(node);
-    }, [hasMore]);
+    }, [hasMore, inputValues]);
+
+    // 자동완성 데이터 fetch 함수
+    const fetchAutoCompleteData = useCallback(async (type, value, pageNum) => {
+        if (!value.trim()) {
+            setAutoCompleteData(prevData => ({...prevData, [type]: []}));
+            setShowSuggestions(prevShow => ({...prevShow, [type]: false}));
+            return;
+        }
+        try {
+            const response = await api.get(`/admin/${type}s/search`, {
+                params: {query: value, page: pageNum, size: 10}
+            });
+            setAutoCompleteData(prevData => ({
+                ...prevData,
+                [type]: pageNum === 0
+                    ? response.data.content
+                    : [...prevData[type], ...response.data.content]
+            }));
+            setHasMore(prevHasMore => ({...prevHasMore, [type]: !response.data.last}));
+            setShowSuggestions(prevShow => ({...prevShow, [type]: true}));
+        } catch (error) {
+            console.error(`Error fetching ${type} data:`, error);
+        }
+    }, []);
+
+    // 입력 변경 핸들러
+    const handleInputChange = useCallback((e) => {
+        const {name, value} = e.target;
+        if (name === 'movieTitle') {
+            setMovieTitle(value);
+        } else {
+            setInputValues(prevValues => ({...prevValues, [name]: value}));
+            setMovieData(prevData => ({...prevData, [name]: value}));
+            setPage(prevPage => ({...prevPage, [name]: 0}));
+            fetchAutoCompleteData(name, value, 0);
+        }
+    }, [fetchAutoCompleteData]);
+
+    // 자동완성 항목 선택 핸들러
+    const handleSuggestionClick = (type, item) => {
+        const existingItems = movieData[`movie${type.charAt(0).toUpperCase() + type.slice(1)}s`];
+
+        // 중복 확인
+        const isDuplicate = existingItems.some(existingItem => existingItem[`${type}Id`] === item[`${type}Id`]);
+
+        if (isDuplicate) {
+            alert(`중복된 ${type === 'director' ? '감독' : type === 'actor' ? '배우' : '장르'}입니다.`);
+            return; // 중복일 경우 추가하지 않음
+        }
+
+        // 중복이 아니면 추가
+        setInputValues(prevValues => ({ ...prevValues, [type]: '' }));
+        setMovieData(prevData => ({
+            ...prevData,
+            [`movie${type.charAt(0).toUpperCase() + type.slice(1)}s`]: [
+                ...prevData[`movie${type.charAt(0).toUpperCase() + type.slice(1)}s`],
+                { [`${type}Id`]: item[`${type}Id`], [`${type}Name`]: item[`${type}Name`] }
+            ]
+        }));
+        setShowSuggestions(prevShow => ({ ...prevShow, [type]: false }));
+        setAutoCompleteData(prevData => ({ ...prevData, [type]: [] }));
+    };
+
+    const handleInputFocus = useCallback((type) => {
+        setShowSuggestions(prevShow => {
+            const newShow = {...prevShow};
+            Object.keys(newShow).forEach(key => {
+                newShow[key] = key === type && !!inputValues[type].trim();
+            });
+            return newShow;
+        });
+    }, [inputValues]);
 
     useEffect(() => {
         const handleClickOutside = (e) => {
-            if (!e.target.closest('.input-container') && !e.target.closest('.suggestions-list')) {
+            if (!e.target.closest('.input-container')) {
                 setShowSuggestions({
                     director: false,
                     actor: false,
@@ -112,71 +205,65 @@ function AdminMovieUploadPage() {
         };
     }, []);
 
-    useEffect(() => {
-        if (inputValues.director) fetchAutoCompleteData('director', inputValues.director, page.director);
-        if (inputValues.actor) fetchAutoCompleteData('actor', inputValues.actor, page.actor);
-        if (inputValues.genre) fetchAutoCompleteData('genre', inputValues.genre, page.genre);
-    }, [inputValues, page]);
-
-    const fetchAutoCompleteData = async (type, value, pageNum) => {
-        if (!value.trim()) return;
-        try {
-            console.log(`Fetching ${type} data for query: "${value}", page: ${pageNum}`);
-            const response = await axios.get(`/admin/${type}s/search`, {
-                params: {query: value, page: pageNum, size: 10}
-            });
-            console.log(`${type} search response:`, response.data);
-            setAutoCompleteData(prevData => ({
-                ...prevData,
-                [type]: pageNum === 0
-                    ? response.data.content
-                    : [...prevData[type], ...response.data.content]
-            }));
-            setHasMore(prevHasMore => ({...prevHasMore, [type]: !response.data.last}));
-            setShowSuggestions(prevShow => ({...prevShow, [type]: true}));
-        } catch (error) {
-            console.error(`Error fetching ${type} data:`, error);
-        }
-    };
-
-    const handleInputChange = (e) => {
-        const {name, value} = e.target;
-        if (name === 'movieTitle') {
-            setMovieTitle(value);
-        } else {
-            setInputValues(prevValues => ({...prevValues, [name]: value}));
-            setMovieData(prevData => ({...prevData, [name]: value}));
-            setPage(prevPage => ({...prevPage, [name]: 0}));
-            setAutoCompleteData(prevData => ({...prevData, [name]: []}));
-            setShowSuggestions(prevShow => ({...prevShow, [name]: !!value.trim()}));
-        }
-    };
-
-    const handleSuggestionClick = (type, item) => {
-        setInputValues(prevValues => ({...prevValues, [type]: ''}));
-        setMovieData(prevData => ({
-            ...prevData,
-            [`movie${type.charAt(0).toUpperCase() + type.slice(1)}s`]: [
-                ...prevData[`movie${type.charAt(0).toUpperCase() + type.slice(1)}s`],
-                {[`${type}Id`]: item[`${type}Id`], [`${type}Name`]: item[`${type}Name`]}
-            ]
-        }));
-        setShowSuggestions(prevShow => ({...prevShow, [type]: false}));
-    };
-
+    // 영화 제목 저장 핸들러
     const handleTitleSubmit = async (e) => {
         e.preventDefault();
+        if (!movieTitle.trim()) {
+            alert('영화 제목을 입력해주세요.');
+            return;
+        }
         try {
-            const response = await axios.post('/admin/movie/list/addDetail1', {movieTitle});
-            setMovieId(response.data.movieId);
-            setMovieData(prevData => ({...prevData, movieTitle: movieTitle}));
-            alert('영화 제목이 성공적으로 저장되었습니다.');
+            const response = await api.post('/admin/movie/list/addDetail1', {movieTitle});
+            const newMovieId = response.data.movieId;
+            setMovieId(newMovieId);
+            setMovieData(prevData => ({
+                ...prevData,
+                movieTitle: movieTitle,
+                movieDirectors: [],
+                movieActors: [],
+                movieGenres: [],
+                runTime: '',
+                movieDescription: '',
+                movieRating: 'ratingTrue',
+                openYear: ''
+            }));
+            alert(`영화 "${movieTitle}"이(가) 성공적으로 생성되었습니다. (영화 ID: ${newMovieId})\n다른 정보를 입력해 주세요.`);
         } catch (error) {
             console.error('Error submitting movie title:', error);
-            alert('영화 제목 저장 중 오류가 발생했습니다.');
+            if (error.response && error.response.status === 409) {
+                const confirmCreate = window.confirm(`"${movieTitle}" 제목의 영화가 이미 존재합니다. 같은 제목으로 새 영화를 생성하시겠습니까?`);
+                if (confirmCreate) {
+                    try {
+                        const retryResponse = await api.post('/admin/movie/list/addDetail1', {
+                            movieTitle,
+                            allowDuplicate: true
+                        });
+                        const newMovieId = retryResponse.data.movieId;
+                        setMovieId(newMovieId);
+                        setMovieData(prevData => ({
+                            ...prevData,
+                            movieTitle: movieTitle,
+                            movieDirectors: [],
+                            movieActors: [],
+                            movieGenres: [],
+                            runTime: '',
+                            movieDescription: '',
+                            movieRating: 'ratingTrue',
+                            openYear: ''
+                        }));
+                        alert(`영화 "${movieTitle}"이(가) 성공적으로 생성되었습니다. (영화 ID: ${newMovieId})\n다른 정보를 입력해 주세요.`);
+                    } catch (retryError) {
+                        console.error('Error retrying movie title submission:', retryError);
+                        alert('영화 제목 저장 중 오류가 발생했습니다.');
+                    }
+                }
+            } else {
+                alert('영화 제목 저장 중 오류가 발생했습니다.');
+            }
         }
     };
 
+    // 전체 영화 데이터 제출 핸들러
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!movieId) {
@@ -198,7 +285,7 @@ function AdminMovieUploadPage() {
 
             console.log('Sending data to server:', JSON.stringify(dataToSend));
 
-            const response = await axios.post('/admin/movie/list/addDetail2', dataToSend);
+            const response = await api.post('/admin/movie/list/addDetail2', dataToSend);
             console.log('Server response:', response.data);
 
             if (response.data && response.data.movieId) {
@@ -220,7 +307,7 @@ function AdminMovieUploadPage() {
     const renderSelectedItems = (type) => {
         const items = movieData[`movie${type.charAt(0).toUpperCase() + type.slice(1)}s`];
         return items.map((item, index) => (
-            <div key={index}>
+            <div className="manPoster" key={index}>
                 {item[`${type}Name`]}
                 <button onClick={() => removeItem(type, index)}>X</button>
             </div>
@@ -234,6 +321,35 @@ function AdminMovieUploadPage() {
         }));
     };
 
+    const handleActorAdd = (newActor) => {
+        setMovieData(prevData => ({
+            ...prevData,
+            movieActors: [
+                ...prevData.movieActors,
+                {actorId: newActor.actorId, actorName: newActor.actorName}
+            ]
+        }));
+        setAutoCompleteData(prevData => ({
+            ...prevData,
+            actors: [newActor, ...prevData.actors]
+        }));
+    };
+
+    const handleDirectorAdd = (newDirector) => {
+        setMovieData(prevData => ({
+            ...prevData,
+            movieDirectors: [
+                ...prevData.movieDirectors,
+                {directorId: newDirector.directorId, directorName: newDirector.directorName}
+            ]
+        }));
+        setAutoCompleteData(prevData => ({
+            ...prevData,
+            directors: [newDirector, ...prevData.directors]
+        }));
+    };
+
+    // 스타일 관련 객체들
     const suggestionListStyle = {
         position: 'absolute',
         zIndex: 1000,
@@ -244,10 +360,46 @@ function AdminMovieUploadPage() {
         listStyle: 'none',
         padding: 0,
         margin: 0,
-        width: '20%'
+        width: '20%',
+        top: 280,
+        right: 200,
     };
 
+    const suggestionItemStyle = {
+        display: 'flex',
+        alignItems: 'center',
+        padding: '5px',
+    };
+
+    const suggestionImageStyle = {
+        width: '50px',
+        height: '50px',
+        marginRight: '10px',
+        objectFit: 'cover',
+    };
+
+    const suggestionTextStyle = {
+        display: 'flex',
+        flexDirection: 'column',
+    };
+
+
     return (
+
+
+        <>
+        <div className='wrap'>
+            <SideBar />
+            <div className="admin_head">
+                <img src={home} alt="Home" />
+                <h2>관리자페이지</h2>
+            </div>
+            <div className="admin_movie_head">
+                <span>Admin {">"} 영화 관리 {">"} 새 영화 업로드 - 파일 정보</span>
+            </div>
+
+
+
         <div className='UploadBody'>
             <div className="AdminUploadHead">
                 <h2>영화 업로드</h2>
@@ -271,7 +423,8 @@ function AdminMovieUploadPage() {
                 </form>
 
                 <form onSubmit={handleSubmit} className="UploadInfoForm">
-                    {['director', 'actor', 'genre'].map((type) => (
+                    {['director', 'actor', 'genre'].map((type) => (<>
+                    
                         <label key={type}>
                             <div>{type.charAt(0).toUpperCase() + type.slice(1)}:</div>
                             <div className="input-container">
@@ -281,8 +434,17 @@ function AdminMovieUploadPage() {
                                     className='MovieUploadInput'
                                     value={inputValues[type]}
                                     onChange={handleInputChange}
-                                    onFocus={() => setShowSuggestions(prev => ({...prev, [type]: true}))}
+                                    onFocus={() => handleInputFocus(type)}
                                 />
+                                {type !== 'genre' && (
+                                    <button
+                                        type="button"
+                                        onClick={() => type === 'actor' ? setIsActorModalOpen(true) : setIsDirectorModalOpen(true)}
+                                    >
+                                        {type === 'actor' ? '배우 추가' : '감독 추가'}
+                                    </button>
+                                )}
+                                {/*  */}
                                 {showSuggestions[type] && autoCompleteData[type] && autoCompleteData[type].length > 0 && (
                                     <ul className="suggestions-list" style={suggestionListStyle}>
                                         {autoCompleteData[type].map((item, index) => (
@@ -290,36 +452,71 @@ function AdminMovieUploadPage() {
                                                 key={item[`${type}Id`]}
                                                 onClick={() => handleSuggestionClick(type, item)}
                                                 ref={index === autoCompleteData[type].length - 1 ? lastSuggestionElementRef(type) : null}
+                                                style={suggestionItemStyle}
                                             >
-                                                {item[`${type}Name`]}
+                                                {item[`${type}Photo`] && item[`${type}Photo`][0] && (
+                                                    <img
+                                                        src={item[`${type}Photo`][0].photoUrl}
+                                                        alt={item[`${type}Name`] || `${type} photo`}
+                                                        style={suggestionImageStyle}
+                                                        onError={(e) => {
+                                                            console.error(`Failed to load image for ${item[`${type}Name`]}:`, e);
+                                                            e.target.src = 'path/to/fallback/image.jpg';
+                                                        }}
+                                                    />
+                                                )}
+                                                <div style={suggestionTextStyle}>
+                                                    <strong>{item[`${type}Name`] || '이름 없음'}</strong>
+                                                    {item[`${type}Birth`] && (
+                                                        <span>출생: {item[`${type}Birth`]}</span>
+                                                    )}
+                                                </div>
                                             </li>
                                         ))}
                                     </ul>
                                 )}
                             </div>
-                            {renderSelectedItems(type)}
                         </label>
+                        <div className='manPosterDiv'>
+                            {/* 자동 완성 선택 후 이름 추가 */}
+                            {renderSelectedItems(type)}
+                        </div>
+                        </>
                     ))}
                     <label>
                         <div>시간:</div>
                         <div>
-                            <input type="text" name="runTime" className='MovieUploadInput' value={movieData.runTime}
-                                   onChange={handleInputChange}
-                                   required/>
+                            <input
+                                type="text"
+                                name="runTime"
+                                className='MovieUploadInput'
+                                value={movieData.runTime}
+                                onChange={handleInputChange}
+                                required
+                            />
                         </div>
                     </label>
                     <label>
                         <div>줄거리:</div>
                         <div>
-                            <input type="text" name="movieDescription" className='MovieUploadInput'
-                                   value={movieData.movieDescription}
-                                   onChange={handleInputChange} required/>
+                            <input
+                                type="text"
+                                name="movieDescription"
+                                className='MovieUploadInput'
+                                value={movieData.movieDescription}
+                                onChange={handleInputChange}
+                                required
+                            />
                         </div>
                     </label>
                     <label>
                         <div>청소년 관람 여부:</div>
                         <div>
-                            <select name="movieRating" value={movieData.movieRating} onChange={handleInputChange}>
+                            <select
+                                name="movieRating"
+                                value={movieData.movieRating}
+                                onChange={handleInputChange}
+                            >
                                 <option value="ratingTrue">청소년 관람 가능</option>
                                 <option value="ratingFalse">청소년 관람 불가능</option>
                             </select>
@@ -328,10 +525,14 @@ function AdminMovieUploadPage() {
                     <label>
                         <div>제작년도:</div>
                         <div>
-                            <input type="text" name="openYear" className='MovieUploadInput'
-                                   value={movieData.openYear}
-                                   onChange={handleInputChange}
-                                   required/>
+                            <input
+                                type="text"
+                                name="openYear"
+                                className='MovieUploadInput'
+                                value={movieData.openYear}
+                                onChange={handleInputChange}
+                                required
+                            />
                         </div>
                     </label>
                     <div>
@@ -339,8 +540,21 @@ function AdminMovieUploadPage() {
                     </div>
                 </form>
             </div>
+            <AddActorModal
+                isOpen={isActorModalOpen}
+                onClose={() => setIsActorModalOpen(false)}
+                onAdd={handleActorAdd}
+            />
+            <AddDirectorModal
+                isOpen={isDirectorModalOpen}
+                onClose={() => setIsDirectorModalOpen(false)}
+                onAdd={handleDirectorAdd}
+            />
         </div>
+        </div>
+        </>
     );
+
 }
 
 

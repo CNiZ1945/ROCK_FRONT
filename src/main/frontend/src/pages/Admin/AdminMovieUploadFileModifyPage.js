@@ -1,182 +1,246 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import axios from 'axios';
+import { api } from '../../api/axios';
+import SideBar from './SideBar';
+import home from "./images/home.svg";
 
-function AdminMovieUploadModifyPage2() {
+
+
+function AdminMovieUploadFileModifyPage() {
     const { movieId } = useParams();
     const navigate = useNavigate();
+    const location = useLocation();
+    const [originalData, setOriginalData] = useState(null);
+
+    const [movieTitle, setMovieTitle] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
+
     const [movieData, setMovieData] = useState({
-        movieTitle: '',
-        trailerUrls: '',
-        trailerId: '',
+        trailers: [
+            { trailerUrls: '', trailerId: null, mainTrailer: false },
+            { trailerUrls: '', trailerId: null, mainTrailer: false },
+            { trailerUrls: '', trailerId: null, mainTrailer: false }
+        ],
         movieFilm: '',
-        filmId: null,
-        posterUrls: '',
-        posterId: null
+        posters: [
+            { posterUrls: '', posterId: null, mainPoster: false },
+            { posterUrls: '', posterId: null, mainPoster: false },
+            { posterUrls: '', posterId: null, mainPoster: false }
+        ]
     });
 
     useEffect(() => {
         const fetchMovieData = async () => {
             try {
                 console.log('Fetching movie data for movieId:', movieId);
-                const response = await axios.get(`/admin/movie/${movieId}/second`);
+                const response = await api.get(`/admin/movie/${movieId}/second`);
                 console.log('Full server response:', JSON.stringify(response.data, null, 2));
 
                 const newMovieData = {
                     movieTitle: response.data.movieTitle || '',
-                    trailerUrls: response.data.trailer && response.data.trailer.length > 0
-                        ? response.data.trailer[0].trailerUrls
-                        : '',
-                    trailerId: response.data.trailer && response.data.trailer.length > 0
-                        ? response.data.trailer[0].trailerId
-                        : null,
-                    movieFilm: response.data.movieFilm && response.data.movieFilm.movieFilm
-                        ? response.data.movieFilm.movieFilm
-                        : '',
-                    filmId: response.data.movieFilm && response.data.movieFilm.filmId
-                        ? response.data.movieFilm.filmId
-                        : null,
-                    posterUrls: response.data.poster && response.data.poster.length > 0
-                        ? response.data.poster[0].posterUrls
-                        : '',
-                    posterId: response.data.poster && response.data.poster.length > 0
-                        ? response.data.poster[0].posterId
-                        : null
+                    trailers: [
+                        ...(response.data.trailer || []).map(trailer => ({
+                            trailerUrls: trailer.trailerUrls || '',
+                            trailerId: trailer.trailerId || null,
+                            mainTrailer: trailer.mainTrailer || false
+                        })),
+                        ...Array(3 - (response.data.trailer || []).length).fill({ trailerUrls: '', trailerId: null, mainTrailer: false })
+                    ].slice(0, 3),
+                    movieFilm: response.data.movieFilm?.movieFilm || '',
+                    posters: [
+                        ...(response.data.poster || []).map(poster => ({
+                            posterUrls: poster.posterUrls || '',
+                            posterId: poster.posterId || null,
+                            mainPoster: poster.mainPoster || false
+                        })),
+                        ...Array(3 - (response.data.poster || []).length).fill({ posterUrls: '', posterId: null, mainPoster: false })
+                    ].slice(0, 3)
                 };
-                console.log('Processed movie data:', newMovieData);
 
                 setMovieData(newMovieData);
+                setOriginalData(newMovieData);  // 원본 데이터 저장
+                setMovieTitle(newMovieData.movieTitle);
             } catch (error) {
                 console.error('Error fetching movie data:', error);
-                console.error('Error response:', error.response);
-                alert('영화 정보를 불러오는데 실패했습니다.');
+                setErrorMessage('영화 정보를 불러오는데 실패했습니다.');
             }
         };
 
         fetchMovieData();
-    }, [movieId]);
+    }, [movieId, navigate]);
 
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        console.log(`Input changed: ${name} = ${value}`);
-        setMovieData(prevData => ({
-            ...prevData,
-            [name]: value
-        }));
+    const handleInputChange = (e, index, type) => {
+        const { name, value, type: inputType, checked } = e.target;
+        const actualValue = inputType === 'checkbox' ? checked : value;
+
+        if (type === 'trailers' || type === 'posters') {
+            const updatedItems = movieData[type].map((item, i) => {
+                if (i === index) {
+                    return { ...item, [name]: actualValue };
+                }
+                if (name === 'mainTrailer' || name === 'mainPoster') {
+                    return { ...item, [name]: false };
+                }
+                return item;
+            });
+            setMovieData({ ...movieData, [type]: updatedItems });
+        } else {
+            setMovieData({ ...movieData, [name]: actualValue });
+        }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setErrorMessage('');
         try {
-            const dataToSend = {
+            const changedData = {
                 movieId: movieId,
-                movieTitle: movieData.movieTitle,
-                movieFilm: {
-                    filmId: movieData.filmId,
-                    movieFilm: movieData.movieFilm
-                },
-                trailer: [
-                    {
-                        trailerId: movieData.trailerId,
-                        trailerUrls: movieData.trailerUrls
-                    }
-                ],
-                poster: [
-                    {
-                        posterId: movieData.posterId,
-                        posterUrls: movieData.posterUrls
-                    }
-                ]
+                movieTitle: movieTitle,
+                trailer: movieData.trailers.filter((trailer, index) =>
+                    trailer.trailerUrls !== originalData.trailers[index]?.trailerUrls ||
+                    trailer.mainTrailer !== originalData.trailers[index]?.mainTrailer
+                ),
+                movieFilm: movieData.movieFilm !== originalData.movieFilm ? { movieFilm: movieData.movieFilm } : undefined,
+                poster: movieData.posters.filter((poster, index) =>
+                    poster.posterUrls !== originalData.posters[index]?.posterUrls ||
+                    poster.mainPoster !== originalData.posters[index]?.mainPoster
+                )
             };
-            console.log('Submitting data:', JSON.stringify(dataToSend, null, 2));
 
-            const response = await axios.put(`/admin/movie/${movieId}/updateSecond`, dataToSend);
+            // 변경된 데이터만 포함
+            const dataToSend = Object.fromEntries(
+                Object.entries(changedData).filter(([key, value]) =>
+                    value !== undefined && (Array.isArray(value) ? value.length > 0 : true)
+                )
+            );
+
+            console.log('Sending changed data:', dataToSend);
+
+            const response = await api.put(`/admin/movie/${movieId}/updateSecond`, dataToSend);
             console.log('Server response after update:', response.data);
-
             alert('영화 정보가 성공적으로 수정되었습니다.');
-            navigate('/admin/MovieList');
+            navigate("/admin/MovieList");
         } catch (error) {
-            console.error('Error updating movie:', error);
-            console.error('Error response:', error.response?.data);
-            alert('영화 정보 수정에 실패했습니다.');
+            console.error('Error submitting movie data:', error.response?.data || error.message);
+            setErrorMessage(error.response?.data?.message || '영화 정보 수정 중 오류가 발생했습니다. 다시 시도해 주세요.');
         }
     };
-    console.log('Current movieData state:', movieData);
-
-
     return (
+<>
+        <div className='wrap'>
+
+        <SideBar />
+                <div className="admin_head">
+                    <img src={home} alt="Home" />
+                    <h2>관리자페이지</h2>
+                </div>
+                <div className="admin_movie_head">
+                    <span>Admin {">"} 영화 관리 {">"} 영화 수정 - 파일 정보</span>
+                </div>
         <div className='UploadBody'>
             <div className="AdminUploadHead">
                 <h2>영화 수정 - 파일 정보</h2>
             </div>
             <div className="UploadInfo">
+                {errorMessage && (
+                    <div className="error-message" style={{color: 'red', marginBottom: '10px'}}>
+                        {errorMessage}
+                    </div>
+                )}
                 <div className="UploadTitleForm">
-                    <label className="label">
+                    <label className="ModifyMovieTitle">
                         <div>제목:</div>
-                        <div>{movieData.movieTitle}</div>
+                        <div>{movieTitle}</div>
                     </label>
                 </div>
 
                 <form onSubmit={handleSubmit} className="UploadInfoForm">
-
-                    <label>
+                    <label className='ModifyMovieFile'>
                         <div>영화 URL:</div>
                         <div>
                             <input
+                                className='modifyMovieInput'
                                 type="text"
                                 name="movieFilm"
                                 value={movieData.movieFilm}
-                                onChange={handleInputChange}
+                                onChange={(e) => handleInputChange(e, null, 'movieFilm')}
                                 required
-                            />
-                            <input
-                                type="hidden"
-                                name="filmId"
-                                value={movieData.filmId || ''}
                             />
                         </div>
                     </label>
-                    <label>
-                        <div>예고편 URL:</div>
-                        <div>
-                            <input
-                                type="text"
-                                name="trailerUrls"
-                                value={movieData.trailerUrls}
-                                onChange={handleInputChange}
-                                required
-                            />
-                            <input
-                                type="hidden"
-                                name="trailerId"
-                                value={movieData.trailerId || ''}
-                            />
-                        </div>
-                    </label>
-                    <label>
-                        <div>포스터 URL:</div>
-                        <div>
-                            <input
-                                type="text"
-                                name="posterUrls"
-                                value={movieData.posterUrls}
-                                onChange={handleInputChange}
-                                required
-                            />
-                            <input
-                                type="hidden"
-                                name="posterId"
-                                value={movieData.posterId || ''}
-                            />
-                        </div>
-                    </label>
+
+                    {movieData.trailers.map((trailer, index) => (
+                        <label className='ModifyMovieFile' key={index} >
+                            <label className='ModifyMovieFileLabel' >
+                                <div>예고편 URL {index + 1}:</div>
+                                <div>
+                                    <input
+                                        className='modifyMovieInput'
+                                        type="text"
+                                        name="trailerUrls"
+                                        value={trailer.trailerUrls}
+                                        onChange={(e) => handleInputChange(e, index, 'trailers')}
+                                    />
+                                </div>
+                            </label>
+                            {index === 0 && (
+                                <label  style={{marginLeft: '10px'}}>
+                                    <div>메인 예고편:</div>
+                                    <div>
+                                        <input
+                                            type="checkbox"
+                                            name="mainTrailer"
+                                            checked={trailer.mainTrailer}
+                                            onChange={(e) => handleInputChange(e, index, 'trailers')}
+                                        />
+                                    </div>
+                                </label>
+                            )}
+                        </label>
+                    ))}
+
+                    {movieData.posters.map((poster, index) => (
+                        <label className='ModifyMovieFile' key={index} >
+                            <label className='ModifyMovieFileLabel' >
+                                <div>포스터 URL {index + 1}:</div>
+                                <div>
+                                    <input
+                                        className='modifyMovieInput'
+                                        type="text"
+                                        name="posterUrls"
+                                        value={poster.posterUrls}
+                                        onChange={(e) => handleInputChange(e, index, 'posters')}
+                                    />
+                                </div>
+                            </label>
+                            {index === 0 && (
+                                <label style={{marginLeft: '10px'}}>
+                                    <div>메인 포스터:</div>
+                                    <div>
+                                        <input
+                                            type="checkbox"
+                                            name="mainPoster"
+                                            checked={poster.mainPoster}
+                                            onChange={(e) => handleInputChange(e, index, 'posters')}
+                                        />
+                                    </div>
+                                </label>
+                            )}
+                        </label>
+                    ))}
+
                     <div>
                         <input type="submit" value="완료" className="MovieUploadBtn"/>
                     </div>
                 </form>
             </div>
         </div>
+        </div>
+
+        </>
+
     );
 }
 
-export default AdminMovieUploadModifyPage2;
+export default AdminMovieUploadFileModifyPage;

@@ -44,8 +44,8 @@ public class MyPageController {
     @GetMapping("/history")
     public ResponseEntity<Page<MyPageWatchHistoryResponseDTO>> getWatchHistory(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "0",name = "page") int page,
+            @RequestParam(defaultValue = "10",name = "page") int size) {
 
         Long memNum = userDetails.getMemNum();// userDetails에서 memNum을 추출하는 로직
 
@@ -68,7 +68,7 @@ public class MyPageController {
     // 마이페이지 리뷰 삭제하기
     @DeleteMapping("/reviews/{reviewId}")
     public ResponseEntity<?> deleteReview(
-            @PathVariable Long reviewId,
+            @PathVariable("reviewId") Long reviewId,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         Long memNum = userDetails.getMemNum();
         myPageService.deleteReview(reviewId, memNum);

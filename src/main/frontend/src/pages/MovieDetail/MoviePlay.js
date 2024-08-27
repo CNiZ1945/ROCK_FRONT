@@ -1,15 +1,15 @@
 import React, { useEffect, useState, useRef } from "react";
-import {useLocation, useNavigate} from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import ReactPlayer from "react-player";
 import { useParams } from 'react-router-dom';
 import { api } from "../../api/axios";
 
 // css
-import "./css/MoviePlay.css"
+import "../../common/css/MoviePlay.css"
 
 
-function MoviePlayPage() {
+function MoviePlay() {
     const location = useLocation();
     // const { filmUrl, watchedTime } = location.state;
     const videoRef = useRef(null);
@@ -28,11 +28,17 @@ function MoviePlayPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [hasLoaded, setHasLoaded] = useState(false);
 
+
+
+    useEffect(() => {
+        if (movieData) {
+            console.log("movieData:", movieData);
+        }
+    }, [movieData]); // movieData가 변경될 때마다 실행
+    
     //경로 하드코딩 -> 서버 올릴 시, const url 부분 수정해야함
 
     useEffect(() => {
-        console.log("movieId:", movieId.movieId, "Type of movieId:", typeof movieId.movieId);
-        
         const fetchMovieData = async () => {
             try {
                 // localStorage에서 데이터 가져오기
@@ -74,12 +80,12 @@ function MoviePlayPage() {
             const token = localStorage.getItem('accessToken');
             await api.post('/user/movies/history/update-progress',
                 {
-                    movie: {movieId: movieId},
+                    movie: { movieId: movieId },
                     watchTime: Math.floor(playedSeconds),
                     totalDuration: totalDuration
                 },
                 {
-                    headers: {'Authorization': `Bearer ${token}`}
+                    headers: { 'Authorization': `Bearer ${token}` }
                 }
             );
             console.log('시청 진행 상황이 업데이트되었습니다.');
@@ -126,26 +132,22 @@ function MoviePlayPage() {
             <div className='iframeDiv'>
                 <ReactPlayer
                     ref={videoRef}
-                    // url={filmUrl}
-                    url={`/user/videos/${encodeURIComponent('ex_movie_film.mp4')}`}
+                    // url={`/user/videos/ex_movie_film.mp4`}
+                    url={`http://localhost:8080/user/videos/${encodeURIComponent('ex_movie_film.mp4')}`}
                     width="100%"
                     height="100%"
                     controls={true}
                     playing={isPlaying}
-                    // onReady={() => {
-                    //     if (videoRef.current && watchedTime) {
-                    //         videoRef.current.seekTo(watchedTime);
-                    //     }
-                    // }}
                     onReady={handleReady}
-                    onProgress={(progress) => {
-                        console.log("Current progress:", progress);
-                        updateWatchingProgress(progress.playedSeconds);
-                    }}
-                    onDuration={handleDuration} // 비디오 전체 길이 설정
+                    onProgress={(progress) => updateWatchingProgress(progress.playedSeconds)}
+                    onDuration={handleDuration}
                     onError={(e) => {
                         console.error("Video playback error:", e);
-                        setError("비디오를 재생할 수 없습니다." + videoUrl);
+                        if (e && e.target && e.target.error && e.target.error.code) {
+                            setError(`비디오를 재생할 수 없습니다. 오류 코드: ${e.target.error.code}`);
+                        } else {
+                            setError("비디오를 재생할 수 없습니다.");
+                        }
                     }}
                     onPlay={() => setIsPlaying(true)}
                     onPause={() => setIsPlaying(false)}
@@ -157,9 +159,10 @@ function MoviePlayPage() {
                         }
                     }}
                 />
+
             </div>
         </>
     );
 }
 
-export default MoviePlayPage;
+export default MoviePlay;

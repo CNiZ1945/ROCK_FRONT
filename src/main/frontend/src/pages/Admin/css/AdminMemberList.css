@@ -1,6 +1,6 @@
 /* 리스트 전체 영역 */
 .list_div{
-	width: 80%;
+	/* width: 80%; */
 	/* border: 1px solid black; */
 	display: flex;
 	flex-direction: column;
