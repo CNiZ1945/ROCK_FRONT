@@ -160,7 +160,7 @@ align-items: center;
 color: #000;
 font-weight: 300;
 text-align: center;
-font-size: 23px;
+font-size: 16px;
 
     .focused{
         color: #fff !important;
@@ -231,6 +231,7 @@ const Section = styled.div`
     //display: flex;
     //justify-content: flex-start;
     //margin-top: 22px;
+    
 `;
 
 // 프로필 박스

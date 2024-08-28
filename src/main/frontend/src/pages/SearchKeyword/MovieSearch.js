@@ -13,15 +13,17 @@ import searchimg from './images/searchimg.png'
 function MovieSearch() {
     const [searchParams, setSearchParams] = useSearchParams();
     const [movies, setMovies] = useState([]);
-    const [topRankMovies, setTopRankMovies] = useState([]);
+    const [topRankMovies, setTopRankMovies] = useState([]); // 상위 랭킹     영화 상태 추가
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [page, setPage] = useState(parseInt(searchParams.get('page') || '0'));
-    const [totalPages, setTotalPages] = useState(1);
-    const [currentGroup, setCurrentGroup] = useState(Math.floor(page / 10));
+    const [page, setPage] = useState(parseInt(searchParams.get('page') || '0')); // 페이지 기본값을 0으로 설정
+    const [totalPages, setTotalPages] = useState(1); // 총 페이지 수 상태 추가
+    const [currentGroup, setCurrentGroup] = useState(Math.floor(page / 10)); // 현재 페이지 그룹 설정
     const [searchInput, setSearchInput] = useState(""); // 검색 입력 상태 추가
 
     const navigate = useNavigate();
+
+
     useEffect(() => {
         const fetchMovies = async () => {
             setLoading(true);
@@ -56,28 +58,32 @@ function MovieSearch() {
         fetchMovies();
     }, [searchParams, page]);
 
+
+    // 영화 검색 랭킹 기능
     useEffect(() => {
         const fetchTopRankMovies = async () => {
             try {
                 const response = await api.get('/user/TopRankMovies');
-                if (response.ok) {
-                    const data = response.data;
-                    console.log('상위 랭킹 영화 데이터:', data);
-                    setTopRankMovies(Array.isArray(data.content) ? data.content : [data.content]);
-                } else {
-                    console.error("랭킹 정보 불러오는 중 에러 발생 error:", error);
+                console.log('서버 응답:', response); // 응답 확인
 
-                    setError('상위 랭킹 영화 요청 실패');
+                const data = response.data;
+
+                // 데이터가 존재하고, 기대하는 구조인지 확인
+                if (data && Array.isArray(data.content)) {
+                    setTopRankMovies(data.content);
+                } else {
+                    console.error("데이터 구조가 예상과 다릅니다.");
+                    setError('상위 랭킹 영화 데이터를 처리하는 중 문제가 발생했습니다.');
                 }
             } catch (err) {
-                console.error("fetchTopRankMovies error", err);
-
-                setError('서버 오류');
+                console.error("fetchTopRankMovies error:", err);
+                setError(err.message || '상위 랭킹 영화 요청 실패');
             }
         };
 
         fetchTopRankMovies();
     }, []);
+
 
     useEffect(() => {
         setCurrentGroup(Math.floor(page / 10));
@@ -144,6 +150,17 @@ function MovieSearch() {
         );
     };
 
+
+    // 로그 확인용
+    useEffect(() => {
+        console.log('Current movies:', movies);
+        console.log('Number of movies:', movies.length);
+    }, [movies]);
+
+    useEffect(() => {
+        console.log('Top Rank Movies:', topRankMovies); // 상태가 올바르게 업데이트되는지 확인
+    }, [topRankMovies]);
+
     // html 시작 ================
     return (
         <>
@@ -164,22 +181,42 @@ function MovieSearch() {
             {loading && <p>검색 중...</p>}
             {error && <p className="error">{error}</p>}
 
-            <div className="top_rank_movies">
+            <TopRankMoviesDiv>
                 <h2>상위 랭킹 영화</h2>
                 {topRankMovies.length > 0 ? (
-                    <ul>
+                    <TopRankMoviesUl>
                         {topRankMovies.map((movie) => (
-                            <li key={movie.movieId}>
+                            <TopRankMoviesLi key={movie.movieId}>
                                 <Link to={`/user/MoviePage/${movie.movieId}`}>
-                                    {movie.movieTitle}
+
+                                    {movie.posters && movie.posters.length > 0 ? (
+                                        movie.posters.map((poster, index) => (
+                                            <TopRankMoviesPoster
+                                                key={index}
+                                                src={poster.posterUrls || 'https://via.placeholder.com/500x750?text=No+Image'}
+                                                alt={movie.movieTitle}
+                                                onError={(e) => {
+                                                    e.target.src = 'https://via.placeholder.com/500x750?text=No+Image';
+                                                }}
+                                            />
+                                        ))
+                                    ) : (
+                                        <TopRankMoviesPoster
+                                            src='https://via.placeholder.com/500x750?text=No+Image'
+                                            alt={movie.movieTitle}
+                                        />
+                                    )}
+                                    <figcaption >
+                                        {movie.movieTitle}
+                                    </figcaption>
                                 </Link>
-                            </li>
+                            </TopRankMoviesLi>
                         ))}
-                    </ul>
+                    </TopRankMoviesUl>
                 ) : (
                     <p>상위 랭킹 영화가 없습니다.</p>
                 )}
-            </div>
+            </TopRankMoviesDiv>
 
             <ChatBot />
 
@@ -191,15 +228,23 @@ function MovieSearch() {
                 <MainContainer>
 
                     <WriteSection>
-                        {/*검색창*/}
-                        <Link><img src={search} alt="검색창"></img></Link>
+                        <form onSubmit={(e) => e.preventDefault()}>
 
-                        <SearchInput
-                            type="text"
-                            className="bottom_search_text"
-                            placeholder="무엇이든 찾아보세요"
-                        // onChange={handleSearchInput}
-                        />
+                            {/*검색창*/}
+                            <MovieSearchButton
+                                type="submit"
+                                onClick={() => setSearchParams({ query: searchInput })}
+                            ><img src={search} alt="검색창" />
+                            </MovieSearchButton>
+
+                            <SearchInput
+                                type="text"
+                                className="bottom_search_text"
+                                value={searchInput} // 입력 필드에 상태 연결
+                                onChange={(e) => setSearchInput(e.target.value)} // 입력값 변경 시 상태 업데이트
+                                placeholder="검색 예: title:Inception, director:Nolan, actor:DiCaprio, genre:Sci-Fi"
+                            />
+                        </form>
                     </WriteSection>
 
 
@@ -262,20 +307,26 @@ function MovieSearch() {
                                 </>
                             ))}
                         </SectionContainer>
+
+
+
+
                     </Container>
 
 
                     {/*페이지네이션*/}
                     <Pagination
                         className="pagination"
-                        activePage={page} // 현재 페이지
-                        itemsCountPerPage={1} // 한 페이지랑 보여줄 아이템 갯수
-                        totalItemsCount={10} // 총 아이템 갯수
-                        pageRangeDisplayed={10} // paginator의 페이지 범위
-                        prevPageText={"‹"} // "이전"을 나타낼 텍스트
-                        nextPageText={"›"} // "다음"을 나타낼 텍스트
-                        onChange={handlePageChange} // 페이지 변경을 핸들링하는 함수
+                        activePage={page + 1} // 현재 페이지 (페이지네이션 라이브러리는 1부터 시작하므로 +1)
+                        itemsCountPerPage={10} // 한 페이지에 보여줄 아이템 수
+                        totalItemsCount={totalPages * 10} // 총 아이템 수 (페이지 수 * 페이지당 아이템 수)
+                        pageRangeDisplayed={10} // 표시할 페이지 버튼의 범위
+                        prevPageText={"‹"} // 이전 페이지 텍스트
+                        nextPageText={"›"} // 다음 페이지 텍스트
+                        onChange={handlePageChange} // 페이지 변경 핸들러
                     />
+
+
 
                 </MainContainer>
                 <ChatBot />
@@ -303,6 +354,9 @@ const Container = styled.div`
     width: 1044px;
     margin: 0 auto;
     margin-bottom: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 `;
 
 // 검색창+글쓰기 버튼 감싸는 박스
@@ -382,14 +436,15 @@ const SectionR = styled.div`
 
 //포스터 감싸는 전체 박스
 const SectionContainer = styled.div`
-    width: 1044px;
+    width: 1300px;
     
     //margin: 0 auto;
     //margin-top: 40px;
     //padding-bottom: 50px;
     display: flex;
     flex-direction: row;
-    gap: 30px;
+    justify-content: center;
+    // gap: 30px;
 
 `;
 
@@ -409,33 +464,34 @@ const SectionA = styled.div`
         vertical-align: top;
     }
     .movie_figure{
-        width: 300px;
+        // width: 300px;
 
         }
         
         figcaption{
-            font-size: 15px;
-            overflow: wrap;
+        text-align: center;
+        overflow:hidden;
+        width: 200px;
+        padding-top: 20px;
+        color: #a5a5a5;
+        font-size: 17px;
+        display: table-cell;
+        vertical-align: top;
         }
 
         img{
-        border: 1px solid red;
-        width: 240px;
-        height: 360px;
+        // border: 1px solid red;
+        width: 200px;
+        height: 300px;
         border-radius: 12px;
         will-change: transform;
         background-color: #252525;
         overflow:hidden;
-        
+        transition: transform 0.3s ease;
+
         //호버시,
         &:hover{
-            width: 240px;
-            height: 360px;
-            border-radius: 12px;
             transform: scale(1.1);
-            transition: all 0.2s linear;
-            overflow:hidden;
-            
         }
     }
 `;
@@ -448,6 +504,70 @@ const SectionBottom = styled.div`
     display: table-cell;
     vertical-align: top;
 `;
+
+const MovieSearchButton = styled.button`
+
+`
+
+const TopRankMoviesDiv = styled.div`
+    // border: 1px solid red;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    h2{
+        color: #fff;
+        font-size: 2rem;
+        margin-bottom: 10px;
+    }
+    
+`
+
+// 검색 랭킹 ul
+const TopRankMoviesUl = styled.ul`
+    width: 1300px;
+    // border: 1px solid white;
+    display: flex;  
+    flex-wrap: wrap;
+    justify-content: center;
+`
+// 검색 랭킹 li
+const TopRankMoviesLi = styled.li`
+        display: flex;  
+        flex-direction: column;
+        margin-right: 30px;
+        margin-bottom: 20px;
+
+    figcaption{
+
+        text-align: center;
+        overflow:hidden;
+        width: 200px;
+        padding-bottom: 20px;
+        padding-top: 10px;
+        color: #a5a5a5;
+        font-size: 17px;
+        display: table-cell;
+        vertical-align: top;
+    }
+`
+// 검색 랭킹 img
+const TopRankMoviesPoster = styled.img`
+    width: 200px;
+    height: 300px;
+    border-radius: 12px;
+    // border: 1px solid red;
+    transition: transform 0.3s ease;
+
+            //호버시,
+        &:hover{
+            transform: scale(1.1);
+            overflow:hidden;
+            
+        }
+
+`
 
 
 

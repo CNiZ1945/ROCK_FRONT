@@ -48,20 +48,20 @@ const MovieReview = ({ movieId, movieDetail, memRole, correspondMemName, corresp
     // movieId, sortBy에 따라 랜더링
     useEffect(() => {
         const token = localStorage.getItem('accessToken');
+
         if (token) {
-            // movieId각 객체인지 확인
             if (typeof movieId === 'object' && movieId.movieId) {
-                fetchReviews(token, currentPage);
+                fetchReviews(token, 1).then(() => {
+                    console.log("useEffect EditingReviewId after fetch:", editingReviewId);
+                });
                 fetchInitialLikeStatuses(token);
                 
-                console.log("movieId:", movieId.movieId, "Type of movieId:", typeof movieId.movieId);
-                console.log("EditingReviewId:", editingReviewId);
+                console.log("useEffect movieId:", movieId.movieId, "Type of movieId:", typeof movieId.movieId);
             } else {
                 console.error("movieId가 유효하지 않습니다.", movieId);
             }
         }
-    }, [movieId, sortBy, currentPage]);
-
+    }, [movieId, sortBy]);
 
 
     // 정렬 방식을 변경하는 함수
@@ -76,9 +76,9 @@ const MovieReview = ({ movieId, movieDetail, memRole, correspondMemName, corresp
         try {
             const validMovieId = movieId.movieId;
             const response = await api.get(`/user/movies/detail/${validMovieId}/reviews?page=${page}&sortBy=${sortBy}`, {
-                headers: { 'Authorization': `Bearer ${token}` }
+                headers: {'Authorization': `Bearer ${token}`}
             });
-            // const data = response.data;
+            const data = response.data;
             // console.log('Fetched review data:', response.data);
             setReviews(response.data.reviews);
             setTotalReviews(response.data.totalReviews);
@@ -87,12 +87,8 @@ const MovieReview = ({ movieId, movieDetail, memRole, correspondMemName, corresp
             setPageNumbers(response.data.pageNumbers);
             setHasPrevious(response.data.hasPrevious);
             setHasNext(response.data.hasNext);
-
-            console.log("correspondMemNum:", correspondMemNum);
-            console.log("reviews.memNum:", reviews?.memNum);
-
         } catch (error) {
-            console.error('리뷰를 가져오는 중 오류 발생:', error);
+            // console.error('리뷰를 가져오는 중 오류 발생:', error);
             setError('리뷰를 불러오는데 실패했습니다.');
         }
     };
@@ -143,45 +139,38 @@ const MovieReview = ({ movieId, movieDetail, memRole, correspondMemName, corresp
 
     // 리뷰 submit 관리
     const handleSubmitReview = async () => {
-        const validMovieId = movieId.movieId;
         const token = localStorage.getItem('accessToken');
-
         try {
+            const validMovieId = movieId.movieId;
             const reviewData = {
                 reviewContent: newReview.content,
                 reviewRating: newReview.rating,
                 attractionPoints: attractionPoints,
                 emotionPoints: emotionPoints
             };
-            if (isValid) {
 
-                if (editingReviewId) {
-                    await api.put(`/user/movies/detail/${validMovieId}/reviews/${editingReviewId}`, reviewData, {
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
-                    setEditingReviewId(null);
-                } else {
-                    await api.post(`/user/movies/detail/${validMovieId}/reviews`, reviewData, {
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
-                }
-                setNewReview({ content: '', rating: 5 });
-                setAttractionPoints({ directingPoint: false, actingPoint: false, visualPoint: false, storyPoint: false, ostPoint: false });
-                setEmotionPoints({ stressReliefPoint: false, scaryPoint: false, realityPoint: false, immersionPoint: false, tensionPoint: false });
-                await fetchReviews(token, currentPage);
-                console.log("EditingReviewId after submit:", editingReviewId); // 상태 확인용 로그
-                
-                alert(editingReviewId ? '리뷰가 수정되었습니다.' : '리뷰가 작성되었습니다.');
-
+            if (editingReviewId) {
+                await api.put(`/user/movies/detail/${validMovieId}/reviews/${editingReviewId}`, reviewData, {
+                    headers: {'Authorization': `Bearer ${token}`}
+                });
+                setEditingReviewId(null);
+            } else {
+                await api.post(`/user/movies/detail/${validMovieId}/reviews`, reviewData, {
+                    headers: {'Authorization': `Bearer ${token}`}
+                });
             }
-
+            setNewReview({content: '', rating: 5});
+            setAttractionPoints({directingPoint: false, actingPoint: false, visualPoint: false, storyPoint: false, ostPoint: false});
+            setEmotionPoints({stressReliefPoint: false, scaryPoint: false, realityPoint: false, immersionPoint: false, tensionPoint: false});
+            await fetchReviews(token, currentPage);
+            alert(editingReviewId ? '리뷰가 수정되었습니다.' : '리뷰가 작성되었습니다.');
         } catch (error) {
             if (error.response && error.response.data) {
-                console.error("review submit error:", error.response.data);
-                alert("하단의 리뷰의 수정 버튼을 누르고 수정해주세요");
-            }
-
-            else {
+                
+                console.error(error.response.data);
+                
+                alert("이미 리뷰를 작성했습니다. 수정 버튼을 누르고 수정해주세요");
+            } else {
                 alert('리뷰 작성/수정에 실패했습니다. 다시 시도해 주세요.');
             }
         }
@@ -232,6 +221,8 @@ const MovieReview = ({ movieId, movieDetail, memRole, correspondMemName, corresp
             setCurrentPage(pageToFetch);
             await fetchReviews(token, pageToFetch);
             // setTotalReviews(newTotalReviews);
+            setEditingReviewId(null); // 삭제 후 편집 ID 초기화
+
             alert('리뷰가 삭제되었습니다.');
         } catch (error) {
             console.error('리뷰 삭제 중 오류 발생:', error);
@@ -250,7 +241,7 @@ const MovieReview = ({ movieId, movieDetail, memRole, correspondMemName, corresp
             });
             const likeStatusArray = response.data; // [{reviewId, memNum, likeCount, like}]
             const initialLikes = {};
-            console.log("Like Status:", response.data);
+            console.log("fetchInitialLikeStatuses Like Status:", response.data);
 
             // 배열을 순회하며 상태를 초기화합니다.
             likeStatusArray.forEach(status => {
@@ -510,11 +501,11 @@ const MovieReview = ({ movieId, movieDetail, memRole, correspondMemName, corresp
 
                                     {/* 첫 리뷰 작성시 등록 버튼, 리뷰 작성 후는 수정 버튼 */}
                                     {editingReviewId ? (
-                                        <EditBtn type='submit' onClick={handleValidationAndSubmit}>
+                                        <EditBtn type='submit'  >
                                             수정
                                         </EditBtn>
                                     ) : (
-                                        <UploadBtn type='submit' onClick={handleValidationAndSubmit}>
+                                        <UploadBtn type='submit' >
                                             등록
                                         </UploadBtn>
                                     )}

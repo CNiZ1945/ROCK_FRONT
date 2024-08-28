@@ -12,7 +12,7 @@ import search from './images/search.svg';
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars, faUser, faTimes } from "@fortawesome/free-solid-svg-icons";
-
+import Profile_1 from './images/Profile_1.svg';
 
 
 
@@ -115,65 +115,78 @@ function Navs() {
 		<NavWrapper scrollposition={scrollPosition}>
 
 
-			<MenuWrapper>
-				<LogoImg
-					alt="logo"
-					src={logo}
-					scrollposition={scrollPosition}
-					onClick={() => {
-						navigate(`/`);
-					}}
-				/>
+		<MenuWrapper>
+			<LogoImg
+				alt="logo"
+				src={logo}
+				scrollposition={scrollPosition}
+				onClick={() => {
+					navigate(`/`);
+				}}
+			/>
 
-				<MenuName
-					onClick={() => {
-						goToPage('/');
-					}}
-					scrollposition={scrollPosition}
-				>
-					HOME
-				</MenuName>
-
-
-				<MenuName
-					onClick={() => {
-						goToPage('/user/moviepage/12');
-					}}
-					scrollposition={scrollPosition}
-				>
-					MOVIE
-				</MenuName>
-
-				<MenuName
-					onClick={() => {
-						goToPage('user/notice');
-					}}
-					scrollposition={scrollPosition}
-				>
-					NOTICE
-				</MenuName>
+			 <MenuName
+				onClick={() => {
+					goToPage(`/`);
+				}}
+				scrollposition={scrollPosition}
+			>
+				홈
+			</MenuName>
 
 
-				<MenuName
-					onClick={() => {
-						goToPage('user/mypage');
-					}}
-					scrollposition={scrollPosition}
-				>
-					MYPAGE
-				</MenuName>
+			{/*<MenuName*/}
+			{/*    onClick={() => {*/}
+			{/*        goToPage('/user/moviepage/:movieId');*/}
+			{/*    }}*/}
+			{/*    scrollposition={scrollPosition}*/}
+			{/*>*/}
+			{/*    영화*/}
+			{/*</MenuName>*/}
 
 
-				<MenuName
-					onClick={() => {
-						goToPage('/admin/memberList');
-					}}
-					scrollposition={scrollPosition}
-				>
-					ADMIN
-				</MenuName>
+			<MenuName
+				onClick={() => {
+					goToPage('/user/recommend/:movieId');
+				}}
+				scrollposition={scrollPosition}
+			>
+				NEW!추천콘텐츠
+			</MenuName>
 
-			</MenuWrapper>
+
+
+			<MenuName
+				onClick={() => {
+					goToPage('user/notice');
+				}}
+				scrollposition={scrollPosition}
+			>
+				공지사항
+			</MenuName>
+
+
+
+			<MenuName
+				onClick={() => {
+					goToPage('/user/mypage');
+				}}
+				scrollposition={scrollPosition}
+			>
+				마이페이지
+			</MenuName>
+
+
+
+			<MenuName
+				onClick={() => {
+					goToPage('/admin/movieList');
+				}}
+				scrollposition={scrollPosition}
+			>
+				관리자
+			</MenuName>
+		</MenuWrapper>
 
 
 
@@ -212,22 +225,51 @@ function Navs() {
 			</SearchWrapper>
 
 
+
 			<IconWrapper>
-				<IconImg
+			<IconImg
 					onClick={() => handleLogout()}
 					alt="loginIcon"
 					src={loginIcon}
 					scrollposition={scrollPosition}
 				/>
+
+			<IconImg
+				onClick={() => goToPage('/SignUp')}
+				alt="mypageIcon"
+				src={mypageIcon}
+				scrollposition={scrollPosition}
+			/>
+		{/*프로필 이미지 ==================================*/}
 				<IconImg
-					onClick={() => goToPage('/SignUp')}
-					alt="mypageIcon"
-					src={mypageIcon}
+					onClick={() => goToPage('/user/mypage')}
+					alt="Profile"
+					src={Profile_1}
 					scrollposition={scrollPosition}
 				/>
-			</IconWrapper>
+
+				{/*<IconImg*/}
+				{/*    onClick={() => goToPage('/mypage')}*/}
+				{/*    alt="Profile"*/}
+				{/*    src={Profile_2}*/}
+				{/*    scrollposition={scrollPosition}*/}
+				{/*/>*/}
+				{/*<IconImg*/}
+				{/*    onClick={() => goToPage('/mypage')}*/}
+				{/*    alt="Profile"*/}
+				{/*    src={Profile_3}*/}
+				{/*    scrollposition={scrollPosition}*/}
+				{/*/>*/}
+				{/*<IconImg*/}
+				{/*    onClick={() => goToPage('/mypage')}*/}
+				{/*    alt="Profile"*/}
+				{/*    src={Profile_4}*/}
+				{/*    scrollposition={scrollPosition}*/}
+				{/*/>*/}
+		</IconWrapper>
 		</NavWrapper>
-	);
+);
+	
 }
 
 
