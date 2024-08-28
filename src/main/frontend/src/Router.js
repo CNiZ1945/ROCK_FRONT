@@ -17,6 +17,7 @@ import NoticeWrite from "./pages/Notice/NoticeWrite";
 import MemberInfo from "./pages/Login/MemberInfo";
 import MyPage from "./pages/Login/Mypage/MyPage";
 import Chart from './pages/Chart/Chart';
+import MovieSearch from './pages/SearchKeyword/MovieSearch';
 
 import AdminApp from './pages/Admin/AdminApp';
 import AdminMovieList from './pages/Admin/AdminMovieList';
@@ -42,7 +43,8 @@ const Router = () => {
                 {/*<Route path="/users/login" element={<GoogleAPI />} />*/}
 
                 {/*검색 결과*/}
-                <Route path="/searchKeyword" element={<SearchKeyword/>}/>
+                <Route path="/user/searchKeyword" element={<SearchKeyword/>}/>
+                <Route path="/user/MovieSearch" element={<MovieSearch/>}/>
 
 
 

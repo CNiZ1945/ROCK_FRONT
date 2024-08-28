@@ -17,6 +17,7 @@ import { faBars, faUser, faTimes } from "@fortawesome/free-solid-svg-icons";
 
 
 function Navs() {
+	
 	const [accessToken, setAccessToken] = useState(localStorage.getItem('accessToken'));
 
 	const [searchInput, setSearchInput] = useState('');
@@ -24,12 +25,15 @@ function Navs() {
 
 	const [recommendData, loading, error] = useFetch('/data/searchResult.json');
 
+	const [searchTerm, setSearchTerm] = useState('');
+
 	const navigate = useNavigate();
 
 	const goToPage = path => {
 		navigate(path);
 	};
 
+	// 로그아웃 버튼 시 로그 아웃
 	const handleLogout = async () => {
 		setAccessToken(localStorage.getItem('accessTokne'))
 
@@ -48,6 +52,35 @@ function Navs() {
             alert('로그아웃 중 오류가 발생했습니다. 다시 시도해주세요.');
 		}
 	}
+	
+	// 검색 창 변경 확인
+	const handleSearchChange = (e) => {
+        setSearchTerm(e.target.value);
+    };
+
+	// 검색 기능
+    const handleSearchSubmit = (e) => {
+        e.preventDefault();
+
+        // 입력된 검색어를 쉼표로 구분하여 배열로 변환
+        const terms = searchTerm.split(',').map(term => term.trim()).filter(term => term !== '');
+
+        // URLSearchParams 객체 생성
+        const params = new URLSearchParams();
+
+        // 각 검색어를 파라미터에 추가 (최대 4개까지)
+        if (terms.length > 0) params.append('movieTitle', terms[0]);
+        if (terms.length > 1) params.append('movieDirectors', terms[1]);
+        if (terms.length > 2) params.append('movieActors', terms[2]);
+        if (terms.length > 3) params.append('genres', terms[3]);
+
+        // 쿼리 파라미터를 포함한 URL 생성
+        const url = `/user/MovieSearch?${params.toString()}`;
+        console.log('검색 URL:', url); // 디버깅 용
+        // url로 이동
+		navigate(url);
+    };
+
 
 	const updateScroll = () => {
 		setScrollPosition(window.scrollY || document.documentElement.scrollTop);
@@ -57,7 +90,7 @@ function Navs() {
 		window.addEventListener('scroll', updateScroll);
 	}, []);
 
-	const handleSearchInput = e => setSearchInput(e.target.value);
+	// const handleSearchInput = e => setSearchInput(e.target.value);
 
 	useEffect(() => {
 		window.addEventListener('click', function (e) {
@@ -146,7 +179,7 @@ function Navs() {
 
 			{/*  검색창 */}
 			<SearchWrapper ref={searchWrapper}>
-				{searchInput && (
+				{/* {searchInput && (
 					<RecommendSearch>
 						{filteredRecommendData.map(item => {
 							return (
@@ -161,16 +194,21 @@ function Navs() {
 							);
 						})}
 					</RecommendSearch>
-				)}
+				)} */}
+				<form onSubmit={handleSearchSubmit}>
 				<SearchInput
 					placeholder="영화 이름 입력"
-					onChange={handleSearchInput}
-					value={searchInput}
+					type="text"
+					name="searchTerm"
+					value={searchTerm}
+					onChange={handleSearchChange}
+
 					scrollposition={scrollPosition}
 				/>
-
-				<SearchIcon alt="serachIcon" src={search} />
-
+				<SearchSubmitBtn>
+					<SearchIcon alt="serachIcon" src={search} />
+				</SearchSubmitBtn>
+				</form>
 			</SearchWrapper>
 
 
@@ -336,6 +374,13 @@ const SearchInput = styled.input`
     transition: 0.3s ease-out;
   }
 `;
+
+//검색 버튼
+const SearchSubmitBtn = styled.button`
+	// border: 1px solid red;
+	width: 10px;
+	height: 30px;
+`
 
 const SearchIcon = styled.img`
   position: absolute;

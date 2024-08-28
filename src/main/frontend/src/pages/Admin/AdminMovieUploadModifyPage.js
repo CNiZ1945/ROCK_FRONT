@@ -1,12 +1,15 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
+import AddActorModal from './AddActorModal';
+import AddDirectorModal from './AddDirectorModal';
 import { api } from '../../api/axios';
+
 import SideBar from './SideBar';
 import home from "./images/home.svg";
-import "./css/AdminMovieUpload.css"
+import { BiBorderRadius } from 'react-icons/bi';
 
-// 영화 수정 1번 페이지
+
 function AdminMovieUploadModifyPage() {
     const { movieId } = useParams();
     const navigate = useNavigate();
@@ -20,9 +23,11 @@ function AdminMovieUploadModifyPage() {
         movieRating: 'ratingTrue',
         openYear: ''
     });
+
+    const [isActorModalOpen, setIsActorModalOpen] = useState(false);
+    const [isDirectorModalOpen, setIsDirectorModalOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
 
-    // 자동완성을 위한 상태
     const [autoCompleteData, setAutoCompleteData] = useState({
         directors: [],
         actors: [],
@@ -38,46 +43,20 @@ function AdminMovieUploadModifyPage() {
         actor: false,
         genre: false
     });
-    const [page, setPage] = useState({
-        director: 0,
-        actor: 0,
-        genre: 0
-    });
-    const [hasMore, setHasMore] = useState({
-        director: true,
-        actor: true,
-        genre: true
-    });
-
-    const observer = useRef();
-    const lastSuggestionElementRef = useCallback((type) => (node) => {
-        if (observer.current) observer.current.disconnect();
-        observer.current = new IntersectionObserver(entries => {
-            if (entries[0].isIntersecting && hasMore[type]) {
-                setPage(prevPage => ({ ...prevPage, [type]: prevPage[type] + 1 }));
-            }
-        });
-        if (node) observer.current.observe(node);
-    }, [hasMore]);
 
     const fetchMovieData = useCallback(async () => {
         try {
             setIsLoading(true);
             const response = await api.get(`/admin/movie/${movieId}`);
-            console.log("Fetched movie data:", response.data); // API 응답 로그
-            setMovieData(prevData => {
-                const data = {
-                    movieTitle: response.data.movieTitle, // 빈 문자열로 기본값 설정
-                    movieDirectors: response.data.movieDirectors || [],
-                    movieActors: response.data.movieActors || [],
-                    movieGenres: response.data.movieGenres || [],
-                    runTime: response.data.runTime || '', // runTime 추가
-                    movieDescription: response.data.movieDescription || '', // movieDescription 추가
-                    movieRating: response.data.movieRating || 'ratingTrue', // movieRating 추가
-                    openYear: response.data.openYear // null 체크 추가
-                };
-                console.log("Updated movie data:", data); // 업데이트된 영화 데이터 로그
-                return data;
+            setMovieData({
+                movieTitle: response.data.movieTitle || '',
+                movieDirectors: response.data.movieDirectors || [],
+                movieActors: response.data.movieActors || [],
+                movieGenres: response.data.movieGenres || [],
+                runTime: response.data.runTime || '',
+                movieDescription: response.data.movieDescription || '',
+                movieRating: response.data.movieRating || 'ratingTrue',
+                openYear: response.data.openYear || ''
             });
         } catch (error) {
             console.error('Error fetching movie data:', error);
@@ -91,52 +70,62 @@ function AdminMovieUploadModifyPage() {
         fetchMovieData();
     }, [fetchMovieData]);
 
-    useEffect(() => {
-        if (inputValues.director) fetchAutoCompleteData('director', inputValues.director, page.director);
-        if (inputValues.actor) fetchAutoCompleteData('actor', inputValues.actor, page.actor);
-        if (inputValues.genre) fetchAutoCompleteData('genre', inputValues.genre, page.genre);
-    }, [inputValues, page]);
-
-    useEffect(() => {
-        console.log("Movie Data:", movieData); // 영화 데이터 확인
-    }, [movieData]);
-
-    const fetchAutoCompleteData = async (type, value, pageNum) => {
-        if (!value.trim()) return;
+    const fetchAutoCompleteData = useCallback(async (type, value) => {
+        if (!value.trim()) {
+            setShowSuggestions(prevShow => ({ ...prevShow, [type]: false }));
+            setAutoCompleteData(prevData => ({ ...prevData, [type]: [] }));
+            return;
+        }
         try {
             const response = await api.get(`/admin/${type}s/search`, {
-                params: { query: value, page: pageNum, size: 10 }
+                params: { query: value }
             });
             setAutoCompleteData(prevData => ({
                 ...prevData,
-                [type]: pageNum === 0
-                    ? response.data.content
-                    : [...prevData[type], ...response.data.content]
+                [type]: response.data.content
             }));
-            setHasMore(prevHasMore => ({ ...prevHasMore, [type]: !response.data.last }));
-            setShowSuggestions(prevShow => ({ ...prevShow, [type]: true }));
+            setShowSuggestions(prevShow => ({
+                ...prevShow,
+                [type]: true
+            }));
         } catch (error) {
             console.error(`Error fetching ${type} data:`, error);
         }
-    };
+    }, []);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
+
+        // 자동완성 필드일 경우
         if (['director', 'actor', 'genre'].includes(name)) {
             setInputValues(prevValues => ({ ...prevValues, [name]: value }));
-            setPage(prevPage => ({ ...prevPage, [name]: 0 }));
             setAutoCompleteData(prevData => ({ ...prevData, [name]: [] }));
-            setShowSuggestions(prevShow => ({ ...prevShow, [name]: !!value.trim() }));
+            if (value.trim()) {
+                fetchAutoCompleteData(name, value);
+            } else {
+                setShowSuggestions(prevShow => ({ ...prevShow, [name]: false }));
+            }
         } else {
-            setMovieData(prevData => {
-                const updatedData = { ...prevData, [name]: value };
-                console.log(`Updated ${name}:`, updatedData[name]); // 각 필드 업데이트 로그
-                return updatedData;
-            });
+            // 일반 필드일 경우
+            setMovieData(prevData => ({
+                ...prevData,
+                [name]: value
+            }));
         }
     };
 
     const handleSuggestionClick = (type, item) => {
+        const existingItems = movieData[`movie${type.charAt(0).toUpperCase() + type.slice(1)}s`];
+
+        // 중복 확인
+        const isDuplicate = existingItems.some(existingItem => existingItem[`${type}Id`] === item[`${type}Id`]);
+
+        if (isDuplicate) {
+            alert(`중복된 ${type === 'director' ? '감독' : type === 'actor' ? '배우' : '장르'}입니다.`);
+            return; // 중복일 경우 추가하지 않음
+        }
+
+        // 중복이 아니면 추가
         setInputValues(prevValues => ({ ...prevValues, [type]: '' }));
         setMovieData(prevData => ({
             ...prevData,
@@ -146,18 +135,72 @@ function AdminMovieUploadModifyPage() {
             ]
         }));
         setShowSuggestions(prevShow => ({ ...prevShow, [type]: false }));
+        setAutoCompleteData(prevData => ({ ...prevData, [type]: [] }));
     };
+
+    const handleInputFocus = useCallback((type) => {
+        setShowSuggestions(prevShow => ({
+            director: false,
+            actor: false,
+            genre: false,
+            [type]: true
+        }));
+    }, []);
+
+    const renderSelectedItems = (type) => {
+        const items = movieData[`movie${type.charAt(0).toUpperCase() + type.slice(1)}s`];
+        return items.map((item, index) => (
+            <div key={index}>
+                {item[`${type}Name`]}
+                <button onClick={(e) => removeItem(type, index, e)}>X</button>
+            </div>
+        ));
+    };
+
+
+    const removeItem = (type, index, event) => {
+        // 이벤트 전파 중지
+        if (event) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+
+        setMovieData(prevData => {
+            const updatedItems = [...prevData[`movie${type.charAt(0).toUpperCase() + type.slice(1)}s`]];
+            updatedItems.splice(index, 1);
+            return {
+                ...prevData,
+                [`movie${type.charAt(0).toUpperCase() + type.slice(1)}s`]: updatedItems
+            };
+        });
+    };
+
+
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (!e.target.closest('.input-container') && !e.target.closest('.suggestions-list')) {
+                setShowSuggestions({
+                    director: false,
+                    actor: false,
+                    genre: false
+                });
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
             const dataToSubmit = {
                 ...movieData,
-                movieId: movieId // URL에서 가져온 movieId를 포함
+                movieId: movieId
             };
-            console.log("Submitting data:", dataToSubmit);
             const response = await api.put(`/admin/movie/${movieId}/updateFirst`, dataToSubmit);
-            console.log("Movie updated successfully:", response.data);
             navigate(`/admin/movie/${movieId}/modify2`, { state: { movieData: response.data } });
         } catch (error) {
             console.error('Error updating movie:', error);
@@ -166,30 +209,65 @@ function AdminMovieUploadModifyPage() {
         }
     };
 
-    const renderSelectedItems = (type) => {
-        const items = movieData[`movie${type.charAt(0).toUpperCase() + type.slice(1)}s`];
-        return items.map((item, index) => (
-            <div key={index}>
-                {item[`${type}Name`]}
-                <button onClick={() => removeItem(type, index)}>X</button>
-            </div>
-        ));
-    };
-
-    const textareaStyle = {
-        color: 'black',  // 텍스트 색상을 검정색으로 설정
-        backgroundColor: 'white',  // 배경색을 흰색으로 설정
-        border: '1px solid #ccc',  // 테두리 추가
-        padding: '5px',  // 내부 여백 추가
-        width: '100%',  // 너비를 100%로 설정
-        minHeight: '100px',  // 최소 높이 설정
-    };
-
-    const removeItem = (type, index) => {
+    const handleActorAdd = (newActor) => {
         setMovieData(prevData => ({
             ...prevData,
-            [`movie${type.charAt(0).toUpperCase() + type.slice(1)}s`]: prevData[`movie${type.charAt(0).toUpperCase() + type.slice(1)}s`].filter((_, i) => i !== index)
+            movieActors: [
+                ...prevData.movieActors,
+                { actorId: newActor.actorId, actorName: newActor.actorName }
+            ]
         }));
+        setAutoCompleteData(prevData => ({
+            ...prevData,
+            actors: [newActor, ...prevData.actors]
+        }));
+    };
+
+    const handleDirectorAdd = (newDirector) => {
+        setMovieData(prevData => ({
+            ...prevData,
+            movieDirectors: [
+                ...prevData.movieDirectors,
+                { directorId: newDirector.directorId, directorName: newDirector.directorName }
+            ]
+        }));
+        setAutoCompleteData(prevData => ({
+            ...prevData,
+            directors: [newDirector, ...prevData.directors]
+        }));
+    };
+
+    const suggestionListStyle = {
+        position: 'absolute',
+        zIndex: 1000,
+        backgroundColor: 'white',
+        border: '1px solid #ddd',
+        maxHeight: '200px',
+        overflowY: 'auto',
+        listStyle: 'none',
+        padding: 0,
+        margin: 0,
+        width: '40%',
+        top: '100%',
+    };
+
+    const suggestionItemStyle = {
+        display: 'flex',
+        alignItems: 'center',
+        padding: '5px',
+    };
+
+    const suggestionImageStyle = {
+        width: '50px',
+        height: '50px',
+        marginRight: '10px',
+        objectFit: 'cover',
+        borderRadius: '50%',
+    };
+
+    const suggestionTextStyle = {
+        display: 'flex',
+        flexDirection: 'column',
     };
 
     if (isLoading) {
@@ -199,22 +277,21 @@ function AdminMovieUploadModifyPage() {
     return (
         <>
             <div className='wrap'>
-
-
                 <SideBar />
                 <div className="admin_head">
                     <img src={home} alt="Home" />
                     <h2>관리자페이지</h2>
                 </div>
                 <div className="admin_movie_head">
-                    <span>Admin {">"} 영화 관리 {">"} 영화 수정 - 기본 정보</span>
+                    <span>Admin {">"} 영화 관리 {">"} 새 영화 업로드 - 파일 정보</span>
                 </div>
+
                 <div className='UploadBody'>
                     <div className="AdminUploadHead">
                         <h2>영화 수정 - 기본 정보</h2>
                     </div>
                     <div className="UploadInfo">
-                        <form onSubmit={handleSubmit} className="movieModifyUploadInfoForm">
+                        <form onSubmit={handleSubmit} className="UploadInfoForm">
                             <label>
                                 <div>제목:</div>
                                 <div>
@@ -222,7 +299,7 @@ function AdminMovieUploadModifyPage() {
                                         type="text"
                                         name="movieTitle"
                                         className='MovieUploadInput'
-                                        value={movieData.movieTitle}  // 기본값 추가
+                                        value={movieData.movieTitle}
                                         onChange={handleInputChange}
                                         required
                                     />
@@ -230,38 +307,60 @@ function AdminMovieUploadModifyPage() {
                             </label>
 
                             {['director', 'actor', 'genre'].map((type) => (
-                                <label key={type}>
-                                    <div>{type.charAt(0).toUpperCase() + type.slice(1)}:</div>
-                                    <div className="input-container">
-                                        <input
-                                            type="text"
-                                            name={type}
-                                            className='MovieUploadInput'
-                                            value={inputValues[type]}
-                                            onChange={handleInputChange}
-                                            onFocus={() => setShowSuggestions(prev => ({ ...prev, [type]: true }))}
-                                        />
-                                        {showSuggestions[type] && autoCompleteData[type] && autoCompleteData[type].length > 0 && (
-                                            <ul className="suggestions-list" style={{
-                                                position: 'absolute',
-                                                zIndex: 1000,
-                                                backgroundColor: 'white',
-                                                border: '1px solid #ddd'
-                                            }}>
-                                                {autoCompleteData[type].map((item, index) => (
-                                                    <li
-                                                        key={item[`${type}Id`]}
-                                                        onClick={() => handleSuggestionClick(type, item)}
-                                                        ref={index === autoCompleteData[type].length - 1 ? lastSuggestionElementRef(type) : null}
-                                                    >
-                                                        {item[`${type}Name`]}
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        )}
+                                <>
+                                    <label key={type}>
+                                        <div>{type.charAt(0).toUpperCase() + type.slice(1)}:</div>
+                                        <div className="input-container">
+                                            <input
+                                                type="text"
+                                                name={type}
+                                                className='MovieUploadInput'
+                                                value={inputValues[type]}
+                                                onChange={handleInputChange}
+                                                onFocus={() => handleInputFocus(type)}
+                                            />
+                                            {type !== 'genre' && (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => type === 'actor' ? setIsActorModalOpen(true) : setIsDirectorModalOpen(true)}
+                                                >
+                                                    {type === 'actor' ? '배우 추가' : '감독 추가'}
+                                                </button>
+                                            )}
+                                            {showSuggestions[type] && autoCompleteData[type] && autoCompleteData[type].length > 0 && (
+                                                <ul className="suggestions-list" style={suggestionListStyle}>
+                                                    {autoCompleteData[type].map((item, index) => (
+                                                        <li
+                                                            key={item[`${type}Id`]}
+                                                            onClick={() => handleSuggestionClick(type, item)}
+                                                            style={suggestionItemStyle}
+                                                        >
+                                                            {item[`${type}Photo`] && item[`${type}Photo`][0] && (
+                                                                <img
+                                                                    src={item[`${type}Photo`][0].photoUrl}
+                                                                    alt={item[`${type}Name`] || `${type} photo`}
+                                                                    style={suggestionImageStyle}
+                                                                />
+                                                            )}
+                                                            <div style={suggestionTextStyle}>
+                                                                <strong style={{ fontSize: '17px', fontWeight: 300 }}>
+                                                                    {item[`${type}Name`] || '이름 없음'}
+                                                                    {item[`${type}Birth`] && ` (${item[`${type}Birth`]})`}
+                                                                </strong>
+
+                                                            </div>
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            )}
+                                        </div>
+
+                                    </label>
+                                    <div className='manPosterDiv'>
+                                        {/* 자동 완성 선택 후 이름 추가 */}
+                                        {renderSelectedItems(type)}
                                     </div>
-                                    {renderSelectedItems(type)}
-                                </label>
+                                </>
                             ))}
 
                             <label>
@@ -283,8 +382,8 @@ function AdminMovieUploadModifyPage() {
                                 <div>
                                     <textarea
                                         name="movieDescription"
-                                        style={textareaStyle}  // 스타일 적용
-                                        value={movieData.movieDescription}  // 기본값 추가
+                                        style={{ color: 'black', backgroundColor: 'white', border: '1px solid #ccc', padding: '5px', width: '100%', minHeight: '100px' }}
+                                        value={movieData.movieDescription}
                                         onChange={handleInputChange}
                                         required
                                     />
@@ -312,7 +411,7 @@ function AdminMovieUploadModifyPage() {
                                         type="text"
                                         name="openYear"
                                         className='MovieUploadInput'
-                                        value={movieData.openYear} // null 또는 undefined인 경우 빈 문자열로 설정
+                                        value={movieData.openYear}
                                         onChange={handleInputChange}
                                         required
                                     />
@@ -320,10 +419,20 @@ function AdminMovieUploadModifyPage() {
                             </label>
 
                             <div>
-                                <input type="submit" value="다음" className="MovieUploadBtn" />
+                                <input type="submit" value="저장" className="MovieUploadBtn" />
                             </div>
                         </form>
                     </div>
+                    <AddActorModal
+                        isOpen={isActorModalOpen}
+                        onClose={() => setIsActorModalOpen(false)}
+                        onAdd={handleActorAdd}
+                    />
+                    <AddDirectorModal
+                        isOpen={isDirectorModalOpen}
+                        onClose={() => setIsDirectorModalOpen(false)}
+                        onAdd={handleDirectorAdd}
+                    />
                 </div>
             </div>
         </>

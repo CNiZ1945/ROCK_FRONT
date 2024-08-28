@@ -101,7 +101,7 @@ function AdminMovieUploadFilePage() {
                 <div className="admin_movie_head">
                     <span>Admin {">"} 영화 관리 {">"} 새 영화 업로드 - 파일 정보</span>
                 </div>
-                
+
                 <div className='UploadBody'>
                     <div className="AdminUploadHead">
                         <h2>영화 업로드 - 파일 정보</h2>
@@ -143,13 +143,13 @@ function AdminMovieUploadFilePage() {
                                         </div>
                                     </label>
                                     {index === 0 && ( // 첫 번째 항목에만 체크박스 표시
-                                        <label className='UploadCheckBoxLabel'  style={{ marginLeft: '10px' }}>
+                                        <label className='UploadCheckBoxLabel' style={{ marginLeft: '10px' }}>
                                             <div>메인 예고편:</div>
                                             <div>
                                                 <input
                                                     type="checkbox"
                                                     name="mainTrailer"
-                                                    
+
                                                     checked={trailer.mainTrailer}
                                                     onChange={(e) => handleInputChange(e, index, 'trailers')}
                                                 />

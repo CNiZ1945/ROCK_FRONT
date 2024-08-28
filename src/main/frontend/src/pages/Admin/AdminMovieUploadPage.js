@@ -64,6 +64,9 @@ function AdminMovieUploadPage() {
         genre: true
     });
 
+    const [inputPosition, setInputPosition] = useState({ top: 0, left: 0, width: 0 });
+
+
     // 인증 로직
     const checkPermission = async () => {
         const token = localStorage.getItem('accessToken');
@@ -360,27 +363,32 @@ function AdminMovieUploadPage() {
         listStyle: 'none',
         padding: 0,
         margin: 0,
-        width: '20%',
-        top: 280,
-        right: 200,
+        width: '40%',
+        top: "110%",
+        // right: 200,
+        
     };
 
     const suggestionItemStyle = {
         display: 'flex',
         alignItems: 'center',
         padding: '5px',
+        fontsize: '100px',
     };
+
 
     const suggestionImageStyle = {
         width: '50px',
         height: '50px',
         marginRight: '10px',
         objectFit: 'cover',
+        borderRadius: "50%",
     };
 
     const suggestionTextStyle = {
         display: 'flex',
         flexDirection: 'column',
+        fontsize: '100px',
     };
 
 
@@ -436,6 +444,7 @@ function AdminMovieUploadPage() {
                                     onChange={handleInputChange}
                                     onFocus={() => handleInputFocus(type)}
                                 />
+
                                 {type !== 'genre' && (
                                     <button
                                         type="button"
@@ -444,7 +453,8 @@ function AdminMovieUploadPage() {
                                         {type === 'actor' ? '배우 추가' : '감독 추가'}
                                     </button>
                                 )}
-                                {/*  */}
+
+                                {/* 감독, 배우 자동 완성 창 */}
                                 {showSuggestions[type] && autoCompleteData[type] && autoCompleteData[type].length > 0 && (
                                     <ul className="suggestions-list" style={suggestionListStyle}>
                                         {autoCompleteData[type].map((item, index) => (
@@ -466,10 +476,12 @@ function AdminMovieUploadPage() {
                                                     />
                                                 )}
                                                 <div style={suggestionTextStyle}>
-                                                    <strong>{item[`${type}Name`] || '이름 없음'}</strong>
-                                                    {item[`${type}Birth`] && (
-                                                        <span>출생: {item[`${type}Birth`]}</span>
-                                                    )}
+                                                
+                                                <strong style={{ fontSize: '17px', fontWeight: 300 }}>
+                                                    {item[`${type}Name`] || '이름 없음'}
+                                                    {item[`${type}Birth`] && ` (${item[`${type}Birth`]})`}
+                                                </strong>
+
                                                 </div>
                                             </li>
                                         ))}

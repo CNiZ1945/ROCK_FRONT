@@ -32,7 +32,7 @@
     width: 80%;
     display: flex;
     margin-top: 20px;
-    margin-bottom: 20px;
+    /* margin-bottom: 10px; */
     /* border: 1px solid red; */
     
 }
@@ -197,8 +197,14 @@
     position: relative;
     margin-right: 10px;
 }
+.input-container{
+    position: relative;
+    display: flex;
+}
 
-
+.input-container > button{
+    width: 100px;
+}
 .NewMovieUploadTitle > div:first-child{
     margin-right: 10px;
 }
@@ -245,3 +251,4 @@
     margin-right: 20px;
 
 }
+

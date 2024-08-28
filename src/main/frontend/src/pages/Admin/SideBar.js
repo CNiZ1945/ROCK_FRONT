@@ -37,7 +37,7 @@ const SideBar = () => {
 
                     <Menu>
                         <Img src={home}></Img>
-                        <NavLink className="a" style={({isActive}) => (isActive ? activeStyle : {})} to='/login'>
+                        <NavLink className="a" style={({isActive}) => (isActive ? activeStyle : {})} to='/'>
                             Home
                         </NavLink>
                     </Menu>
@@ -65,7 +65,7 @@ const SideBar = () => {
 
                     <Menu>
                         <Img src={gear}></Img>
-                        <Link className="a" to='/logout'>Logout</Link>
+                        <Link className="a" to='/login'>Logout</Link>
                     </Menu>
                 </SideWrap>
             </MenuWrap>
