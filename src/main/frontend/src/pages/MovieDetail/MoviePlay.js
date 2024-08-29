@@ -4,9 +4,8 @@ import axios from "axios";
 import ReactPlayer from "react-player";
 import { useParams } from 'react-router-dom';
 import { api } from "../../api/axios";
+import styled from "styled-components";
 
-// css
-import "./css/MoviePlay.css"
 
 
 function MoviePlay() {
@@ -129,7 +128,7 @@ function MoviePlay() {
     return (
 
         <>
-            <div className='iframeDiv'>
+            <IframeDiv>
                 <ReactPlayer
                     ref={videoRef}
                     // url={`/user/videos/ex_movie_film.mp4`}
@@ -160,9 +159,21 @@ function MoviePlay() {
                     }}
                 />
 
-            </div>
+            </IframeDiv>
         </>
     );
 }
 
 export default MoviePlay;
+
+const IframeDiv = styled.div`
+    width: 100%;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+
+    ReactPlayer{
+
+    
+    }
+`

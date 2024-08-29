@@ -164,19 +164,6 @@ function MovieSearch() {
     // html 시작 ================
     return (
         <>
-            <div className="search">
-                <form onSubmit={(e) => e.preventDefault()}>
-                    <input
-                        type="text"
-                        value={searchInput} // 입력 필드에 상태 연결
-                        onChange={(e) => setSearchInput(e.target.value)} // 입력값 변경 시 상태 업데이트
-                        placeholder="검색 예: title:Inception, director:Nolan, actor:DiCaprio, genre:Sci-Fi"
-                    />
-                    <button type="submit" onClick={() => setSearchParams({ query: searchInput })}>
-                        검색
-                    </button>
-                </form>
-            </div>
 
             {loading && <p>검색 중...</p>}
             {error && <p className="error">{error}</p>}
@@ -378,6 +365,9 @@ const WriteSection = styled.section`
         margin-left: 20px;
         opacity: 0.5;
     }
+    form{
+        display: flex;
+    }
 `;
 
 // 검색창
@@ -396,6 +386,7 @@ const SearchInput = styled.input`
     color: #333;
     min-height: 32px;
     background-color: transparent;
+    color: white;
 `;
 
 
@@ -515,7 +506,8 @@ const TopRankMoviesDiv = styled.div`
     flex-direction: column;
     justify-content: center;
     align-items: center;
-
+    margin-top: 20px;
+    
     h2{
         color: #fff;
         font-size: 2rem;

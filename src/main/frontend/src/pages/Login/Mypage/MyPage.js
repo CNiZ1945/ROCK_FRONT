@@ -8,6 +8,9 @@ import play from "../images/play.svg";
 import MemberInfo from "../MemberInfo";
 // import FindPassword from "../FindPW";
 import WithdrawMember from "../WithdrawMember";
+import MyReview from "../MyReview";
+import BookMark from "../BookMark";
+import WatchHistory from "../WatchHistory";
 import { api } from '../../../api/axios';
 import {DogImg, BirdImg, FishImg, CatImg, TurtleImg, 
     profile1, profile2, profile3, profile4, profile5} from './ProfileImg'
@@ -23,9 +26,9 @@ const MyPage = () => {
 
 
     const menuArr = [
-        {name: '최근 시청 내역', content: ""},
-        {name: '내가 찜한 리스트', content: ""},
-        {name: '나의 작성 리뷰', content: ""},
+        {name: '최근 시청 내역', content: <WatchHistory />},
+        {name: '내가 찜한 리스트', content: <BookMark />},
+        {name: '나의 작성 리뷰', content: <MyReview />},
         {name: '회원정보 수정', content: <MemberInfo />},
         {name: '회원탈퇴', content: <WithdrawMember />},
     ];

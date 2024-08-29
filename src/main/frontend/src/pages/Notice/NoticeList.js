@@ -439,7 +439,7 @@ const Header = styled.div`
         border: 1px solid #cccccc;
         border-radius: 2px;
         background-color: #e5e8eb;
-
+        margin-left: 15px;
         float: right;
 
         margin-top: 2px;
@@ -475,6 +475,7 @@ const Header = styled.div`
 
 const NoticeWriteButton = styled.div`
     font-size: 15px;
+    
 `;
 
 const Wrap = styled.div`

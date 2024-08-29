@@ -29,7 +29,7 @@
 }
 
 .post_title{
-    width: 935px;
+    width: 1024px;
     height: 40px;
     border: none;
     outline: none;
@@ -44,9 +44,10 @@
     text-align: left;
     border: 1px solid #ccc;
 }
+
 .post_text{
-    float: right;
-    width: 935px;
+
+    width: 1024px;
     height: 500px;
     resize: none;
     border: none;
@@ -54,7 +55,7 @@
     border: 1px solid #ccc;
     margin-top: 10px;
     margin-left: 5px;
-    margin-right: auto;
+
     text-indent: 10px;
     font-size: 13px;
     font-weight: 500;
@@ -126,45 +127,28 @@
     background-color: #273dff;
 }
 
-/* 왼쪽 */
-.btn_left{
-    width: 20%;
-    /* border: 1px solid red; */
-}
 
 
 
 /* 중앙 */
 .btn_center{
-    width: 60%;
+    /* width: 60%; */
     /* border: 1px solid red; */
     text-align: center;
     display: flex;
     justify-content: space-evenly;
 }
 .btn_center button{
-    width: 200px;
-    height: 50px;
-
-}
-
-
-
-
-/* 오른쪽 */
-.btn_right{
-    width: 20%;
-    /* border: 1px solid red; */
-    text-align: right;
-    /* padding-right: 10px; */
-}
-
-.back_to_list{
-    width: 100px;
-    height: 50px;
-
+    width: 90px;
+    height: 45px;
+    border: 1px solid #cccccc;
     margin-right: 10px;
 }
+
+
+
+
+
 
 
 

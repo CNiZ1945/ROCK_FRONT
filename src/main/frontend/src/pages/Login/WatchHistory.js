@@ -106,18 +106,28 @@ function WatchHistory() {
                 setError('접근 토큰이 없습니다. 다시 로그인해주세요.');
                 return;
             }
-
-            const response = await api.get(`/user/mypage/history`, {
+    
+            const response = await api.get('/user/mypage/history', {
                 params: {
                     page: page,
-                    size: itemsPerPage
+                    size: itemsPerPage // 페이지 사이즈 설정
                 },
-                headers: {'Authorization': `Bearer ${token}`}
+                headers: { 'Authorization': `Bearer ${token}` }
             });
-
-            console.log('Response data:', response.data);
-            setWatchHistory(prevHistory => [...prevHistory, ...response.data.content]);
-            setHasMore(response.data.content.length === itemsPerPage);
+    
+            console.log('Fetched History:', response.data); // 응답 데이터 확인
+    
+            const fetchedHistory = response.data.content;
+    
+            if (fetchedHistory.length === 0 && page === 0) {
+                setError('시청 기록이 없습니다.');
+                setWatchHistory([]);
+                setHasMore(false);
+            } else {
+                setWatchHistory(prevHistory => [...prevHistory, ...fetchedHistory]);
+                setHasMore(fetchedHistory.length === itemsPerPage);
+            }
+    
         } catch (error) {
             console.error('Error fetching watch history:', error);
             setError('시청 기록을 가져오는데 실패했습니다.');
@@ -125,6 +135,8 @@ function WatchHistory() {
             setLoading(false);
         }
     };
+    
+    
 
     const handleLoadMore = () => {
         setCurrentPage(prevPage => prevPage + 1);

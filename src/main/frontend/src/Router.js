@@ -30,12 +30,14 @@ import AdminMovieUploadModifyPage from './pages/Admin/AdminMovieUploadModifyPage
 import AdminMovieUploadFileModifyPage from './pages/Admin/AdminMovieUploadFileModifyPage';
 import AdminMovieUploadFilePage from './pages/Admin/AdminMovieUploadFilePage';
 import AdminMovieUploadPage from './pages/Admin/AdminMovieUploadPage';
+import TokenChecker from './components/Nav/TokenChecker';
 
 
 //Router
 const Router = () => {
     return (<BrowserRouter>
             <Navs/>
+            {/* <TokenChecker /> */}
         {/*Routes*/}
             <Routes>
                 {/*메인*/}

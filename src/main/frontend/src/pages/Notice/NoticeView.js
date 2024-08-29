@@ -185,8 +185,8 @@ const NoticeView = () => {
         <>
 
 
-            <div className="noticeView">
-                <div className="noticeViewHead">
+            <Wrap>
+                <NoticeViewHead>
                     <NoticeViewTitle>
                         {/* 조건부 렌더링 적용 */}
                         {noticeInfo ? (
@@ -224,12 +224,12 @@ const NoticeView = () => {
                             </>
                         )}
                     </div>
-                </div>
-                <div className="noticeViewContent">
+                </NoticeViewHead>
+                <NoticeViewContent>
                     {/* 조건부 렌더링 적용 */}
                     {noticeInfo ? (
                         <textarea
-                            id="boardContent"
+
                             className="post_text"
                             value={editContent !== '' ? editContent : noticeInfo?.boardContent}
                             onChange={(e) => setEditContent(e.target.value)}
@@ -237,14 +237,14 @@ const NoticeView = () => {
                         ></textarea>
                     ) : (
                         <textarea
-                            id="boardContent"
+
                             className="post_text"
                             defaultValue="내용 없음"
                             readOnly={!isAdmin}
                         ></textarea>
                     )}
-                </div>
-                <div className="noticeViewFiles">
+                </NoticeViewContent>
+                <NoticeViewFile>
                     {/* 조건부 렌더링 적용 */}
                     {noticeInfo && noticeInfo.files && noticeInfo.files.length > 0 ? (
                         <div>
@@ -262,22 +262,26 @@ const NoticeView = () => {
                     ) : (
                         <div>첨부파일이 없습니다.</div>
                     )}
-                </div>
-                <div className="noticeViewBtn">
-                    <div className="btn_left"></div>
-                    <div className="btn_center">
-                        {isAdmin && (
-                            <>
-                                <button className="modify_btn" onClick={editPost}>수정</button>
-                                <button className="delete_btn" onClick={deletePost}>삭제</button>
-                            </>
-                        )}
-                    </div>
-                    <div className="btn_right">
-                        <button className="back_to_list" onClick={() => navigate('/user/Notice')}>목록으로<br /> 돌아가기</button>
-                    </div>
-                </div>
-            </div>
+                </NoticeViewFile>
+                <NoticeViewBtn>
+                    <NoticeViewBtnWrap>
+
+                        <div className="btn_center">
+                            {isAdmin && (
+                                <>
+                                    <button className="modify_btn" onClick={editPost}>수정</button>
+                                    <button className="delete_btn" onClick={deletePost}>삭제</button>
+                                </>
+                            )}
+                        </div>
+                        <div className="btn_right">
+                            <button className="back_to_list" onClick={() => navigate('/user/Notice')}>목록으로<br /> 돌아가기</button>
+                        </div>
+
+                    </NoticeViewBtnWrap>
+
+                </NoticeViewBtn>
+            </Wrap>
 
             <ChatBot />
         </>
@@ -289,14 +293,33 @@ export default NoticeView;
 const Wrap = styled.div`
     width: 100%;
     //height: 100vh;
-    position: relative;
+    // position: relative;
     margin: 0 auto;
     //padding: 40px 40px;
     //background: rgb(255,255,255);
     background: #fff;
     display: inline-block;
+    display: flex;
+    flex-direction: column;
 `;
 
+// 글 제목, 날짜
+const NoticeViewHead = styled.div`
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    .noticeViewInfo{
+        width: 1024px;
+        text-align: right;
+
+    }
+
+`;
+
+// 글 제목
 const NoticeViewTitle = styled.div`
 
     box-sizing: border-box;
@@ -314,4 +337,85 @@ const NoticeViewTitle = styled.div`
 `;
 
 
+// 글 내용
+const NoticeViewContent = styled.div`
 
+    display: flex;
+    justify-content: center;
+    text-align: center;
+
+    textarea{
+
+    }
+`;
+
+// 첨부 파일
+const NoticeViewFile = styled.div`
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+margin-top: 10px;
+
+div{
+    width: 1024px;
+    margin-top; 10px;    
+    }
+    
+    `
+
+// 수정, 삭제, 돌아가기 버튼
+const NoticeViewBtn = styled.div`
+    margin-top: 10px;
+    margin-bottom: 10px;
+
+    display: flex;    
+    justify-content: center;
+    `
+
+const NoticeViewBtnWrap = styled.div`
+    width: 1024px;
+
+    display: flex;    
+    justify-content: space-between;
+
+    // 수정 버튼
+    .modify_btn{
+    background-color: #e5e8eb;
+
+    &:hover{
+        cursor: pointer;
+        background-color: #3182f6;
+        color: white;
+        }
+    }
+
+    // 삭제 버튼
+    .delete_btn{
+    background-color: #e5e8eb;
+
+        &:hover{
+        cursor: pointer;
+        background-color: red;
+        color: white;
+        }
+    
+
+    }
+
+
+    // 목록으로 돌아가기 버튼
+    .back_to_list{
+        width: 90px;
+        height: 45px;
+        background-color: #e5e8eb;
+        border: 1px solid #cccccc;
+
+        &:hover{
+        cursor: pointer;
+        background-color: #3182f6;
+        color: white;
+            }
+    }
+    
+`

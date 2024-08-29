@@ -358,9 +358,9 @@ const MovieDetail = () => {
 
                                                 <DesContent>
                                                     {/*줄거리-연습용*/}
-                                                    <span className="Destitle_span">
-                                                        {/* {movieDetail.movieDescription} */}
-                                                    </span>
+                                                    <MovieDescription>
+                                                        {movieDetail.movieDescription}
+                                                    </MovieDescription>
 
                                                     {/*줄거리-data*/}
                                                     {/*<span>{movieDetailDescription}</span>*/}
@@ -820,7 +820,10 @@ const MovieLike = styled.button`
 
     }
 `;
+const MovieDescription = styled.div`
+    color: white;
 
+`
 
 //포스터 - 이미지
 const MoviePoster = styled.img`

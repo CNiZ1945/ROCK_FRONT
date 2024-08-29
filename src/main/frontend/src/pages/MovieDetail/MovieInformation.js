@@ -169,28 +169,7 @@ const MovieInformation = () => {
                 <WholeContainer>
                     <div className="logoplace" />
 
-                    <ArrayContent>
-                        <ThumbBox>
-                            {/*포스터-연습용*/}
-                            <MoviePoster
-                            // src={movieDetail.posters && movieDetail.posters.length > 0 ? movieDetail.posters[0].posterUrls : ''}
-                            // alt={`${movieDetail.movieTitle} 포스터`}
-                            />
 
-                            {/*포스터-data/*/}
-                            {/*<MoviePoster src={movieData.movieThumbNailImg} alt="포스터" />*/}
-                        </ThumbBox>
-
-
-                        {/*2.줄거리*/}
-                        <DesBox className="description">
-
-                            <Destitle>줄거리</Destitle>
-                            <DesContent>
-                                {movieDetail.movieDescription || '줄거리를 불러올 수 없습니다'}
-                            </DesContent>
-                        </DesBox>
-                    </ArrayContent>
                     {/*1.썸네일*/}
 
 
@@ -198,11 +177,11 @@ const MovieInformation = () => {
                     <ArrayContent className='colum'>
                         <Txt><a className="txt">감독</a></Txt>
                         <DirectorBox>
-                            <ul>
+                            <DirectorBoxUL>
                                 {movieDetail.directors?.map(director => (
                                     <>
                                         <li key={director.directorId}>
-                                            {director.directorPhoto && director.directorPhoto.length > 0 && (
+                                            {director.directorPhoto && director.directorPhoto.length > 0 ? (
                                                 <Link to={`https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=0&ie=utf8&query=${director.directorName}`} target="_blank" >
 
                                                     <DirectorPoster
@@ -211,15 +190,21 @@ const MovieInformation = () => {
                                                         className="directorImg"
                                                     />
                                                 </Link>
+                                            ) : (
+                                                <DirectorPoster
+                                                    src="https://via.placeholder.com/200x300"  // 디폴트 이미지 경로
+                                                    alt="디폴트 사진"
+                                                    className="actorImg"
+                                                />
                                             )}
-                                        </li>
-                                        <li key={director.directorId}>
                                             {director.directorName}
+
                                         </li>
+
                                     </>
 
                                 ))}
-                            </ul>
+                            </DirectorBoxUL>
                         </DirectorBox>
                     </ArrayContent>
                     {/*3.감독*/}
@@ -236,20 +221,26 @@ const MovieInformation = () => {
                                 {movieDetail.actors?.map(actor => (
 
                                     <li key={actor.actorId}>
-                                        <div>
-                                            {actor.actorPhoto && actor.actorPhoto.length > 0 && (
-                                                <Link to={`https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=0&ie=utf8&query=${actor.actorName}`} target="_blank" >
-
+                                        <PhotoArrayDiv>
+                                            {actor.actorPhoto && actor.actorPhoto.length > 0 ? (
+                                                <Link to={`https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=0&ie=utf8&query=${actor.actorName}`} target="_blank">
                                                     <ActorPoster
-                                                        src={actor.actorPhoto[0].photoUrl}
+                                                        src={actor.actorPhoto[0].photoUrl}  // 배우 사진이 있을 때 사용
                                                         alt={`${actor.actorName} 사진`}
                                                         className="actorImg"
                                                     />
                                                 </Link>
+                                            ) : (
+                                                <ActorPoster
+                                                    src="https://via.placeholder.com/200x300"  // 디폴트 이미지 경로
+                                                    alt="디폴트 사진"
+                                                    className="actorImg"
+                                                />
                                             )}
 
+
                                             {actor.actorName}
-                                        </div>
+                                        </PhotoArrayDiv>
                                     </li>
 
 
@@ -263,48 +254,43 @@ const MovieInformation = () => {
                     <ArrayContent className='colum'>
                         <Txt><a className="txt">영화 정보</a></Txt>
 
+
                         <DetailBox>
-                            <ul className="DetailTitle">
-                                {Detail_LIST.map(category => {
-                                    return (<DetailTitle key={category.id}>
-                                        {category.title}
-                                            </DetailTitle>);
-                                })}
-                            </ul>
-
-                            <ul className="DetailContext" key="index">
-
-                                {/* 배우 */}
-                                <MovieDetailBoxUl>
-                                    {movieDetail.directors?.map(director => (
-                                        <DetailContext key={director.directorId}>
-                                            {director.directorName}
+                            <ul className="DetailList">
+                                {Detail_LIST.map((category, index) => (
+                                    <li key={category.id} className="DetailItem">
+                                        <DetailTitle>
+                                            {category.title}
+                                        </DetailTitle>
+                                        <DetailContext>
+                                            {index === 0 && movieDetail.directors?.map((director, idx) => (
+                                                <React.Fragment key={director.directorId}>
+                                                    {director.directorName}
+                                                    {idx < movieDetail.directors.length - 1 && ', '}
+                                                </React.Fragment>
+                                            ))}
+                                            {index === 1 && movieDetail.actors?.map((actor, idx) => (
+                                                <React.Fragment key={actor.actorId}>
+                                                    {actor.actorName}
+                                                    {idx < movieDetail.actors.length - 1 && ', '}
+                                                </React.Fragment>
+                                            ))}
+                                            {index === 2 && (movieDetail.genres?.map((genre, idx) => (
+                                                <React.Fragment key={genre.genreId}>
+                                                    {genre.genreName}
+                                                    {idx < movieDetail.genres.length - 1 && ', '}
+                                                </React.Fragment>
+                                            )) || "정보 없음")}
+                                            {index === 3 && (movieDetail.movieRating || "정보 없음")}
+                                            {index === 4 && (movieDetail.runTime || "정보 없음") + '분'}
+                                            {index === 5 && (movieDetail.openYear || "정보 없음")}
                                         </DetailContext>
-
-                                    ))}
-                                </MovieDetailBoxUl>
-
-                                {/* 배우 */}
-                                <MovieDetailBoxUl>
-                                    {movieDetail.actors?.map(actor => (
-                                        <DetailContext key={actor.actorId}>
-                                            {actor.actorName}
-                                        </DetailContext>
-
-                                    ))}
-                                </MovieDetailBoxUl>
-                                {/* 장르 */}
-                                <DetailContext>{movieDetail.genres?.map(genre => genre.genreName).join(', ') || "정보 없음"}</DetailContext>
-                                {/* 등급 */}
-                                <DetailContext>{movieDetail.movieRating || "정보 없음"}</DetailContext>
-                                {/* 상영 시간 */}
-                                <DetailContext>{movieDetail.runTime || "정보 없음"}분</DetailContext>
-                                {/* 개봉일 */}
-                                <DetailContext>{movieDetail.openYear || "정보 없음"}</DetailContext>
+                                    </li>
+                                ))}
                             </ul>
-
-
                         </DetailBox>
+
+
 
                     </ArrayContent>
 
@@ -360,27 +346,41 @@ const MoviePoster = styled.img`
 
 //감독- 전체 박스
 const DirectorBox = styled.div`
-    width: 785px;
+    width: 1200px;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-   
+    // border: 1px solid red;
 
     //디자인
     // margin-bottom: 30px;
     margin-left: 10px;
-    display: flex;
+
     justify-content: left;
     
 `;
 
+// 감독 사진 ul
+const DirectorBoxUL = styled.ul`
+display: flex;
+flex-wrap: wrap;
+
+li{
+display: flex;
+flex-direction: column;
+margin-bottom: 20px;
+}
+
+`
+
+
 //배우-이미지 박스
 const ActorBox = styled.div`
-    width: 785px;
+    width: 1200px;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-
+    // border: 1px solid red;
     //디자인
     margin-bottom: 30px;
     margin-left: 10px;
@@ -391,9 +391,16 @@ const ActorBox = styled.div`
 // 사진 정렬 ul
 const PhotoArray = styled.ul`
     display: flex;
-    flex-wrap: wrap'
+    flex-wrap: wrap;
+    // border: 1px solid red;
 
     `
+const PhotoArrayDiv = styled.div`
+        display: flex;
+        flex-direction: column;
+
+`
+
 
 //텍스트
 const Txt = styled.div`
@@ -412,7 +419,7 @@ const Txt = styled.div`
         margin-left: 20px;
         font-size: 16px;
         display: flex;
-       align-items: center;
+        align-items: center;
     }
 `;
 
@@ -437,21 +444,25 @@ const ActorPoster = styled.img`
 // 영화 상세 설명
 const DetailBox = styled.div`
     
-    width: 785px;
+    width: 1200px;
     display: flex;
     flex-wrap: wrap;
     margin-top: 30px;
 
+    // border: 1px solid red;
+    .DetailList{
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+    }
     
-
-    .DetailTitle {
-        // border: 1px solid red;
-    }
-
-    .DetailContext {
-
+    .DetailItem {
+        display: flex;
+        // border: 1px solid blue;
+        margin-top: 15px;
 
     }
+    
 `;
 
 // 감독 출연진 정렬 박스
@@ -531,18 +542,24 @@ const BookingButton = styled.button`
 
 //포스터 - 오른쪽
 const DetailTitle = styled.li`
-    margin-bottom: 20px;
+
+    width: 10%;
+    // margin-bottom: 20px;
     padding-left: 6px;
     color: #fff;
     opacity: 0.64;
     font-size: 18px;
     text-align: left;
     text-indent: 15px;
-`;
+    display: flex;
+    align-items: center;
+    `;
 
 //내용
 const DetailContext = styled.li`
-    margin-bottom: 20px;
+    width: 90%;
+
+  
     font-size: 16px;
     font-weight: 300;
     padding-top: 2px;
@@ -552,8 +569,12 @@ const DetailContext = styled.li`
     margin-left: 30px;
     line-height: 1.4;
     text-align: left;
-    
-`;
+    // border: 1px solid white;
+
+    display: flex;
+
+
+    `;
 
 //데이터-연습용
 const Detail_LIST = [

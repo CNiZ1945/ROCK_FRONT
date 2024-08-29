@@ -13,13 +13,14 @@ import search from './images/search.svg';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars, faUser, faTimes } from "@fortawesome/free-solid-svg-icons";
 import Profile_1 from './images/Profile_1.svg';
+import TokenChecker from './TokenChecker';
 
 
 
 function Navs() {
 	
 	const [accessToken, setAccessToken] = useState(localStorage.getItem('accessToken'));
-
+	const [loginOn, setLoginOn] = useState(true);
 	const [searchInput, setSearchInput] = useState('');
 	const [scrollPosition, setScrollPosition] = useState(0);
 
@@ -33,19 +34,16 @@ function Navs() {
 		navigate(path);
 	};
 
+
 	// 로그아웃 버튼 시 로그 아웃
 	const handleLogout = async () => {
-		setAccessToken(localStorage.getItem('accessTokne'))
 
 		try {
             if (accessToken) {
                 localStorage.removeItem('accessToken');
                 setAccessToken(null);
 				navigate('/login');
-            }	
-			else{
-           		navigate('/login');
-			}		
+            }		
 		} 
 		catch (error) {
 			console.error('로그아웃 중 오류 발생:', error);
@@ -112,6 +110,8 @@ function Navs() {
 
 	//HTML
 	return (
+		<>
+		
 		<NavWrapper scrollposition={scrollPosition}>
 
 
@@ -268,6 +268,7 @@ function Navs() {
 				{/*/>*/}
 		</IconWrapper>
 		</NavWrapper>
+		</>
 );
 	
 }

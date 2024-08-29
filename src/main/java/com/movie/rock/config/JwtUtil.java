@@ -23,6 +23,10 @@ public class JwtUtil implements Serializable {
         return createToken(memId, 1000 * 60 * 60 * 3);
     }
 
+//    public String generateAccessToken(String memId) {
+//        return createToken(memId, 1000 * 60);
+//    }
+
     // 리프래쉬 토큰 ( 7일 유효 )
     public String generateRefreshToken(String memId) {
         return createToken(memId, 1000 * 60 * 60 * 24 * 7);
