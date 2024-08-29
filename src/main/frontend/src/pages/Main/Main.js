@@ -7,7 +7,7 @@ import VideoSwiper from './VideoSwiper/VideoSwiper';
 import MainTop4 from './MainTop4';
 import Navs from "../../components/Nav/Navs";
 import axios  from 'axios';
-import ChatBot from '../ChatBot/ChatBot';
+import ChatBot from '../../components/ChatBot/ChatBot';
 
 
 function Main() {

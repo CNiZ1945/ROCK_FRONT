@@ -6,7 +6,7 @@ import { useParams } from 'react-router-dom';
 import { api } from "../../api/axios";
 
 // css
-import "../../common/css/MoviePlay.css"
+import "./css/MoviePlay.css"
 
 
 function MoviePlay() {

@@ -11,6 +11,14 @@ function Login() {
     const [password, setPassword] = useState("");
     const [rememberUserName, setRememberUserName] = useState(false);
 
+    useEffect(() => {
+        const accessToken = localStorage.getItem('accessToken');
+        if(accessToken){
+            localStorage.removeItem('accessToken');
+        }
+
+
+    }, []);
 
     // 아이디 저장 관련 - 1
     useEffect(() => {

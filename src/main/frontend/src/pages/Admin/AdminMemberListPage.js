@@ -8,7 +8,7 @@ import SideBar from "./SideBar";
 //img
 import home from "./images/home.svg";
 import Pagination from "react-js-pagination";
-import ChatBot from "../ChatBot/ChatBot";
+import ChatBot from "../../components/ChatBot/ChatBot";
 import { Navigate, useNavigate } from "react-router-dom";
 
 
@@ -25,7 +25,7 @@ function AdminMemberListPage() {
     const [selectedMembers, setSelectedMembers] = useState([]);
 
     const [selectAll, setSelectAll] = useState(false);
-    
+
     const [hasPermission, setHasPermission] = useState(false);
 
     const [isLoading, setIsLoading] = useState(true);
@@ -39,12 +39,29 @@ function AdminMemberListPage() {
         fetchMembers();
     }, [currentPage, searchTerm]);
 
+    // 권한 확인 후 게시글 불러오기
+    useEffect(() => {
+        if (!initializedRef.current) {
+            initializedRef.current = true;
+            checkPermission();
+            console.log("hasPermission: ", hasPermission);
+
+        }
+        if (hasPermission) {
+            fetchMembers(currentPage);
+        }
+
+
+
+    }, [hasPermission]);
+
+
     // 로그인 및 권한 상태 확인
     const checkPermission = async () => {
         const token = localStorage.getItem('accessToken');
         const response = await api.get('auth/memberinfo', {
             headers: {
-                "Authorization" : `Bearer ${token}`,
+                "Authorization": `Bearer ${token}`,
             }
         });
         const role = response.data.memRole;
@@ -56,7 +73,7 @@ function AdminMemberListPage() {
                 // return;
             }
             // 관리자가 아닐 시
-            if(role !== 'ADMIN'){
+            if (role !== 'ADMIN') {
                 alert("관리자만 들어갈 수 있는 페이지입니다.");
                 navigate(-1);
             }
@@ -81,19 +98,19 @@ function AdminMemberListPage() {
         try {
             const response = await api.get(`/admin/members/search?term=${searchTerm}`);
             const allMembers = response.data; // 전체 검색 결과를 가져옴
-    
+
             // 페이지네이션 처리
             const startIndex = (currentPage - 1) * 10;
             const endIndex = startIndex + 10;
             const pagedMembers = allMembers.slice(startIndex, endIndex);
-    
+
             setMembers(pagedMembers); // 현재 페이지의 회원 목록 업데이트
             setTotalPages(Math.ceil(allMembers.length / 10)); // 총 페이지 수 업데이트
         } catch (error) {
             console.error("Error fetching members:", error);
         }
     };
-    
+
 
 
     // 회원 검색 로직
@@ -101,14 +118,14 @@ function AdminMemberListPage() {
         e.preventDefault();
         try {
             const response = await api.get(`/admin/members/search?term=${searchTerm}`);
-            setMembers(response.data);    
-        } 
+            setMembers(response.data);
+        }
         catch (error) {
             console.error("Error searching members:", error);
         }
 
     }
-    
+
 
     // 전체 선택 체크박스 핸들러
     const handleSelectAll = (e) => {
@@ -176,26 +193,12 @@ function AdminMemberListPage() {
         fetchMembers(); // 페이지 변경 시 데이터 새로 요청
     };
 
-        // 권한 확인 후 게시글 불러오기
-        useEffect(() => {
-            if (!initializedRef.current) {
-                initializedRef.current = true;
-                checkPermission();
-                console.log("hasPermission: ", hasPermission);
-    
-            }
-            if (hasPermission) {
-                fetchMembers(currentPage);
-            }
 
-    
-
-        }, [hasPermission]);
 
     // 검색 엔터키 기능
     const handleEnterKey = (e) => {
         e.preventDefault();
-        if(e.key === 'Enter'){
+        if (e.key === 'Enter') {
             console.log("input enter key:", searchTerm)
         }
     }
@@ -219,7 +222,7 @@ function AdminMemberListPage() {
         <>
             {/* 배경 wrap*/}
             <div className="wrap" >
-                
+
                 {/* sidebar */}
                 <SideBar />
                 {/*3.상단 브레드스크럼 메뉴바*/}
@@ -248,12 +251,12 @@ function AdminMemberListPage() {
                     <Button
                         className="search_submit"
                         type="submit">
-                            검색
-                        </Button>
-                        {/* 삭제 버튼 */}
-                        
-                        <DeleteButton onClick={handleDeleteMembers}>회원 삭제</DeleteButton>
-                    
+                        검색
+                    </Button>
+                    {/* 삭제 버튼 */}
+
+                    <DeleteButton onClick={handleDeleteMembers}>회원 삭제</DeleteButton>
+
                 </FormBox>
 
                 <div className="list_div">
@@ -309,17 +312,17 @@ function AdminMemberListPage() {
 
                     {/* 페이지네이션 컴포넌트 */}
                     {/* <div className="pagination"> */}
-                        <Pagination
-                            activePage={currentPage}
-                            itemsCountPerPage={10}
-                            totalItemsCount={totalPages * 10}
-                            pageRangeDisplayed={10}
-                            onChange={handlePageChange}
-                            prevPageText={"‹"}
-                            nextPageText={"›"}
-                            firstPageText={"«"}
-                            lastPageText={"»"}
-                        />
+                    <Pagination
+                        activePage={currentPage}
+                        itemsCountPerPage={10}
+                        totalItemsCount={totalPages * 10}
+                        pageRangeDisplayed={10}
+                        onChange={handlePageChange}
+                        prevPageText={"‹"}
+                        nextPageText={"›"}
+                        firstPageText={"«"}
+                        lastPageText={"»"}
+                    />
                     {/* </div> */}
 
                 </div>

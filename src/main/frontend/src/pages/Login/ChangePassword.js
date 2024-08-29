@@ -4,7 +4,7 @@ import axios from "axios";
 
 
 // css
-import "../../common/css/ChangePassword.css"
+import "./css/ChangePassword.css"
 import { api } from '../../api/axios';
 import styled from 'styled-components';
 

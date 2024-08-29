@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 // import '../css/Header.css';
-import ChatBot from '../ChatBot/ChatBot';
+import ChatBot from '../../components/ChatBot/ChatBot';
 import { api } from '../../api/axios';
 import styled from 'styled-components';
 import Pagination from "react-js-pagination";

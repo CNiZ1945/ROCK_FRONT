@@ -7,7 +7,7 @@ import bullet from "./images/bullet.svg"
 
 import Pagination from "react-js-pagination";
 import './css/Paging.css';
-import ChatBot from '../ChatBot/ChatBot';
+import ChatBot from '../../components/ChatBot/ChatBot';
 
 
 

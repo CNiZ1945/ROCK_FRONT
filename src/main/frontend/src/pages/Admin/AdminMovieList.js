@@ -9,7 +9,7 @@ import home from "./images/home.svg";
 import CommonTable from './AdminTable/CommonTable';
 import CommonTableColumn from './AdminTable/CommonTableColumn';
 import CommonTableRow from './AdminTable/CommonTableRow';
-import ChatBot from "../ChatBot/ChatBot"
+import ChatBot from "../../components/ChatBot/ChatBot"
 
 
 import "./css/Admin.css";

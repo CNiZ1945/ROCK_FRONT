@@ -14,7 +14,7 @@ import SideBar from './SideBar';
 import './css/AdminMemberList.css';
 
 import home from "./images/home.svg";
-import ChatBot from '../ChatBot/ChatBot';
+import ChatBot from '../../components/ChatBot/ChatBot';
 // import handleEnterKey from '../../components/handleEnterKey';
 
 function AdminNoticeListPage() {

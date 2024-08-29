@@ -11,7 +11,7 @@ import WithdrawMember from "../WithdrawMember";
 import { api } from '../../../api/axios';
 import {DogImg, BirdImg, FishImg, CatImg, TurtleImg, 
     profile1, profile2, profile3, profile4, profile5} from './ProfileImg'
-import ChatBot from '../../ChatBot/ChatBot';
+import ChatBot from '../../../components/ChatBot/ChatBot';
 
 
 //MyPage header
@@ -53,7 +53,9 @@ const MyPage = () => {
             }
         } catch (error) {
             console.error("Mypage header user name error:", error);
-            alert("회원 이름을 불러오는데 문제가 발생했습니다.");
+            alert("회원 이름을 불러오는데 문제가 발생했습니다. 다시 로그인해주세요");
+            navigate('/login')
+            return;
         }
     };
 
