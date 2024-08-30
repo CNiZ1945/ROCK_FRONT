@@ -34,7 +34,7 @@ const DraggableMovieItem = ({ movie, showPlayButton, showProgressBar, progressPe
                     className="mypage-poster-link"
                 >
                     <img
-                        src={movie.poster.posterUrls}
+                        src={movie.mainPosterUrl?.posterUrls || 'https://via.placeholder.com/343x493?text=No+Image'}
                         alt={movie.movieTitle}
                         className="mypage-movie-poster"
                     />

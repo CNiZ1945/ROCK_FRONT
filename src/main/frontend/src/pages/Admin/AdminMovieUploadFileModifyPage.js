@@ -4,7 +4,8 @@ import axios from 'axios';
 import { api } from '../../api/axios';
 import SideBar from './SideBar';
 import home from "./images/home.svg";
-
+import "./css/AdminMovieUpload.css";
+import ChatBot from '../../components/ChatBot/ChatBot';
 
 
 function AdminMovieUploadFileModifyPage() {
@@ -15,7 +16,7 @@ function AdminMovieUploadFileModifyPage() {
 
     const [movieTitle, setMovieTitle] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
-    
+
     const [hasPermission, setHasPermission] = useState(false);
 
     const [movieData, setMovieData] = useState({
@@ -34,7 +35,7 @@ function AdminMovieUploadFileModifyPage() {
 
     useEffect(() => {
         const token = localStorage.getItem('accessToken');
-        if(!token){
+        if (!token) {
             alert("로그인이 필요한 페이지입니다. 로그인 해주세요.");
             navigate("/login");
         }
@@ -165,17 +166,17 @@ function AdminMovieUploadFileModifyPage() {
         }
     };
 
-        // 권한없을시 페이지 없음
-        if (!hasPermission) {
-            return null;
-        }
+    // 권한없을시 페이지 없음
+    if (!hasPermission) {
+        return null;
+    }
 
-        
+
     return (
-<>
-        <div className='wrap'>
+        <>
+            <div className='wrap'>
 
-        <SideBar />
+                <SideBar />
                 <div className="admin_head">
                     <img src={home} alt="Home" />
                     <h2>관리자페이지</h2>
@@ -183,106 +184,109 @@ function AdminMovieUploadFileModifyPage() {
                 <div className="admin_movie_head">
                     <span>Admin {">"} 영화 관리 {">"} 영화 수정 - 파일 정보</span>
                 </div>
-        <div className='UploadBody'>
-            <div className="AdminUploadHead">
-                <h2>영화 수정 - 파일 정보</h2>
-            </div>
-            <div className="UploadInfo">
-                {errorMessage && (
-                    <div className="error-message" style={{color: 'red', marginBottom: '10px'}}>
-                        {errorMessage}
+                <div className='UploadBody'>
+                    <div className="AdminUploadHead">
+                        <h2>영화 수정 - 파일 정보</h2>
                     </div>
-                )}
-                <div className="UploadTitleForm">
-                    <label className="ModifyMovieTitle">
-                        <div>제목:</div>
-                        <div>{movieTitle}</div>
-                    </label>
-                </div>
-
-                <form onSubmit={handleSubmit} className="UploadInfoForm">
-                    <label className='ModifyMovieFile'>
-                        <div>영화 URL:</div>
-                        <div>
-                            <input
-                                className='modifyMovieInput'
-                                type="text"
-                                name="movieFilm"
-                                value={movieData.movieFilm}
-                                onChange={(e) => handleInputChange(e, null, 'movieFilm')}
-                                required
-                            />
+                    <div className="UploadInfo">
+                        {errorMessage && (
+                            <div className="error-message" style={{ color: 'red', marginBottom: '10px' }}>
+                                {errorMessage}
+                            </div>
+                        )}
+                        <div className="UploadTitleForm">
+                            <label className="ModifyMovieTitle">
+                                <div>제목:</div>
+                                <div>{movieTitle}</div>
+                            </label>
                         </div>
-                    </label>
 
-                    {movieData.trailers.map((trailer, index) => (
-                        <label className='ModifyMovieFile' key={index} >
-                            <label className='ModifyMovieFileLabel' >
-                                <div>예고편 URL {index + 1}:</div>
-                                <div>
-                                    <input
-                                        className='modifyMovieInput'
-                                        type="text"
-                                        name="trailerUrls"
-                                        value={trailer.trailerUrls}
-                                        onChange={(e) => handleInputChange(e, index, 'trailers')}
-                                    />
-                                </div>
-                            </label>
-                            {index === 0 && (
-                                <label  style={{marginLeft: '10px'}}>
-                                    <div>메인 예고편:</div>
+                        <form onSubmit={handleSubmit} className="UploadInfoForm">
+
+                            <label className='ModifyMovieFile'>
+                                <label className='ModifyMovieFileLabel'>
+                                    <div>영화 URL:</div>
                                     <div>
                                         <input
-                                            type="checkbox"
-                                            name="mainTrailer"
-                                            checked={trailer.mainTrailer}
-                                            onChange={(e) => handleInputChange(e, index, 'trailers')}
+                                            className='modifyMovieInput'
+                                            type="text"
+                                            name="movieFilm"
+                                            value={movieData.movieFilm}
+                                            onChange={(e) => handleInputChange(e, null, 'movieFilm')}
+                                            required
                                         />
                                     </div>
                                 </label>
-                            )}
-                        </label>
-                    ))}
-
-                    {movieData.posters.map((poster, index) => (
-                        <label className='ModifyMovieFile' key={index} >
-                            <label className='ModifyMovieFileLabel' >
-                                <div>포스터 URL {index + 1}:</div>
-                                <div>
-                                    <input
-                                        className='modifyMovieInput'
-                                        type="text"
-                                        name="posterUrls"
-                                        value={poster.posterUrls}
-                                        onChange={(e) => handleInputChange(e, index, 'posters')}
-                                    />
-                                </div>
                             </label>
-                            {index === 0 && (
-                                <label style={{marginLeft: '10px'}}>
-                                    <div>메인 포스터:</div>
-                                    <div>
-                                        <input
-                                            type="checkbox"
-                                            name="mainPoster"
-                                            checked={poster.mainPoster}
-                                            onChange={(e) => handleInputChange(e, index, 'posters')}
-                                        />
-                                    </div>
-                                </label>
-                            )}
-                        </label>
-                    ))}
 
-                    <div>
-                        <input type="submit" value="완료" className="MovieUploadBtn"/>
+                            {movieData.trailers.map((trailer, index) => (
+                                <label className='ModifyMovieFile' key={index} >
+                                    <label className='ModifyMovieFileLabel' >
+                                        <div>예고편 URL {index + 1}:</div>
+                                        <div>
+                                            <input
+                                                className='modifyMovieInput'
+                                                type="text"
+                                                name="trailerUrls"
+                                                value={trailer.trailerUrls}
+                                                onChange={(e) => handleInputChange(e, index, 'trailers')}
+                                            />
+                                        </div>
+                                    </label>
+                                    {index === 0 && (
+                                        <label style={{ marginLeft: '10px' }}>
+                                            <div>메인 예고편:</div>
+                                            <div>
+                                                <input
+                                                    type="checkbox"
+                                                    name="mainTrailer"
+                                                    checked={trailer.mainTrailer}
+                                                    onChange={(e) => handleInputChange(e, index, 'trailers')}
+                                                />
+                                            </div>
+                                        </label>
+                                    )}
+                                </label>
+                            ))}
+
+                            {movieData.posters.map((poster, index) => (
+                                <label className='ModifyMovieFile' key={index} >
+                                    <label className='ModifyMovieFileLabel' >
+                                        <div>포스터 URL {index + 1}:</div>
+                                        <div>
+                                            <input
+                                                className='modifyMovieInput'
+                                                type="text"
+                                                name="posterUrls"
+                                                value={poster.posterUrls}
+                                                onChange={(e) => handleInputChange(e, index, 'posters')}
+                                            />
+                                        </div>
+                                    </label>
+                                    {index === 0 && (
+                                        <label style={{ marginLeft: '10px' }}>
+                                            <div>메인 포스터:</div>
+                                            <div>
+                                                <input
+                                                    type="checkbox"
+                                                    name="mainPoster"
+                                                    checked={poster.mainPoster}
+                                                    onChange={(e) => handleInputChange(e, index, 'posters')}
+                                                />
+                                            </div>
+                                        </label>
+                                    )}
+                                </label>
+                            ))}
+
+                            <div>
+                                <input type="submit" value="완료" className="MovieUploadBtn" />
+                            </div>
+                        </form>
                     </div>
-                </form>
+                </div>
             </div>
-        </div>
-        </div>
-
+            <ChatBot />
         </>
 
     );

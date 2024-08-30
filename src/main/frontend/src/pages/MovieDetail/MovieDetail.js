@@ -416,11 +416,12 @@ const MovieDetail = () => {
                                         {/*포스터-연습용*/}
                                         {/* <MoviePoster src={poster} alt="포스터" /> */}
                                         <MoviePoster
-                                            src={
-                                                movieDetail.posters && movieDetail.posters.length > 0
-                                                    ? movieDetail.posters.find(poster => poster.posterUrls)?.posterUrls
-                                                    : '' || 'https://via.placeholder.com/343x493?text=No+Image'
-                                            }
+                                        src={movieDetail.mainPosterUrl?.posterUrls || 'https://via.placeholder.com/343x493?text=No+Image'}
+                                            // src={
+                                            //     movieDetail.posters && movieDetail.posters.length > 0
+                                            //         ? movieDetail.posters.find(poster => poster.posterUrls)?.posterUrls
+                                            //         : '' || 'https://via.placeholder.com/343x493?text=No+Image'
+                                            // }
                                             alt={`${movieDetail.movieTitle} 포스터`}
                                             className="movie_bg"
                                         />

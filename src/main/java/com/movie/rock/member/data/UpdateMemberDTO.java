@@ -13,6 +13,5 @@ public class UpdateMemberDTO {
     private String memNewPasswordCheck;
     private String memNewEmail;
     private String memNewTel;
-
-
+    private String memNewProfile;
 }

@@ -100,7 +100,7 @@ function BookMark() {
                                 <div className="mypage-bookmark-poster-container">
                                     <Link to={`/user/MoviePage/${movie.movieId}`} className="mypage-bookmark-movie-link">
                                         <img
-                                            src={movie.poster ? movie.poster.posterUrls : 'https://via.placeholder.com/500'}
+                                            src={movie.mainPosterUrl?.posterUrls || 'https://via.placeholder.com/343x493?text=No+Image'}
                                             alt={movie.movieTitle}
                                             className="mypage-bookmark-movie-poster"
                                             onError={(e) => e.target.src = 'https://via.placeholder.com/500'}

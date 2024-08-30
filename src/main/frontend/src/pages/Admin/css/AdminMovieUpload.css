@@ -65,7 +65,6 @@
     width: 80%;
     display: flex;
     margin-top: 20px;
-    margin-bottom: 20px;
     /* border: 1px solid red; */
     
 }
@@ -97,6 +96,7 @@
 }
 .admimMovieUploadTitle > label{
     width: 30%;
+    
     text-align: right;
     /* display: flex; */
     /* align-items: right; */
@@ -107,8 +107,10 @@
 /* 새 영화 업로드 제목 버튼 */
 .MovietitleSubmit{
     width: 140px;
+    height: 30px;
     margin-left: 10px;
-    border: 1px solid rgba(201, 201, 201, 0.6);
+    color: black;
+    border: 1px solid black;
 }
 
 .MovieTitleInput{
@@ -145,7 +147,7 @@
 }
 
 .UploadMovieFileLabel{
-    width: 992px;
+    width: 1045px;
     display: flex;
     margin-bottom: 15px;
     justify-content: right;
@@ -220,7 +222,7 @@
 .ModifyMovieFile > label{
     display: flex;
     /* border: 1px solid blue; */
-    width: 30%;
+    width: 48%;
 }
 
 .ModifyMovieFile > div:first-child{
@@ -228,9 +230,10 @@
 }
 
 .ModifyMovieFileLabel{
-    /* border: 1px solid red; */
-    margin-left: 292px;
-    width: 30% !important; 
+    width: 992px;
+    display: flex;
+    margin-bottom: 15px;
+    justify-content: right;
 }
 .ModifyMovieFile > .ModifyMovieFileLabel > div{
     text-align: right !important;

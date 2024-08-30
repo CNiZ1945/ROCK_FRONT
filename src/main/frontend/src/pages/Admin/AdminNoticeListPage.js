@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import CommonTable from '../../components/table/CommonTable';
 import CommonTableColumn from '../../components/table/CommonTableColumn';
@@ -38,41 +38,34 @@ function AdminNoticeListPage() {
     const [isSearching, setIsSearching] = useState(false);
 
     // 로그인 및 권한 상태 확인
-    const checkPermission = async () => {
+    const checkPermission = useCallback(async () => {
         const token = localStorage.getItem('accessToken');
-        const response = await api.get('auth/memberinfo', {
-            headers: {
-                "Authorization" : `Bearer ${token}`,
-            }
-        });
-        const role = response.data.memRole;
-        try {
-            // 로그인을 하지 않을 시
-            if (!token) {
-                alert('로그인이 필요한 페이지입니다.');
-                navigate("/login");
-                // return;
-            }
-            // 관리자가 아닐 시
-            if(role !== 'ADMIN'){
-                alert("관리자만 들어갈 수 있는 페이지입니다.");
-                navigate(-1);
-            }
-            else {
-                setHasPermission(true);
-
-            }
+        if (!token) {
+            alert("로그인이 필요합니다.");
+            navigate('/login');
+            return;
         }
-        catch (error) {
-            console.error('PostList user info error:', error);
-            alert("오류가 발생했습니다. 다시 로그인해주세요")
+    
+        try {
+            const response = await api.get('/auth/memberinfo', {
+                headers: { 'Authorization': 'Bearer ' + token }
+            });
+            const role = response.data.memRole;
+            if (role === 'ADMIN') {
+                setHasPermission(true);
+            } else {
+                alert("관리자만 볼 수 있는 페이지입니다.");
+                navigate('/');
+            }
+        } catch (error) {
+            console.error('Error fetching user info:', error);
+            alert("오류가 발생했습니다. 다시 로그인해주세요.");
             navigate('/login');
         }
         finally {
             setIsLoading(false);
         }
-
-    }
+    }, [navigate]);
 
     // 공지글 내용 불러오기
     const loadBoardList = async (page = 1) => {

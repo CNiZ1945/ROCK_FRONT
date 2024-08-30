@@ -8,6 +8,7 @@ import { api } from '../../api/axios';
 import SideBar from './SideBar';
 import home from "./images/home.svg";
 import { BiBorderRadius } from 'react-icons/bi';
+import ChatBot from '../../components/ChatBot/ChatBot';
 
 
 function AdminMovieUploadModifyPage() {
@@ -113,7 +114,7 @@ const checkPermission = useCallback(async () => {
         if (role === 'ADMIN') {
             setHasPermission(true);
         } else {
-            alert("권한이 없습니다.");
+            alert("관리자만 볼 수 있는 페이지입니다.");
             navigate('/');
         }
     } catch (error) {
@@ -319,7 +320,7 @@ const checkPermission = useCallback(async () => {
                     <h2>관리자페이지</h2>
                 </div>
                 <div className="admin_movie_head">
-                    <span>Admin {">"} 영화 관리 {">"} 새 영화 업로드 - 파일 정보</span>
+                    <span>Admin {">"} 영화 관리 {">"} 영화 수정 - 영화 정보</span>
                 </div>
 
                 <div className='UploadBody'>
@@ -418,7 +419,7 @@ const checkPermission = useCallback(async () => {
                                 <div>
                                     <textarea
                                         name="movieDescription"
-                                        style={{ color: 'black', backgroundColor: 'white', border: '1px solid #ccc', padding: '5px', width: '100%', minHeight: '100px' }}
+                                        style={{ color: 'black', backgroundColor: 'white', border: '1px solid #ccc', padding: '5px', width: '50%', height: '200px', resize:'none'}}
                                         value={movieData.movieDescription}
                                         onChange={handleInputChange}
                                         required
@@ -471,6 +472,7 @@ const checkPermission = useCallback(async () => {
                     />
                 </div>
             </div>
+            <ChatBot />
         </>
     );
 }

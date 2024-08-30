@@ -160,6 +160,8 @@ public class AuthController {
 
         memberInfo.setMemId(member.getMemId());
 
+        memberInfo.setMemProfile(member.getMemProfile());
+
         memberInfo.setMemBirth(member.getMemBirth().toString());
 
 

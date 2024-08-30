@@ -4,6 +4,7 @@ import axios from 'axios';
 import { api } from '../../api/axios';
 import SideBar from './SideBar';
 import home from "./images/home.svg";
+import ChatBot from '../../components/ChatBot/ChatBot';
 
 function AdminMovieUploadFilePage() {
     const navigate = useNavigate();
@@ -149,19 +150,21 @@ function AdminMovieUploadFilePage() {
                         </div>
 
                         <form onSubmit={handleSubmit} className="UploadInfoForm">
-                            <label lassName='ModifyMovieFileLabel'>
+                            <div className='MovieUploadDiv'>
+                            <label className='UploadMovieFileLabel'>
                                 <div>영화 URL:</div>
                                 <div>
                                     <input
                                         type="text"
                                         name="movieFilm"
                                         value={movieData.movieFilm}
+                                        className='modifyMovieInput'
                                         onChange={(e) => handleInputChange(e, null, 'movieFilm')}
                                         required
                                     />
                                 </div>
                             </label>
-
+                            </div>
                             {movieData.trailers.map((trailer, index) => (
                                 <div className='MovieUploadDiv' key={index} >
                                     <label className='UploadMovieFileLabel'>
@@ -230,6 +233,7 @@ function AdminMovieUploadFilePage() {
                     </div>
                 </div>
             </div>
+            <ChatBot />
         </>
     );
 }

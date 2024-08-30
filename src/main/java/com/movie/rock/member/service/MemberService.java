@@ -145,6 +145,10 @@ public class MemberService {
             member.updateTel(updateDto.getMemNewTel());
         }
 
+        // 프로필 변경
+        if(updateDto.getMemNewProfile() != null && !updateDto.getMemNewProfile().isEmpty()){
+            member.updateProfile(updateDto.getMemNewProfile());
+        }
         memberRepository.save(member);
     }
 

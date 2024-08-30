@@ -15,6 +15,7 @@ import { api } from '../../../api/axios';
 import {DogImg, BirdImg, FishImg, CatImg, TurtleImg, 
     profile1, profile2, profile3, profile4, profile5} from './ProfileImg'
 import ChatBot from '../../../components/ChatBot/ChatBot';
+import ProfileModal from './ProfileModal';
 
 
 //MyPage header
@@ -23,7 +24,7 @@ const MyPage = () => {
     //탭 폼
     const [currentTab, setTab] = useState(0);
     const [memberName, setMemberName] = useState('');
-
+    const [memberProfile, setMemberProfile] = useState('');
 
     const menuArr = [
         {name: '최근 시청 내역', content: <WatchHistory />},
@@ -51,6 +52,9 @@ const MyPage = () => {
             if (response.status === 200) {
                 const data = response.data;
                 setMemberName(data.memName);
+                setMemberProfile(data.memProfile);
+                console.log("member data", data);
+                
             } else {
                 throw new Error('Failed to fetch user name');
             }
@@ -66,6 +70,9 @@ const MyPage = () => {
         setTab(index);
     };
 
+    const updateProfileImage = (newProfileImageUrl) => {
+        setMemberProfile(newProfileImageUrl);
+    };
 
     useEffect(() => {
         fetchMemberName();
@@ -79,12 +86,13 @@ const MyPage = () => {
             <TopContainer>
                 <Section>
                     <ProfileBoxContainer>
-                        <TopImg src={profile2}></TopImg>
+                        <TopImg src={memberProfile}></TopImg>
 
                         <TitelBox>
                             {memberName} 님
                         </TitelBox>
 
+                        <ProfileModal updateProfileImage = {updateProfileImage}/>
                         <FormBlockBody>
                             <InputTextSizeW>
                                 <EmailsButton
@@ -288,6 +296,7 @@ const TitelBox = styled.div`
     color: #fff;
     font-family: 'SUIT-Regular' !important;
     font-size: 2rem;
+    margin-top: 40px;
     margin-bottom: 40px;
     text-align: left;
     font-weight: 500;
@@ -319,7 +328,7 @@ const TitelBox = styled.div`
 const EmailsButton = styled.button`
     width: 100px;
     height: 45px;
-
+    margin-top: 50px;
     padding: 0.5rem 0.833rem;
     font-size: 12px;
     text-align: center;
@@ -327,7 +336,7 @@ const EmailsButton = styled.button`
     border: 1px solid rgb(77, 77, 77);
     opacity: 0.7;
     color: #f4f4f4;
-    margin-top: 1.8rem;
+    // margin-top: 1.8rem;
     border-radius: 2px;
     //margin-left: 20px;
     float: left;

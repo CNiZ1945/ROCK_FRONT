@@ -7,6 +7,7 @@ import google from "../Login/images/continue_google_neutral.png";
 
 import notice from "./images/notice_write.png";
 import { api } from "../../api/axios";
+import ChatBot from "../../components/ChatBot/ChatBot";
 
 
 
@@ -254,7 +255,9 @@ function NoticeWrite() {
 
                 </FormWrite>
             </FromNoticeWrap>
-        </Wrap>);
+            <ChatBot />
+        </Wrap>
+        );
 }
 
 export default NoticeWrite;

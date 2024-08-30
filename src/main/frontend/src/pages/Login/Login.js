@@ -122,6 +122,11 @@ function Login() {
                                 onChange={(e) => {
                                     setPassword(e.target.value);
                                 }}
+                                onKeyUp={(e) => {
+                                    if(e.key === 'Enter'){
+                                        onSubmit();
+                                    }
+                                   }}
                             />
                         </div>
                         <EmailLoginOption>
@@ -130,11 +135,7 @@ function Login() {
                                        required
                                        checked={rememberUserName}
                                        onChange={handleRememberUserName}
-                                       onKeyUp={(e) => {
-                                        if(e.key === 'Enter'){
-                                            onSubmit();
-                                        }
-                                       }}
+
                                 />
                                 <label htmlFor="id-save" className="label-id-save">아이디 저장</label>
                             </div>

@@ -9,6 +9,7 @@ import home from "./images/home.svg";
 
 import AddActorModal from './AddActorModal';
 import AddDirectorModal from './AddDirectorModal';
+import ChatBot from '../../components/ChatBot/ChatBot';
 
 
 //  새 영화 1번째 페이지
@@ -396,7 +397,7 @@ function AdminMovieUploadPage() {
         return null;
     }
 
-    
+
     return (
 
 
@@ -408,7 +409,7 @@ function AdminMovieUploadPage() {
                 <h2>관리자페이지</h2>
             </div>
             <div className="admin_movie_head">
-                <span>Admin {">"} 영화 관리 {">"} 새 영화 업로드 - 파일 정보</span>
+                <span>Admin {">"} 영화 관리 {">"} 새 영화 업로드 - 영화 정보</span>
             </div>
 
 
@@ -569,6 +570,7 @@ function AdminMovieUploadPage() {
             />
         </div>
         </div>
+        <ChatBot />
         </>
     );
 

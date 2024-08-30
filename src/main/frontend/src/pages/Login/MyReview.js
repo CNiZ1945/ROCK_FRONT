@@ -67,6 +67,8 @@ function MyReview() {
                 setReviews(prevReviews => [...prevReviews, ...response.data.content]);
                 setHasMore(response.data.content.length === reviewsPerPage);
                 setCurrentPage(prevPage => prevPage + 1);
+                console.log(reviews);
+                
             } else {
                 console.error('Unexpected response structure:', response.data);
                 setError('리뷰 데이터 구조가 예상과 다릅니다.');
@@ -139,7 +141,9 @@ function MyReview() {
                             <div className="myreview-content">
                                 <div className="myreview-poster">
                                     <Link to={`/user/MoviePage/${review.movieId}`}>
-                                        <img src={review.poster?.posterUrls || '/path/to/default/poster.jpg'} alt={review.movieTitle} />
+                                        <img 
+                                        src={review.mainPosterUrl?.posterUrls || 'https://via.placeholder.com/343x493?text=No+Image'}
+                                        alt={review.movieTitle} />
                                     </Link>
                                 </div>
                                 <div className="myreview-details">

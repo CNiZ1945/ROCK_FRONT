@@ -81,6 +81,8 @@ function MovieSearch() {
                 console.log('서버 응답:', response); // 응답 확인
 
                 const data = response.data;
+                console.log("fetchTopRankMovies data:", data);
+                
 
                 // 데이터가 존재하고, 기대하는 구조인지 확인
                 if (data && Array.isArray(data.content)) {
@@ -233,48 +235,7 @@ function MovieSearch() {
                             />
                         </form>
                     </WriteSection>
-            <TopRankMoviesDiv>
-                <h2>상위 랭킹 영화</h2>
-                {topRankMovies.length > 0 ? (
-                    <TopRankMoviesUl>
-                        {topRankMovies.map((movie) => (
-                            <TopRankMoviesLi key={movie.movieId}>
-                                <Link to={`/user/MoviePage/${movie.movieId}`}>
-
-                                    {movie.posters && movie.posters.length > 0 ? (
-                                        movie.posters.map((poster, index) => (
-                                            <TopRankMoviesPoster
-                                                key={index}
-                                                src={poster.posterUrls || 'https://via.placeholder.com/500x750?text=No+Image'}
-                                                alt={movie.movieTitle}
-                                                onError={(e) => {
-                                                    e.target.src = 'https://via.placeholder.com/500x750?text=No+Image';
-                                                }}
-                                            />
-                                        ))
-                                    ) : (
-                                        <TopRankMoviesPoster
-                                            src='https://via.placeholder.com/500x750?text=No+Image'
-                                            alt={movie.movieTitle}
-                                        />
-                                    )}
-                                    <figcaption >
-                                        {movie.movieTitle}
-                                    </figcaption>
-                                </Link>
-                            </TopRankMoviesLi>
-                        ))}
-                    </TopRankMoviesUl>
-                ) : (
-                    <p>상위 랭킹 영화가 없습니다.</p>
-                )}
-            </TopRankMoviesDiv>
-
-            <ChatBot />
-
-
-
-
+      
             {/* ============================================================== */}
             <Wrap>
                 <MainContainer>
@@ -313,11 +274,11 @@ function MovieSearch() {
                                     <SectionA>
                                         <Link key={movie.movieId} to={`/user/MoviePage/${movie.movieId}`}>
                                             <figure className="movie_figure">
-                                                {movie.posters && movie.posters.length > 0 ? (
+                                                {movie.mainPoster && movie.mainPoster.length > 0 ? (
                                                     movie.posters.map((poster, index) => (
                                                         <img
                                                             key={index}
-                                                            src={poster.posterUrls || 'https://via.placeholder.com/500x750?text=No+Image'}
+                                                            src={poster.mainPoster || 'https://via.placeholder.com/500x750?text=No+Image'}
                                                             alt={movie.movieTitle}
                                                             onError={(e) => {
                                                                 e.target.src = 'https://via.placeholder.com/500x750?text=No+Image';
@@ -361,6 +322,42 @@ function MovieSearch() {
 
 
                 </MainContainer>
+                <TopRankMoviesDiv>
+                <h2>상위 검색 순위</h2>
+                {topRankMovies.length > 0 ? (
+                    <TopRankMoviesUl>
+                        {topRankMovies.map((movie) => (
+                            <TopRankMoviesLi key={movie.movieId}>
+                                <Link to={`/user/MoviePage/${movie.movieId}`}>
+
+                                    {movie.mainPosterUrl && movie.mainPosterUrl.length > 0 ? (
+                                        movie.mainPosterUrl.map((poster, index) => (
+                                            <TopRankMoviesPoster
+                                                key={index}
+                                                src={poster.mainPosterUrl || 'https://via.placeholder.com/500x750?text=No+Image'}
+                                                alt={movie.movieTitle}
+                                                onError={(e) => {
+                                                    e.target.src = 'https://via.placeholder.com/500x750?text=No+Image';
+                                                }}
+                                            />
+                                        ))
+                                    ) : (
+                                        <TopRankMoviesPoster
+                                            src='https://via.placeholder.com/500x750?text=No+Image'
+                                            alt={movie.movieTitle}
+                                        />
+                                    )}
+                                    <figcaption >
+                                        {movie.movieTitle}
+                                    </figcaption>
+                                </Link>
+                            </TopRankMoviesLi>
+                        ))}
+                    </TopRankMoviesUl>
+                ) : (
+                    <p>상위 랭킹 영화가 없습니다.</p>
+                )}
+            </TopRankMoviesDiv>
                 <ChatBot />
             </Wrap>
         </>
