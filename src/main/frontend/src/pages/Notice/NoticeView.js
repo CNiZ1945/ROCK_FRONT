@@ -187,6 +187,11 @@ const NoticeView = () => {
 
             <Wrap>
                 <NoticeViewHead>
+                <Header className="name">
+                    <Link to={`/user/notice/`}>
+                        게시판
+                    </Link>
+                </Header>
                     <NoticeViewTitle>
                         {/* 조건부 렌더링 적용 */}
                         {noticeInfo ? (
@@ -302,6 +307,20 @@ const Wrap = styled.div`
     display: flex;
     flex-direction: column;
 `;
+
+
+//제목감싸는 박스
+const Header = styled.div`
+    width: 1024px;
+    margin: 0 auto;
+    //background: red;
+    font-family: 'SUIT-Regular' !important;
+    // color: rgb(51, 61, 75);
+    font-size: 36px;
+    font-weight: 800;
+    text-align: left;
+`;
+
 
 // 글 제목, 날짜
 const NoticeViewHead = styled.div`

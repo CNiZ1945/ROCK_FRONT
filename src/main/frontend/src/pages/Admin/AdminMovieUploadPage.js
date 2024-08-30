@@ -391,7 +391,12 @@ function AdminMovieUploadPage() {
         fontsize: '100px',
     };
 
+    // 권한없을시 페이지 없음
+    if (!hasPermission) {
+        return null;
+    }
 
+    
     return (
 
 

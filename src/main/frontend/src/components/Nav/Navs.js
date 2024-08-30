@@ -13,8 +13,6 @@ import search from './images/search.svg';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars, faUser, faTimes } from "@fortawesome/free-solid-svg-icons";
 import Profile_1 from './images/Profile_1.svg';
-import TokenChecker from './TokenChecker';
-
 
 
 function Navs() {
@@ -234,12 +232,12 @@ function Navs() {
 					scrollposition={scrollPosition}
 				/>
 
-			<IconImg
+			{/* <IconImg
 				onClick={() => goToPage('/SignUp')}
 				alt="mypageIcon"
 				src={mypageIcon}
 				scrollposition={scrollPosition}
-			/>
+			/> */}
 		{/*프로필 이미지 ==================================*/}
 				<IconImg
 					onClick={() => goToPage('/user/mypage')}

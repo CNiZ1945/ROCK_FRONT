@@ -55,7 +55,11 @@ def plot_age_bar_chart(age_df, movie_id):
     ax.set_xlabel('나이대')
     ax.set_ylabel('작성자 수')
     ax.set_xticks(range(len(age_group_counts.index)))
-    ax.set_xticklabels(age_group_counts.index, rotation=45)
+    ax.set_xticklabels(age_group_counts.index, fontsize=24)
+
+
+    # y축 레이블 크기 설정
+    ax.tick_params(axis='y', labelsize=24)
 
     plt.tight_layout()
     # plt.show()

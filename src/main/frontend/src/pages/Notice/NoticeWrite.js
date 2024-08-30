@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from 'axios';
 // import './css/NoticeWrite.css';
@@ -34,6 +34,15 @@ function NoticeWrite() {
         newFiles[index] = e.target.files[0];
         setFiles(newFiles);
     };
+    
+    useEffect(() => {
+        const token = localStorage.getItem('accessToken');
+        if(!token){
+            alert("로그인이 필요한 페이지입니다. 로그인부터 진행해주세요");
+            navigate("/login")
+        }
+
+    })
 
     // 파일 추가 버튼 기능
     const addFileInput = () => {

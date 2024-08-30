@@ -13,6 +13,8 @@ import { BiBorderRadius } from 'react-icons/bi';
 function AdminMovieUploadModifyPage() {
     const { movieId } = useParams();
     const navigate = useNavigate();
+    const [hasPermission, setHasPermission] = useState(false);
+
     const [movieData, setMovieData] = useState({
         movieTitle: '',
         movieDirectors: [],
@@ -46,6 +48,7 @@ function AdminMovieUploadModifyPage() {
 
     const fetchMovieData = useCallback(async () => {
         try {
+            checkPermission();
             setIsLoading(true);
             const response = await api.get(`/admin/movie/${movieId}`);
             setMovieData({
@@ -92,6 +95,33 @@ function AdminMovieUploadModifyPage() {
             console.error(`Error fetching ${type} data:`, error);
         }
     }, []);
+
+    // 로그인 확인, 권한 확인
+const checkPermission = useCallback(async () => {
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+        alert("로그인이 필요합니다.");
+        navigate('/login');
+        return;
+    }
+
+    try {
+        const response = await api.get('/auth/memberinfo', {
+            headers: { 'Authorization': 'Bearer ' + token }
+        });
+        const role = response.data.memRole;
+        if (role === 'ADMIN') {
+            setHasPermission(true);
+        } else {
+            alert("권한이 없습니다.");
+            navigate('/');
+        }
+    } catch (error) {
+        console.error('Error fetching user info:', error);
+        alert("오류가 발생했습니다. 다시 로그인해주세요.");
+        navigate('/login');
+    }
+}, [navigate]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -273,6 +303,12 @@ function AdminMovieUploadModifyPage() {
     if (isLoading) {
         return <div>Loading...</div>;
     }
+        // 권한없을시 페이지 없음
+        if (!hasPermission) {
+            return null;
+        }
+
+        
 
     return (
         <>

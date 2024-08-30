@@ -61,6 +61,10 @@ def plot_attraction_rader_chart(attraction_points_df, movie_id):
     # 기본 그리드 제거
     ax.grid(False)
 
+    # 카테고리 레이블 추가 (폰트 크기 조절)
+    ax.set_xticks(angles[:-1])
+    ax.set_xticklabels(categories, fontsize=24)  # 폰트 크기 설정
+    
     # 외부 원 제거
     ax.spines['polar'].set_visible(False)
 

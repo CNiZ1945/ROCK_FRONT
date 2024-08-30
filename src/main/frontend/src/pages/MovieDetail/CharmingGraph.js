@@ -82,7 +82,7 @@ const CharmingGraph = ({ movieId }) => {
         }
     };
 
-    const graphIndex = ["성별", "나이", "매력 포인트", "감정 포인트"];
+    const graphIndex = ["‍🧑 성별 분포", "🎓 연령별 분포이", "❤️ 매력 포인트", "😳 감정 포인트"];
 
     return (
         <GraphContainer>
@@ -107,17 +107,19 @@ const CharmingGraph = ({ movieId }) => {
 
 //타이틀
 const GraphTitle = styled.div`
-    width: 100%;
+
+    font-size: 20px;
     text-align: center;
-    font-family: 'SUIT-Regular';
-    font-size: 23px;
-    font-weight: 600;
     color: #000;
-    margin-bottom: 10px;
-    //border-bottom: 12px solid #f1f1f3;
-    // display: inline-block;
+    font-weight: 600;
     display: flex;
     justify-content: center;
+    border-bottom: 5px solid #f4f4f4;
+    margin: 0 auto;
+    padding-top: 10px;
+    margin-bottom: 25px;
+    padding-bottom: 12px;
+
 `;
 
 const GraphImage = styled.div`

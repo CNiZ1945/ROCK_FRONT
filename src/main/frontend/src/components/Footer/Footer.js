@@ -38,12 +38,15 @@ function Footer() {
 
             <Copyright>ⓒ Rock Corp.ALL RIGHTS RESERVED.</Copyright>
 
+          {false && (
+
             <FooterIcons>
               <i className="fa-brands fa-youtube" href="https://www.youtube.com/channel/UCLKYLWsKF4waqDx8T_43hBw" />
               <i className="fa-brands fa-instagram-square" />
               <i className="fa-brands fa-facebook" />
               <i className="fa-brands fa-twitter" />
             </FooterIcons>
+            )}
 
           </FooterUl>
         </Fl>

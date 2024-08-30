@@ -57,6 +57,12 @@ def plot_emotion_radar_chart(emotion_points_df, movie_id):
         scaled_bg_values = [0.2 * i] * (len(categories) + 1)
         ax.plot(angles, scaled_bg_values, 'gray', linewidth=0.5)
 
+    # 배경 5각형 색상 설정
+    bg_color = 'lightgray'
+    for i in range(6):
+        scaled_bg_values = [0.2 * i] * (len(categories) + 1)
+        ax.plot(angles, scaled_bg_values, color=bg_color, linewidth=0.5)
+
     # 외부 원 제거
     ax.spines['polar'].set_visible(False)
 
@@ -64,20 +70,28 @@ def plot_emotion_radar_chart(emotion_points_df, movie_id):
     ax.plot(angles, values, 'o-', linewidth=2, color='skyblue')
     ax.fill(angles, values, alpha=0.25, color='skyblue')
 
+    # 데이터 플롯 색상 설정
+    line_color = 'blue'
+    fill_color = 'lightblue'
+    
+    ax.plot(angles, values, 'o-', linewidth=2, color=line_color)
+    ax.fill(angles, values, alpha=0.25, color=fill_color)
+
     # 기본 그리드 제거
     ax.grid(False)
 
-    # 카테고리 레이블 추가
+    # 카테고리 레이블 추가 (폰트 크기 조절)
     ax.set_xticks(angles[:-1])
-    ax.set_xticklabels(categories)
+    ax.set_xticklabels(categories, fontsize=24)  # 폰트 크기 설정
 
     # y축 범위 설정 (0부터 1까지)
     ax.set_ylim(0, 1)
     ax.set_yticks([])
 
     # 방사형 축 그리기
+    ax_color = 'gray'
     for angle in angles[:-1]:
-        ax.plot([angle, angle], [0, 1], 'gray', linewidth=0.5)
+        ax.plot([angle, angle], [0, 1], color=ax_color, linewidth=0.5)
 
     plt.tight_layout()
 

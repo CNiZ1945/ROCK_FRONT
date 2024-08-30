@@ -81,8 +81,8 @@ const MyPage = () => {
                     <ProfileBoxContainer>
                         <TopImg src={profile2}></TopImg>
 
-                        <TitelBox>{memberName} 님
-
+                        <TitelBox>
+                            {memberName} 님
                         </TitelBox>
 
                         <FormBlockBody>
@@ -99,11 +99,6 @@ const MyPage = () => {
                         </FormBlockBody>
                     </ProfileBoxContainer>
 
-                    <Titel>나의 이용권 &nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;스탠다드 정기권
-                        <img
-                            className="play-img"
-                            src={play}/>
-                    </Titel>
                 </Section>
             </TopContainer>
 
@@ -236,7 +231,7 @@ const Section = styled.div`
     //display: flex;
     //justify-content: flex-start;
     //margin-top: 22px;
-    
+
 `;
 
 // 프로필 박스
@@ -247,6 +242,8 @@ const ProfileBoxContainer = styled.div`
     //gap: 30px;
     border-right: 1px solid #1b1b1b;
     align-items: center;
+
+
 `;
 
 
@@ -282,6 +279,7 @@ const Titel = styled.div`
 const TopImg = styled.img`
     width: 160px;
     margin-right: 30px;
+
 `;
 
 //홍길동 박스
@@ -333,7 +331,6 @@ const EmailsButton = styled.button`
     border-radius: 2px;
     //margin-left: 20px;
     float: left;
-
 
     &:hover {
         solid 1px # 1351 f9;

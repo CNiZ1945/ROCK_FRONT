@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { api } from '../../api/axios';
@@ -10,6 +10,7 @@ function AdminMovieUploadFilePage() {
     const location = useLocation();
     const [movieId, setMovieId] = useState(null);
     const [movieTitle, setMovieTitle] = useState('');
+    const [hasPermission, setHasPermission] = useState(false);
 
     const [movieData, setMovieData] = useState({
         trailers: [
@@ -26,6 +27,7 @@ function AdminMovieUploadFilePage() {
     });
 
     useEffect(() => {
+        checkPermission();
         if (location.state) {
             console.log('Received state:', location.state);
             setMovieId(location.state.movieId);
@@ -55,6 +57,32 @@ function AdminMovieUploadFilePage() {
             setMovieData({ ...movieData, [name]: actualValue });
         }
     };
+
+    const checkPermission = useCallback(async () => {
+        const token = localStorage.getItem('accessToken');
+        if (!token) {
+            alert("로그인이 필요합니다.");
+            navigate('/login');
+            return;
+        }
+
+        try {
+            const response = await api.get('/auth/memberinfo', {
+                headers: { 'Authorization': 'Bearer ' + token }
+            });
+            const role = response.data.memRole;
+            if (role === 'ADMIN') {
+                setHasPermission(true);
+            } else {
+                alert("권한이 없습니다.");
+                navigate('/');
+            }
+        } catch (error) {
+            console.error('Error fetching user info:', error);
+            alert("오류가 발생했습니다. 다시 로그인해주세요.");
+            navigate('/login');
+        }
+    }, [navigate]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -90,6 +118,12 @@ function AdminMovieUploadFilePage() {
         }
     };
 
+        // 권한없을시 페이지 없음
+        if (!hasPermission) {
+            return null;
+        }
+
+        
     return (
         <>
             <div className='wrap'>

@@ -191,11 +191,13 @@ const MovieInformation = () => {
                                                     />
                                                 </Link>
                                             ) : (
+                                                <Link to={`https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=0&ie=utf8&query=${director.directorName}`} target="_blank" >
                                                 <DirectorPoster
-                                                    src="https://via.placeholder.com/200x300"  // 디폴트 이미지 경로
+                                                src="https://via.placeholder.com/200x300?text=No+Image"  // 디폴트 이미지 경로
                                                     alt="디폴트 사진"
                                                     className="actorImg"
                                                 />
+                                                </Link>
                                             )}
                                             {director.directorName}
 
@@ -231,11 +233,13 @@ const MovieInformation = () => {
                                                     />
                                                 </Link>
                                             ) : (
+                                                <Link to={`https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=0&ie=utf8&query=${actor.actorName}`} target="_blank">
                                                 <ActorPoster
-                                                    src="https://via.placeholder.com/200x300"  // 디폴트 이미지 경로
+                                                src="https://via.placeholder.com/200x300?text=No+Image"  // 디폴트 이미지 경로
                                                     alt="디폴트 사진"
                                                     className="actorImg"
                                                 />
+                                                </Link>
                                             )}
 
 

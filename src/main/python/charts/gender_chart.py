@@ -25,6 +25,7 @@ def plot_gender_pie_charts(gender_df, movie_id):
     ax.set_title('성별 분포')
     ax.axis('equal')
     # plt.show()
+    # 카테고리 레이블 추가 (폰트 크기 조절)
 
     # 파일 경로 설정
     file_path = os.path.join('src', 'main', 'resources', 'static', 'images', f'gender_chart_{movie_id}.png')

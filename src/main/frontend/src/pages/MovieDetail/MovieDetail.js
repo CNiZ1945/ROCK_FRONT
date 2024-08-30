@@ -53,20 +53,24 @@ const MovieDetail = () => {
 
     const menuArr = [
         { name: '상세정보', content: <MovieInformation /> },
-        { name: '리뷰', content: (<MovieReview
-            movieId={movieId}
-            movieDetail={movieDetail}
-            memRole={memberInfo?.role}
-            correspondMemName={memberInfo?.memName}
-            correspondMemNum={memberInfo?.memNum} 
-            />) },
-        { name: '예고편', content: (<MovieTrailer
+        {
+            name: '리뷰', content: (<MovieReview
+                movieId={movieId}
                 movieDetail={movieDetail}
-                />) },
-            // {name: '추천', content: ""},
+                memRole={memberInfo?.role}
+                correspondMemName={memberInfo?.memName}
+                correspondMemNum={memberInfo?.memNum}
+            />)
+        },
+        {
+            name: '예고편', content: (<MovieTrailer
+                movieDetail={movieDetail}
+            />)
+        },
+        // {name: '추천', content: ""},
         // {name: '추천', content: <MovieReview />},
     ];
-    
+
     const handleScroll = () => {
         const { scrollY } = window;
         scrollY > 200 && setToggleBtn(!toggleBtn);
@@ -123,18 +127,30 @@ const MovieDetail = () => {
         fetchData();
     }, [movieId, navigate]);
 
+    // 공유 기능 버튼, 클립 보드 복사
+    const copyToClipboard = () => {
+        navigator.clipboard.writeText(window.location.href)
+            .then(() => {
+                alert('URL이 클립보드에 복사되었습니다!');
+            })
+            .catch(err => {
+                console.error('Failed to copy: ', err);
+            });
+    };
+
+    
     const fetchMemberInfo = async (token) => {
         try {
             const response = await api.get('/auth/memberinfo', {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
-            console.log("memberInfo: ",memberInfo);
+            console.log("memberInfo: ", memberInfo);
             return {
                 role: response.data.memRole,
                 memName: response.data.memName,
                 memNum: response.data.memNum
             };
-            
+
         } catch (error) {
             console.error('사용자 정보를 가져오는 중 오류 발생:', error);
             if (error.response) {
@@ -158,6 +174,7 @@ const MovieDetail = () => {
             });
             setMovieDetail(response.data);
             console.log("영화정보", response.data);
+            console.log("포스터 데이터:", response.data.posters);
         } catch (error) {
             console.error('영화 상세 정보를 가져오는 중 오류 발생:', error);
             setMovieDetail(null);
@@ -239,13 +256,13 @@ const MovieDetail = () => {
             } else {
                 setIsFavorite(!isFavorite);
             }
-        // 찜 버튼 에러
+            // 찜 버튼 에러
         } catch (error) {
             console.error('찜하기 토글 중 오류 발생:', error);
             if (error.response && error.response.data) {
                 alert(error.response.data.message || "찜하기 처리 중 오류가 발생했습니다.");
             } else {
-                alert( "찜하기 처리 중 오류가 발생했습니다. 다시 시도해 주세요.");
+                alert("찜하기 처리 중 오류가 발생했습니다. 다시 시도해 주세요.");
             }
         }
     };
@@ -323,12 +340,12 @@ const MovieDetail = () => {
                                                     <MovieLike>
                                                         <button
                                                             type="button"
-                                                            className="MovieLike"
+                                                            className="MovieLike like"
                                                             onClick={toggleFavorite}
                                                         >
                                                             {isFavorite ? '❤️' : '🤍'}
                                                         </button>
-                                                        <span> ({totalFavorites})</span>
+                                                        <span className="p-share likeperson">{totalFavorites}</span>
                                                     </MovieLike>
 
 
@@ -336,6 +353,7 @@ const MovieDetail = () => {
                                                     <MovieLike>
                                                         <button
                                                             type="button"
+                                                            onClick={copyToClipboard}
                                                             className="MovieLike">
                                                             <img src={share} alt="공유" className="share"></img>
                                                             <span className="p-share">공유</span>
@@ -398,10 +416,16 @@ const MovieDetail = () => {
                                         {/*포스터-연습용*/}
                                         {/* <MoviePoster src={poster} alt="포스터" /> */}
                                         <MoviePoster
-                                            src={movieDetail.posters && movieDetail.posters.length > 0 ? movieDetail.posters[0].posterUrls : ''}
+                                            src={
+                                                movieDetail.posters && movieDetail.posters.length > 0
+                                                    ? movieDetail.posters.find(poster => poster.posterUrls)?.posterUrls
+                                                    : '' || 'https://via.placeholder.com/343x493?text=No+Image'
+                                            }
                                             alt={`${movieDetail.movieTitle} 포스터`}
                                             className="movie_bg"
                                         />
+
+
 
                                         {/*포스터-data/*/}
                                         {/*<MoviePoster src={movieData.movieThumbNailImg} alt="포스터" />*/}
@@ -768,16 +792,25 @@ const MovieLike = styled.button`
     //이미지(하트)
 
     .like {
-        width: 32px;
+        font-size: 20px;
+        width: 20px;
         margin-bottom: 10px;
         justify-content: right;
-
+        display: flex;
+        justify-content: center;
         &:hover {
 
         }
 
     }
-
+ 
+    // 찜 숫자
+    .likeperson{
+        width: 30px;
+        // border: 1px solid red;
+        margin-top: 10px;
+        // margin-left: 100px;
+    }
     //글씨(찜)
 
     .p-like {
@@ -796,7 +829,7 @@ const MovieLike = styled.button`
 
     .share {
         position: relative;
-        width: 32px;
+        width: 20px;
         margin-bottom: 10px;
         display: flex;
         justify-content: center;

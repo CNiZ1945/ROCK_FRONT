@@ -57,6 +57,7 @@ const GlobalStyle = createGlobalStyle`
 
     a {
         text-decoration: none;
+        color: inherit;
     }
 
     button {
@@ -118,6 +119,7 @@ const GlobalStyle = createGlobalStyle`
     
     a, button, .tab, input {
         -webkit-tap-highlight-color: transparent;
+        
     }
 
     table {

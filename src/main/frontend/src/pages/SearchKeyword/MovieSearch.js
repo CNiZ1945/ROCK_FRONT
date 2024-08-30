@@ -10,6 +10,7 @@ import search from "./images/search.svg"
 import bullet from "./images/bullet.svg"
 import searchimg from './images/searchimg.png'
 
+// 검색 페이지
 function MovieSearch() {
     const [searchParams, setSearchParams] = useSearchParams();
     const [movies, setMovies] = useState([]);
@@ -21,7 +22,20 @@ function MovieSearch() {
     const [currentGroup, setCurrentGroup] = useState(Math.floor(page / 10)); // 현재 페이지 그룹 설정
     const [searchInput, setSearchInput] = useState(""); // 검색 입력 상태 추가
 
+	const [searchTerm, setSearchTerm] = useState('');
+
     const navigate = useNavigate();
+
+    // 로그인 체크
+    useEffect(() => {
+        const token = localStorage.getItem('accessToken');
+        if(!token){
+            alert("로그인이 필요한 페이지입니다. 로그인부터 해주세요");
+            navigate("/login");
+
+        }
+
+    })
 
 
     useEffect(() => {
@@ -89,6 +103,7 @@ function MovieSearch() {
         setCurrentGroup(Math.floor(page / 10));
     }, [page]);
 
+    // 페이지 관리
     const handlePageChange = (newPage) => {
         setPage(newPage - 1);
         setSearchParams((prevParams) => {
@@ -98,6 +113,37 @@ function MovieSearch() {
         });
     };
 
+    // 검색 기능
+    const handleSearchSubmit = (e) => {
+        e.preventDefault();
+
+        // 입력된 검색어를 쉼표로 구분하여 배열로 변환
+        const terms = searchTerm.split(',').map(term => term.trim()).filter(term => term !== '');
+
+        // URLSearchParams 객체 생성
+        const params = new URLSearchParams();
+
+        // 각 검색어를 파라미터에 추가 (최대 4개까지)
+        if (terms.length > 0) params.append('movieTitle', terms[0]);
+        if (terms.length > 1) params.append('movieDirectors', terms[1]);
+        if (terms.length > 2) params.append('movieActors', terms[2]);
+        if (terms.length > 3) params.append('genres', terms[3]);
+
+        // 쿼리 파라미터를 포함한 URL 생성
+        const url = `/user/MovieSearch?${params.toString()}`;
+        console.log('검색 URL:', url); // 디버깅 용
+        // url로 이동
+		navigate(url);
+    };
+
+
+	// 검색 창 변경 확인
+	const handleSearchChange = (e) => {
+        setSearchTerm(e.target.value);
+    };
+
+
+    // 페이지 앞으로가기
     const handleNextGroup = () => {
         const nextGroupStartPage = (currentGroup + 1) * 10;
         if (nextGroupStartPage < totalPages) {
@@ -106,6 +152,7 @@ function MovieSearch() {
         }
     };
 
+    // 페이지 뒤로 가기
     const handlePrevGroup = () => {
         if (currentGroup > 0) {
             const prevGroupStartPage = (currentGroup - 1) * 10;
@@ -167,7 +214,25 @@ function MovieSearch() {
 
             {loading && <p>검색 중...</p>}
             {error && <p className="error">{error}</p>}
+            <WriteSection>
+                        <form onSubmit={handleSearchSubmit}>
 
+                            {/*검색창*/}
+                            <MovieSearchButton
+                                type="submit"
+                                onClick={() => setSearchParams({ query: searchInput })}
+                            ><img src={search} alt="검색창" />
+                            </MovieSearchButton>
+
+                            <SearchInput
+                                type="text"
+                                className="bottom_search_text"
+                                value={searchTerm} // 입력 필드에 상태 연결
+                                onChange={handleSearchChange} // 입력값 변경 시 상태 업데이트
+                                placeholder="검색 예: title:Inception, director:Nolan, actor:DiCaprio, genre:Sci-Fi"
+                            />
+                        </form>
+                    </WriteSection>
             <TopRankMoviesDiv>
                 <h2>상위 랭킹 영화</h2>
                 {topRankMovies.length > 0 ? (
@@ -214,33 +279,12 @@ function MovieSearch() {
             <Wrap>
                 <MainContainer>
 
-                    <WriteSection>
-                        <form onSubmit={(e) => e.preventDefault()}>
-
-                            {/*검색창*/}
-                            <MovieSearchButton
-                                type="submit"
-                                onClick={() => setSearchParams({ query: searchInput })}
-                            ><img src={search} alt="검색창" />
-                            </MovieSearchButton>
-
-                            <SearchInput
-                                type="text"
-                                className="bottom_search_text"
-                                value={searchInput} // 입력 필드에 상태 연결
-                                onChange={(e) => setSearchInput(e.target.value)} // 입력값 변경 시 상태 업데이트
-                                placeholder="검색 예: title:Inception, director:Nolan, actor:DiCaprio, genre:Sci-Fi"
-                            />
-                        </form>
-                    </WriteSection>
-
-
-
                     <Container>
                         {/*포스터.01*/}
-                        <SectionTop>영화</SectionTop>
+                        <SectionTop>영화 검색 결과</SectionTop>
+                        {false &&(
 
-                        <SectionR>
+                            <SectionR>
                             {/*버튼*/}
                             <button
                                 className="button"
@@ -248,12 +292,13 @@ function MovieSearch() {
                                 onClick={() => {
                                     navigate(`/`);
                                 }}
-                            >
+                                >
                                 <img className="bullet" src={bullet}></img>
                                 <a className="button">전체보기</a>
                                 {/*<a>전체검색결과 돌아가기&nbsp;&nbsp;> </a>*/}
                             </button>
                         </SectionR>
+                            )}
 
 
 
@@ -397,7 +442,8 @@ const SectionTop = styled.div`
     color: #fff;
     font-weight: 400;
     vertical-align: middle;
-    margin-top: 140px;
+    margin-top: 100px;
+    margin-bottom: 15px;
 `;
 
 //오른쪽 더보기 버튼

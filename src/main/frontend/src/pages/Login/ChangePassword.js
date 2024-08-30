@@ -63,6 +63,17 @@ export default function ChangePassword() {
         }
     };
 
+        // 로그인 체크
+        useEffect(() => {
+            const token = localStorage.getItem('accessToken');
+            if(!token){
+                alert("로그인이 필요한 페이지입니다. 로그인부터 해주세요");
+                navigate("/login");
+    
+            }
+    
+        })
+        
     // 폼 제출 시 호출
     const handleSubmit = async (e) => {
         e.preventDefault();

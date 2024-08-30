@@ -38,6 +38,7 @@ const AdminMovieList = () => {
     const [sortOrder, setSortOrder] = useState('asc');
 
 
+    // 로그인 상태확인, 권한 확인
     const checkPermission = useCallback(async () => {
         const token = localStorage.getItem('accessToken');
         if (!token) {
@@ -151,6 +152,10 @@ const AdminMovieList = () => {
         fetchMovies(currentPage, searchTerm, newOrder);
     };
 
+    // 권한없을시 페이지 없음
+    if (!hasPermission) {
+        return null;
+    }
 
     return (
         <div className="wrap">

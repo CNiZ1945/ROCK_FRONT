@@ -188,7 +188,11 @@ const MovieReview = ({ movieId, movieDetail, memRole, correspondMemName, corresp
         }
     };
 
-
+    // 리뷰 수정 버튼 클릭시 모달창 띄우기
+    const handleEditButtonClick = (review) => {
+        handleEditClick(review); // 리뷰 수정 핸들러 호출
+        setOpenReviewModal(prev => !prev); // 모달 열기/닫기 토글
+    };
 
     // 리뷰 delete 관리
     const handleDeleteReview = async (reviewId) => {
@@ -561,7 +565,11 @@ const MovieReview = ({ movieId, movieDetail, memRole, correspondMemName, corresp
 
                                                 // 리뷰 수정 버튼
                                                 editButton={(correspondMemNum && Number(review.memNum) === Number(correspondMemNum)) && (
-                                                    <button onClick={() => handleEditClick(review)}>수정</button>
+                                                    <button 
+                                                    onClick={() => 
+                                                        handleEditButtonClick
+                                                    }
+                                                    >수정</button>
                                                 )}
 
                                                 // 리뷰 삭제 버튼
