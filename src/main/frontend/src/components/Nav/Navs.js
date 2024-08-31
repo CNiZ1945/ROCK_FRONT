@@ -145,7 +145,7 @@ function Navs() {
 
 			<MenuName
 				onClick={() => {
-					goToPage('/user/recommend/:movieId');
+					goToPage('/user/Recommend');
 				}}
 				scrollposition={scrollPosition}
 			>

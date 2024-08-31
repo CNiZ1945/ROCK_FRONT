@@ -143,8 +143,8 @@ function MoviePlay() {
                     ref={videoRef}
                     // url={`/user/videos/ex_movie_film.mp4`}
                     url={`http://localhost:8080/user/videos/${encodeURIComponent('ex_movie_film.mp4')}`}
-                    width="100%"
-                    height="100%"
+                    width="35%"
+                    height="35%"
                     controls={true}
                     playing={isPlaying}
                     onReady={handleReady}

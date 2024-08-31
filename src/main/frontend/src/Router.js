@@ -31,6 +31,7 @@ import AdminMovieUploadFileModifyPage from './pages/Admin/AdminMovieUploadFileMo
 import AdminMovieUploadFilePage from './pages/Admin/AdminMovieUploadFilePage';
 import AdminMovieUploadPage from './pages/Admin/AdminMovieUploadPage';
 import TokenChecker from './components/Nav/TokenChecker';
+import Recommend from './pages/MovieDetail/Recommend';
 
 
 //Router
@@ -64,7 +65,7 @@ const Router = () => {
 
 
                 {/*영화 - 상세페이지*/}
-                {/* <Route path="/chart" element={<Chart/>}/> */}
+                <Route path="/user/Recommend" element={<Recommend/>}/>
                 <Route path='/user/moviepage/:movieId' element={<MovieDetail />}/>
                 {/* <Route path='/user/moviePlay' element={<MovieDetail />}/> */}
                 {/* <Route path='/chart/detail/:id' element={<MovieDetail/>}/> */}

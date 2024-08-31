@@ -72,7 +72,8 @@ function Login() {
                 } else {
                     localStorage.removeItem("savedUsername");
                 }
-
+                console.log("login success:", username);
+                
                 // 메인페이지 이동
                 window.location.replace("/");
             } else {
@@ -100,7 +101,9 @@ function Login() {
                     </BorderAndText>
                     <LoginHeadTexts>Rock 계정으로 로그인</LoginHeadTexts>
                     <EmailLoginContainer>
+                        <form>
                         <div>
+                            
                             <EmailLoginInput
                                 type="text"
                                 id="username"
@@ -163,6 +166,7 @@ function Login() {
                             >
                             </LogoImg>
                         </LoginSignupContent>
+                        </form>
                     </EmailLoginContainer>
                 </LoginSigninContent>
             </LoginContainer>

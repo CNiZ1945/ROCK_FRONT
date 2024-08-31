@@ -3,13 +3,14 @@ import { DogImg, BirdImg, FishImg, CatImg, TurtleImg,
     profile1, profile2, profile3, profile4, profile5 } from './ProfileImg';
 import styled from 'styled-components';
 import { api } from '../../../api/axios';
+import { useNavigate } from 'react-router-dom';
 
-export default function ProfileModal() {
+export default function ProfileModal(updateProfileImage ) {
     const [selectedImage, setSelectedImage] = useState(null);
     const [memberInfo, setMemberInfo] = useState({
         memProfile: '',
     });
-
+    const naviage = useNavigate();
     const handleImageSelect = (img) => {
         setSelectedImage(img);
     };
@@ -35,7 +36,7 @@ export default function ProfileModal() {
     useEffect(() => {
         fetchMemberInfo();
         console.log("MemberInfo: ", memberInfo);
-    }, []);
+    }, [memberInfo]);
 
     // 상태 변경 후 로그 찍기
     useEffect(() => {
@@ -49,8 +50,7 @@ export default function ProfileModal() {
     
             if (selectedImage) {
                 const response = await api.put('/auth/update', {
-                    memNewProfile: selectedImage, // 선택된 이미지 URL을 서버에 전송
-                    // 필요한 경우 다른 필드도 포함
+                    memNewProfile: selectedImage,
                 }, {
                     headers: {
                         Authorization: `Bearer ${accessToken}`,
@@ -59,12 +59,20 @@ export default function ProfileModal() {
                 });
     
                 if (response.status === 200) {
+                    setMemberInfo((prevInfo) => {
+                        const updatedInfo = { ...prevInfo, memProfile: selectedImage };
+                        console.log('Updated memberInfo:', updatedInfo); // 로그 추가
+
+                        return updatedInfo;
+                    });
+                    updateProfileImage(selectedImage);
+                    window.location.reload();
                     alert("프로필 이미지가 성공적으로 업데이트되었습니다.");
                 } else {
                     alert("업데이트 실패: " + response.statusText);
                 }
             } else {
-                alert("이미지를 선택해주세요.");
+                alert("다른 이미지를 선택해주세요.");
             }
         } catch (error) {
             console.error("프로필 이미지 업데이트 중 오류 발생:", error);
@@ -80,11 +88,12 @@ export default function ProfileModal() {
                 <ImageSelectWrap>
                     {[profile1, profile2, profile3, profile4, profile5, DogImg, BirdImg, FishImg, CatImg, TurtleImg].map((img, index) => (
                         <ProfileImg 
-                            key={index} 
-                            src={img} 
-                            onClick={() => handleImageSelect(img)}
-                            isSelected={selectedImage === img} // 선택된 이미지에 스타일 적용
-                        />
+    key={index} 
+    src={img} 
+    onClick={() => handleImageSelect(img)}
+    isSelected={selectedImage === img || memberInfo.memProfile === img} // 선택된 이미지에 스타일 적용
+/>
+
                     ))}
                 </ImageSelectWrap>
                 <SubmitButton type="submit">변경 하기</SubmitButton>

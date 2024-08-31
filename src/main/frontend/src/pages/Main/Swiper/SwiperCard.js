@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
+import {SwiperSlide} from "swiper/react";
+import Videos from "../component/Videos";
 
 
 
@@ -9,11 +11,11 @@ function SwiperCard({ movie }) {
     const [isMouseHover, setIsMouseHover] = useState(false);
     const {
         movieName,
-        movieNameInEnglish,
-        movieThumbnailImageUrl,
-        movieSimpleDescription,
+        mainPosterUrl,
+        posterUrl,
+        movieDescription,
     } = movie;
-
+    const poster = mainPosterUrl || (posterUrl && posterUrl.length > 0 ? posterUrl[0].posterUrls : '/path/to/default/image.jpg'); //default 이미지 만들기
     const navigate = useNavigate();
 
 
@@ -37,24 +39,25 @@ function SwiperCard({ movie }) {
             onMouseOut={onMouseOutMovie}
         >
             <Overlay isMouseHover={isMouseHover}>
-                <OverlayTextTitle>{movieName}</OverlayTextTitle>
-                <OverlayText>{movieSimpleDescription}</OverlayText>
+                <OverlayText>{movieDescription}</OverlayText>
 
                 {/*마우스 호버 시 */}
                 <MouseHoverButton>
 
                     <OverlayBtn
                         onClick={() => {
-                            navigate(`/movieDetail/${movie.id}`);
+                            navigate(`/user/moviePage/${movie.id}`);
                         }}
                     >
-                        상세 보기
+                        보러가기
                     </OverlayBtn>
-                    {/*<OverlayBtn onClick={goToBooking}>예약 하기</OverlayBtn>*/}
+
 
                 </MouseHoverButton>
             </Overlay>
-            <PosterImg src={movieThumbnailImageUrl} />
+
+            <PosterImg src={poster} alt={movieName} />
+
             {/*<MovieInfoTextWrapper>*/}
             {/*    <MovieInfoTitle>{movieName}</MovieInfoTitle>*/}
             {/*    <MovieInfoText>{movieNameInEnglish}</MovieInfoText>*/}
@@ -63,8 +66,6 @@ function SwiperCard({ movie }) {
     );
 }
 export default SwiperCard;
-
-
 
 // style
 const fadeIn = keyframes`
@@ -79,50 +80,48 @@ const fadeIn = keyframes`
 
 const SwiperCardContainer = styled.div`
   position: relative;
+    width: 245px;
+    margin-right: 10px;
+    margin-left: 0px;
 `;
 
 const Overlay = styled.div`
   display: ${props => (props.isMouseHover ? 'block' : 'none')};
   position: absolute;
   width: 300px;
-  height: 430px;
-  border-radius: 10px;
-  background: #1351f9;
+  height: 450px;
+    //border: 1px solid red;
+
+    //border-radius: 8px;
+  background: rgba(0,0,0,0.2);
   backdrop-filter: blur(20px);
   animation: ${fadeIn} 0.1s ease-out;
-
   z-index: 100;
-  `;
-  
-  // 2단, 호버시, 보이는 내용
-  const OverlayText = styled.p`
-  width: 150px;
+    //transform: scale(1.1);
+    //transition: all 0.2s linear;
+    //overflow: hidden;  
+`;
+
+// 2단, 호버시, 보이는 내용
+const OverlayText = styled.p`
+  width: 200px;
+  height: 150px;
+  overflow: hidden;  
   margin: auto;
-  margin-top: 40px;
+  margin-top: 100px;
   font-weight: 400;
   text-align: center;
   color: white;
   font-size: 14px;
   line-height: 25px;
 `;
-const OverlayTextTitle = styled.p`
 
-width: 150px;
-margin: auto;
-margin-top: 40px;
-font-size: 20px;
-font-weight: 800;
-text-align: center;
-color: white;
-line-height: 25px;
-`
 const OverlayBtn = styled.button`
   width: 150px;
   height: 55px;
-    border-radius: 5px;
+  border-radius: 5px;
   margin-top: 30px;
   border: 0px;
-  
   background: #1351f9;
   color: white;
   font-size: 16px;
@@ -131,15 +130,15 @@ const OverlayBtn = styled.button`
 
     
   &:hover {
-      background-color: rgb(11, 11, 13,1);
+    background-color: rgb(11, 11, 13,1);
     color: #fff;
-      border: 2px solid #fff;
+    border: 2px solid #fff;
     //box-shadow: 1.8px 3.7px 8px #767676;
   }
 `;
 
 const PosterImg = styled.img`
-  width: 100%;
+    width: 300px !important;
 `;
 
 const MovieInfoTextWrapper = styled.div`

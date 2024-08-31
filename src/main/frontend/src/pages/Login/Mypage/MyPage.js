@@ -25,7 +25,7 @@ const MyPage = () => {
     const [currentTab, setTab] = useState(0);
     const [memberName, setMemberName] = useState('');
     const [memberProfile, setMemberProfile] = useState('');
-
+    const [profileModalOpen, setProfileModalOpen] = useState(false);
     const menuArr = [
         {name: '최근 시청 내역', content: <WatchHistory />},
         {name: '내가 찜한 리스트', content: <BookMark />},
@@ -76,7 +76,10 @@ const MyPage = () => {
 
     useEffect(() => {
         fetchMemberName();
-    }, []);
+    }, [memberProfile]);
+
+
+
 
     //HTML -----------------------------------
     return (
@@ -91,14 +94,18 @@ const MyPage = () => {
                         <TitelBox>
                             {memberName} 님
                         </TitelBox>
+                        {/* 프로필 사진 모달창 */}
+                        {profileModalOpen && (
+                                <ProfileModal updateProfileImage={updateProfileImage} />
+                            )}
 
-                        <ProfileModal updateProfileImage = {updateProfileImage}/>
                         <FormBlockBody>
                             <InputTextSizeW>
+                            {/* 프로필 전환 버튼 */}
                                 <EmailsButton
                                     type="button"
                                     onClick={() => {
-                                        
+                                        setProfileModalOpen(prv => !prv)
                                     }}
                                 >
                                     프로필 전환

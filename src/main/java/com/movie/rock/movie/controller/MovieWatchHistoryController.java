@@ -14,13 +14,13 @@ import static com.movie.rock.movie.data.request.MovieWatchHistoryRequestDTO.*;
 import static com.movie.rock.movie.data.response.MovieWatchHistoryResponseDTO.*;
 
 @RestController
-@RequestMapping("/user/movies/history")
+@RequestMapping("/user")
 @RequiredArgsConstructor
 public class MovieWatchHistoryController {
 
     private final MovieWatchHistoryService movieWatchHistoryService;
 
-    @GetMapping("/continue")
+    @GetMapping("/main/history/continue")
     public ResponseEntity<WatchHistoryListResponseDTO> getContinueWatchingMovies(@AuthenticationPrincipal CustomUserDetails userDetails) {
 
         if (userDetails == null) {
@@ -33,7 +33,7 @@ public class MovieWatchHistoryController {
         return ResponseEntity.ok(responseDTO);
     }
 
-    @GetMapping("/recent-Watched")
+    @GetMapping("/main/history/recent-Watched")
     public ResponseEntity<WatchHistoryListResponseDTO> getRecentWatchedMovies(@AuthenticationPrincipal CustomUserDetails userDetails) {
 
         if (userDetails == null) {
@@ -46,7 +46,7 @@ public class MovieWatchHistoryController {
         return ResponseEntity.ok(responseDTO);
     }
 
-    @PostMapping("/update-progress")
+    @PostMapping("/movies/history/update-progress")
     public ResponseEntity<Void> updateWatchingProgress(
             @RequestBody MovieContinueWatchRequestDTO requestDTO,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
