@@ -1,20 +1,27 @@
 package com.movie.rock.pythonData.controller;
 
-import com.movie.rock.pythonData.service.PersonalChartService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.movie.rock.pythonData.service.PersonalChartService;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequiredArgsConstructor
@@ -27,7 +34,7 @@ public class PersonalChartController {
     // 개인 시청 장르 차트
     @GetMapping("/{memNum}/personal_genres-chart")
     public ResponseEntity<byte[]> personalGenresChart(@PathVariable("memNum") Long memNum) throws IOException {
-//        log.info("Received request for personal genre chart for member number: {}", memNum);
+       log.info("Received request for personal genre chart for member number: {}", memNum);
         personalChartService.runPersonalPythonScript(memNum);
 
         return getPersonalChartResponseEntity(memNum, "personal_genres");
@@ -36,7 +43,7 @@ public class PersonalChartController {
     // 개인 리뷰 매력 포인트 차트
     @GetMapping("/{memNum}/personal_attraction-chart")
     public ResponseEntity<byte[]> personalAttractionChart(@PathVariable("memNum") Long memNum) throws IOException {
-//        log.info("Received request for personal genre chart for member number: {}", memNum);
+       log.info("Received request for personal genre chart for member number: {}", memNum);
         personalChartService.runPersonalPythonScript(memNum);
 
         return getPersonalChartResponseEntity(memNum, "personal_attraction");
@@ -45,7 +52,7 @@ public class PersonalChartController {
     // 개인 리뷰 감정 포인트 차트
     @GetMapping("/{memNum}/personal_emotion-chart")
     public ResponseEntity<byte[]> personalEmotionChart(@PathVariable("memNum") Long memNum) throws IOException {
-//        log.info("Received request for personal genre chart for member number: {}", memNum);
+       log.info("Received request for personal genre chart for member number: {}", memNum);
         personalChartService.runPersonalPythonScript(memNum);
 
         return getPersonalChartResponseEntity(memNum, "personal_emotion");

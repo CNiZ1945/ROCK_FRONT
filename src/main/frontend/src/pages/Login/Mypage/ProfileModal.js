@@ -1,20 +1,25 @@
 import React, { useEffect, useState } from 'react';
-import { DogImg, BirdImg, FishImg, CatImg, TurtleImg, 
-    profile1, profile2, profile3, profile4, profile5 } from './ProfileImg';
+import {
+    DogImg, BirdImg, FishImg, CatImg, TurtleImg,
+    profile1, profile2, profile3, profile4, profile5
+} from './ProfileImg';
 import styled from 'styled-components';
 import { api } from '../../../api/axios';
 import { useNavigate } from 'react-router-dom';
 
-export default function ProfileModal(updateProfileImage ) {
+export default function ProfileModal({updateProfileImage}) {
+    // 변수 설정
     const [selectedImage, setSelectedImage] = useState(null);
     const [memberInfo, setMemberInfo] = useState({
         memProfile: '',
     });
-    const naviage = useNavigate();
+    
+    
     const handleImageSelect = (img) => {
         setSelectedImage(img);
     };
 
+    // 회원 정보 불러오기
     const fetchMemberInfo = async () => {
         const accessToken = localStorage.getItem('accessToken');
         try {
@@ -24,7 +29,7 @@ export default function ProfileModal(updateProfileImage ) {
                     'Content-Type': 'application/json',
                 }
             });
-    
+
             if (response && response.data) {
                 setMemberInfo(response.data);
             }
@@ -32,22 +37,26 @@ export default function ProfileModal(updateProfileImage ) {
             console.error("회원 정보 가져오기 중 오류 발생:", error);
         }
     };
-    
+ 
+    // memberInfo가 변경될 때마다 fetchMemberInfo() 로딩
     useEffect(() => {
         fetchMemberInfo();
         console.log("MemberInfo: ", memberInfo);
     }, [memberInfo]);
 
-    // 상태 변경 후 로그 찍기
+    // memberInfo.memProfile가 변경될때 마다 log 출력
     useEffect(() => {
-        console.log("Updated memberInfo: ", memberInfo);
-    }, [memberInfo]);
-    
+        if (memberInfo.memProfile) {
+            console.log("Profile updated:", memberInfo.memProfile);
+        }
+    }, [memberInfo.memProfile]);
+
+    // 프로필 사진 submit 관리
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
             const accessToken = localStorage.getItem('accessToken');
-    
+
             if (selectedImage) {
                 const response = await api.put('/auth/update', {
                     memNewProfile: selectedImage,
@@ -57,16 +66,19 @@ export default function ProfileModal(updateProfileImage ) {
                         'Content-Type': 'application/json',
                     }
                 });
-    
+
                 if (response.status === 200) {
+                    updateProfileImage(selectedImage);
                     setMemberInfo((prevInfo) => {
-                        const updatedInfo = { ...prevInfo, memProfile: selectedImage };
+                        const updatedInfo = { 
+                            ...prevInfo, 
+                            memProfile: selectedImage 
+                        };
                         console.log('Updated memberInfo:', updatedInfo); // 로그 추가
 
                         return updatedInfo;
                     });
-                    updateProfileImage(selectedImage);
-                    window.location.reload();
+
                     alert("프로필 이미지가 성공적으로 업데이트되었습니다.");
                 } else {
                     alert("업데이트 실패: " + response.statusText);
@@ -79,20 +91,20 @@ export default function ProfileModal(updateProfileImage ) {
             alert("프로필 이미지 업데이트 중 오류가 발생했습니다.");
         }
     };
-    
-    
+
+
 
     return (
         <ProfileModalWrap>
             <form onSubmit={handleSubmit}>
                 <ImageSelectWrap>
                     {[profile1, profile2, profile3, profile4, profile5, DogImg, BirdImg, FishImg, CatImg, TurtleImg].map((img, index) => (
-                        <ProfileImg 
-    key={index} 
-    src={img} 
-    onClick={() => handleImageSelect(img)}
-    isSelected={selectedImage === img || memberInfo.memProfile === img} // 선택된 이미지에 스타일 적용
-/>
+                        <ProfileImg
+                            key={index}
+                            src={img}
+                            onClick={() => handleImageSelect(img)}
+                            isSelected={selectedImage === img || memberInfo.memProfile === img} // 선택된 이미지에 스타일 적용
+                        />
 
                     ))}
                 </ImageSelectWrap>
@@ -102,13 +114,14 @@ export default function ProfileModal(updateProfileImage ) {
     );
 }
 
+// 전체 모달 창
 const ProfileModalWrap = styled.div`
     width: 600px;
     height: 200px;
     position: absolute;
-    top: 10%;
-    left: 26%;
-    border: 1px solid red;
+    top: 100px;
+    left: 530px;
+    // border: 1px solid red;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -120,37 +133,45 @@ const ProfileModalWrap = styled.div`
     }
 `;
 
+// 프로필 사진 선택 창
 const ImageSelectWrap = styled.div`
     width: 400px;
     height: 150px;
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
-    border: 1px solid blue;
+    // border: 1px solid blue;
     margin-right: 10px;
 `;
 
+// 이미지 css
 const ProfileImg = styled.img`
     width: 70px;
     height: 70px;
     cursor: pointer;
-    border: ${(props) => (props.isSelected ? '3px solid blue' : '1px solid #ccc')};
+
+    // 선택되면 border변경
+    border: ${(props) => (props.isSelected ? '3px solid blue' : '')};
+    
     border-radius: 5px;
     &:hover {
-        border: 3px solid blue;
+        border: 3px solid #ccc;
     }
 `;
 
+// 프로필 변경 버튼
 const SubmitButton = styled.button`
     width: 100px;
     height: 40px;
-    margin-top: 20px;
-    background-color: #007bff;
+    background-color: #1351f9;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
+
+    // 커서 올릴 시
     &:hover {
-        background-color: #0056b3;
+        background-color: #007bff;
+        007bff
     }
 `;

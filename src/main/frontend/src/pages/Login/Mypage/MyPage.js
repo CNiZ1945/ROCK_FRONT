@@ -108,7 +108,11 @@ const MyPage = () => {
                                         setProfileModalOpen(prv => !prv)
                                     }}
                                 >
-                                    프로필 전환
+                                    {!profileModalOpen ? (
+                                        '프로필 전환'
+                                    ):(
+                                        '창 닫기'
+                                    )}
                                 </EmailsButton>
                             </InputTextSizeW>
                         </FormBlockBody>
@@ -335,30 +339,29 @@ const TitelBox = styled.div`
 const EmailsButton = styled.button`
     width: 100px;
     height: 45px;
-    margin-top: 50px;
+    margin-top: 57px;
     padding: 0.5rem 0.833rem;
-    font-size: 12px;
+    font-size: 15px;
     text-align: center;
-    background-color: transparent !important;
-    border: 1px solid rgb(77, 77, 77);
+    background-color: #1351f9;
+    border: 2px solid #1351f9;
     opacity: 0.7;
-    color: #f4f4f4;
+    color: #fff;
     // margin-top: 1.8rem;
     border-radius: 2px;
     //margin-left: 20px;
     float: left;
 
     &:hover {
-        solid 1px # 1351 f9;
-        color: # 1351 f9;
+    
+        background-color: #2a00ff;
+        font-weight: 600;
     }
 
     &:active {
-        solid
-        1px #ff27a3;
-
-        #ff27a3
-    ;
+        border: solid 1px #ff27a3;
+        color: #ff27a3;
+    
     }
 `;
 
