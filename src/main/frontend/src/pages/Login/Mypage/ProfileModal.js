@@ -38,18 +38,18 @@ export default function ProfileModal({updateProfileImage}) {
         }
     };
  
-    // memberInfo가 변경될 때마다 fetchMemberInfo() 로딩
-    useEffect(() => {
-        fetchMemberInfo();
-        console.log("MemberInfo: ", memberInfo);
-    }, [memberInfo]);
+    // // memberInfo가 변경될 때마다 fetchMemberInfo() 로딩
+    // useEffect(() => {
+    //     fetchMemberInfo();
+    //     console.log("MemberInfo: ", memberInfo);
+    // }, [memberInfo]);
 
-    // memberInfo.memProfile가 변경될때 마다 log 출력
-    useEffect(() => {
-        if (memberInfo.memProfile) {
-            console.log("Profile updated:", memberInfo.memProfile);
-        }
-    }, [memberInfo.memProfile]);
+    // // memberInfo.memProfile가 변경될때 마다 log 출력
+    // useEffect(() => {
+    //     if (memberInfo.memProfile) {
+    //         console.log("Profile updated:", memberInfo.memProfile);
+    //     }
+    // }, [memberInfo.memProfile]);
 
     // 프로필 사진 submit 관리
     const handleSubmit = async (e) => {

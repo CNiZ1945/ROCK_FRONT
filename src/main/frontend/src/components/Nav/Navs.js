@@ -11,7 +11,6 @@ import useFetch from '../../Hooks/useFetch';
 import search from './images/search.svg';
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars, faUser, faTimes } from "@fortawesome/free-solid-svg-icons";
 import Profile_1 from './images/Profile_1.svg';
 
 
@@ -22,7 +21,7 @@ function Navs() {
 	const [searchInput, setSearchInput] = useState('');
 	const [scrollPosition, setScrollPosition] = useState(0);
 
-	const [recommendData, loading, error] = useFetch('/data/searchResult.json');
+	const [ loading, error] = useFetch('');
 
 	const [searchTerm, setSearchTerm] = useState('');
 
@@ -100,10 +99,6 @@ function Navs() {
 
 	if (loading) return null;
 	if (error) return window.alert('통신에 실패하였습니다');
-
-	const filteredRecommendData = recommendData.movies.filter(item =>
-		item.name.replace(' ', '').includes(searchInput)
-	);
 
 
 	//HTML

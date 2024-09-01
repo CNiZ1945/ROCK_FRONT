@@ -16,10 +16,8 @@ import NoticeView from "./pages/Notice/NoticeView";
 import NoticeWrite from "./pages/Notice/NoticeWrite";
 import MemberInfo from "./pages/Login/MemberInfo";
 import MyPage from "./pages/Login/Mypage/MyPage";
-import Chart from './pages/Chart/Chart';
 import MovieSearch from './pages/SearchKeyword/MovieSearch';
 
-import AdminApp from './pages/Admin/AdminApp';
 import AdminMovieList from './pages/Admin/AdminMovieList';
 import SearchKeyword from './pages/SearchKeyword/SearchKeyword';
 import AdminNoticeListPage from './pages/Admin/AdminNoticeListPage';
@@ -30,15 +28,13 @@ import AdminMovieUploadModifyPage from './pages/Admin/AdminMovieUploadModifyPage
 import AdminMovieUploadFileModifyPage from './pages/Admin/AdminMovieUploadFileModifyPage';
 import AdminMovieUploadFilePage from './pages/Admin/AdminMovieUploadFilePage';
 import AdminMovieUploadPage from './pages/Admin/AdminMovieUploadPage';
-import TokenChecker from './components/Nav/TokenChecker';
 import Recommend from './pages/MovieDetail/Recommend';
 
 
 //Router
 const Router = () => {
     return (<BrowserRouter>
-            <Navs/>
-            {/* <TokenChecker /> */}
+            <Navs />
         {/*Routes*/}
             <Routes>
                 {/*메인*/}

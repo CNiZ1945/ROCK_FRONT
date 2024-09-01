@@ -7,7 +7,6 @@ import { api } from '../../api/axios';
 
 import SideBar from './SideBar';
 import home from "./images/home.svg";
-import { BiBorderRadius } from 'react-icons/bi';
 import ChatBot from '../../components/ChatBot/ChatBot';
 
 

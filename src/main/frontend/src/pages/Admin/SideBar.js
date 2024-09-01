@@ -1,9 +1,7 @@
 import React from 'react';
 import {Link, NavLink, useLocation} from 'react-router-dom';
 // import * as S from './style';
-import Router from "../../Router";
 import styled from "styled-components";
-import profile from "./images/profile.svg";
 
 import home from "./images/home.svg";
 import pencil from "./images/pencil.svg";

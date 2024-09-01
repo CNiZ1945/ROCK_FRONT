@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import CommonTable from '../../components/table/CommonTable';
 import CommonTableColumn from '../../components/table/CommonTableColumn';
 import CommonTableRow from '../../components/table/CommonTableRow';
-import { postList } from '../../Data';
 import styled from "styled-components";
 import Pagination from "react-js-pagination";
 import './css/Paging.css';

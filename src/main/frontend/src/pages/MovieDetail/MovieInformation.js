@@ -1,16 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import poster from './images/poster.jpg'
 
-import Actor from './images/Actor.jpg'
-import Director from './images/Director.jpg'
 import { useCallback } from 'react';
 import { api } from '../../api/axios';
 
-// import authorship1 from './images/authorship1.jpg'
-// import authorship2 from './images/authorship2.jpg'
-// import authorship3 from './images/authorship3.jpg'
 
 
 //영화,상세정보 탭

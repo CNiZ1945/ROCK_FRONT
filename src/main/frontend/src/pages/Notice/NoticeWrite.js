@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from 'axios';
 // import './css/NoticeWrite.css';
 import styled from "styled-components";
-import google from "../Login/images/continue_google_neutral.png";
 
 import notice from "./images/notice_write.png";
 import { api } from "../../api/axios";

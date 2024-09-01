@@ -13,7 +13,6 @@ import Watched from "./component/Watched";
 import Watching from "./component/Watching"
 
 //img
-import searchimg from "../MovieDetail/images/searchimg.png";
 import bullet from "../SearchKeyword/images/bullet.svg";
 
 

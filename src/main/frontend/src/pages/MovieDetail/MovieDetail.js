@@ -4,16 +4,10 @@ import styled from 'styled-components';
 import { useParams, useNavigate } from 'react-router-dom';
 
 
-import DetailImg from './MovieDetailVideoImage/DetailImg';
-import poster from './images/poster.jpg'
-import like from './images/like.svg'
-import likes from './images/likes.svg'
 import share from './images/share.svg'
 
-import MoviePlay from './MoviePlay';
 
 import MovieInformation from './MovieInformation'
-import CharmingGraph from './CharmingGraph';
 import MovieReview from './MovieReview';
 // import MovieTab from './MovieTab.js'
 import ChatBot from '../../components/ChatBot/ChatBot.js';

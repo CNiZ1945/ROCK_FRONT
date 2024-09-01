@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { getPostByNo } from '../../Data';
 import './css/Notice.css';
 import './css/NoticeView.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -8,7 +7,6 @@ import axios from 'axios';
 import { api } from '../../api/axios';
 import styled from 'styled-components';
 
-import notice from "./images/notice_write.png";
 import ChatBot from '../../components/ChatBot/ChatBot';
 
 //공지사항 보기

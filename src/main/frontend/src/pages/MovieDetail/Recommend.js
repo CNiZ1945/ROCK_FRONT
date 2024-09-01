@@ -14,11 +14,7 @@ import { api } from '../../api/axios';
 import Recommend_Graph01 from "./images/Recommend_Graph01.png";
 import Recommend_Graph02 from "./images/Recommend_Graph02.png";
 import Recommend_Graph03 from "./images/Recommend_Graph03.png";
-import searchimg from "./images/searchimg.png";
 import top from "../Login/images/top.png";
-import Actor from './images/Actor.jpg'
-import Director from './images/Director.jpg'
-
 
 //Recommend -----------------------------
 const Recommend = () => {
