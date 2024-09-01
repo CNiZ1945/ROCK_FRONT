@@ -172,6 +172,6 @@ const SubmitButton = styled.button`
     // 커서 올릴 시
     &:hover {
         background-color: #007bff;
-        007bff
+        
     }
 `;

@@ -363,9 +363,6 @@ const MovieDetail = () => {
                                                     <span className="gradation-blue"></span>
                                                 </div>
 
-                                                {/* <Destitle>줄거리</Destitle> */}
-
-
                                                 <br />
 
                                                 <DesContent>
@@ -374,37 +371,10 @@ const MovieDetail = () => {
                                                         {movieDetail.movieDescription}
                                                     </MovieDescription>
 
-                                                    {/*줄거리-data*/}
-                                                    {/*<span>{movieDetailDescription}</span>*/}
                                                 </DesContent>
 
-                                                {/*예고편/스틸컷-data**/}
-                                                {/*<DetailImg stillCutList={stillCutList}/>*/}
                                             </DesBox>
 
-
-                                            {/*포스터 제목-data/*/}
-                                            {/*<MovieTitle>{movieData.movieName}</MovieTitle>*/}
-                                            {/*<EnglishTitle>{movieData.movieNameInEnligh}</EnglishTitle>*/}
-                                            {/*<DetailBox>*/}
-                                            {/*    <ul className="DetailTitle">*/}
-                                            {/*        {Detail_LIST.map(category => {*/}
-                                            {/*            return (<DetailTitle key={category.id}>*/}
-                                            {/*                {category.title}*/}
-                                            {/*            </DetailTitle>);*/}
-                                            {/*        })}*/}
-                                            {/*    </ul>*/}
-
-                                            {/*    <ul className="DetailContext">*/}
-                                            {/*        <DetailContext>{director}토드 필립스</DetailContext>*/}
-                                            {/*        <DetailContext>{movieActors?.join(' ')}호야킨 피닉스</DetailContext>*/}
-                                            {/*        <DetailContext>{country}미국</DetailContext>*/}
-                                            {/*        <DetailContext>{movieAgeRating} 15세 관람가</DetailContext>*/}
-                                            {/*        <DetailContext>{movieRunningTime}2시간 1분</DetailContext>*/}
-                                            {/*        <DetailContext>{movieGenre?.join(' ')}스릴러</DetailContext>*/}
-                                            {/*        <DetailContext>{movieOpeningDate}2019년</DetailContext>*/}
-                                            {/*    </ul>*/}
-                                            {/*</DetailBox>*/}
                                         </AsidePoster>
 
                                         {/*포스터-연습용*/}
@@ -600,7 +570,7 @@ const ScrollBtn = styled.button`
 const DesBox = styled.div`
     float: left;
     width: 580px;
-    margin-top: 80px;
+    margin-top: 20px;
     margin-left: 10px;
     margin-right: 10px;
     
@@ -625,16 +595,6 @@ const DesBox = styled.div`
     }
 `;
 
-
-
-//줄거리-제목 스타일
-const Destitle = styled.span`
-    font-weight: 500;
-    font-size: 20px;
-    color: #fff;
-    margin-top: 40px;
-    margin-left: 10px;
-`;
 
 
 //줄거리 내용
@@ -676,44 +636,6 @@ const BookingButton = styled.button`
 `;
 
 
-//포스터 - 오른쪽
-const DetailTitle = styled.li`
-    margin-bottom: 30px;
-    padding-left: 6px;
-    color: #fff;
-    opacity: 0.64;
-    font-size: 18px;
-
-`;
-
-//내용
-const DetailContext = styled.li`
-    margin-bottom: 30px;
-    font-size: 18px;
-    font-weight: 300;
-    padding-top: 2px;
-    text-overflow: hidden;
-    color: #fff;
-    font-size: 18px;
-    margin-left: 30px;
-    line-height: 1.4;
-
-`;
-
-const DetailBox = styled.div`
-    display: flex;
-    justify-content: left;
-    width:1200px;
-    .DetailTitle {
-        margin-top: 30px;
-    }
-
-    .DetailContext {
-        margin-top: 30px;
-    }
-`;
-
-
 //한글 제목
 const MovieTitle = styled.h1`
     color: #fff;
@@ -724,17 +646,6 @@ const MovieTitle = styled.h1`
     //padding-bottom: 20px;
     padding-top: 30px;
     text-align: left;
-`;
-//영문 제목
-const EnglishTitle = styled.p`
-    color: #fff;
-    font-size: 24px;
-    line-height: 24px;
-    font-weight: 300;
-    padding-bottom: 20px;
-    padding-top: 10px;
-    text-align: left;
-    //border-bottom: 1px solid rgba(255, 255, 255, 0.18);
 `;
 
 //찜+공유 감싸는 박스
@@ -862,14 +773,6 @@ const MoviePoster = styled.img`
     margin-top: 50px;
     margin-left: 80px;
 `;
-
-
-//데이터-연습용
-const Detail_LIST = [{ id: 1, title: '감독' }, { id: 2, title: '출연' }, { id: 3, title: '국가' }, { id: 4, title: '등급' }, {
-    id: 5, title: '상영시간'
-}, { id: 6, title: '장르' }, { id: 7, title: '개봉일' },];
-
-
 
 
 //탭 이하 전체 박스

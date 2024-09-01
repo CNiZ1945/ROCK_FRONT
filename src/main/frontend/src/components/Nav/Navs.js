@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import styled, { keyframes } from 'styled-components';
-import { Link, Navigate, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 
 import logo from "./images/rock_w_logo.svg";
@@ -10,8 +10,7 @@ import mypageIcon from './images/icon_mypage.png';
 import useFetch from '../../Hooks/useFetch';
 import search from './images/search.svg';
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Profile_1 from './images/Profile_1.svg';
+import { api } from '../../api/axios';
 
 
 function Navs() {
@@ -20,7 +19,7 @@ function Navs() {
 	const [loginOn, setLoginOn] = useState(true);
 	const [searchInput, setSearchInput] = useState('');
 	const [scrollPosition, setScrollPosition] = useState(0);
-
+	const [memberProfile, setMemberProfile] = useState('');
 	const [ loading, error] = useFetch('');
 
 	const [searchTerm, setSearchTerm] = useState('');
@@ -31,6 +30,42 @@ function Navs() {
 		navigate(path);
 	};
 
+
+	useEffect(() => {
+		if(memberProfile){
+
+			fetchMemberProfile();
+		}
+	}, [memberProfile])
+
+	const fetchMemberProfile = async () => {
+		try {
+			const token = localStorage.getItem('accessToken');
+		const response = await api.get('/auth/memberinfo', {
+			headers: {
+				'Authorization': `Bearer ${token}`
+			},
+		});
+
+		if (response.status === 200) {
+			const data = response.data;
+			setMemberProfile(data.memProfile);
+			// console.log("member data", data);
+			console.log("memberProfile:", memberProfile);
+			
+
+		} else {
+			throw new Error('profile error');
+		}
+		} 
+		catch (error) {
+			console.error("profile error:", error);
+				
+		}
+		
+
+
+	}
 
 	// 로그아웃 버튼 시 로그 아웃
 	const handleLogout = async () => {
@@ -227,38 +262,14 @@ function Navs() {
 					scrollposition={scrollPosition}
 				/>
 
-			{/* <IconImg
-				onClick={() => goToPage('/SignUp')}
-				alt="mypageIcon"
-				src={mypageIcon}
-				scrollposition={scrollPosition}
-			/> */}
 		{/*프로필 이미지 ==================================*/}
-				<IconImg
+				<ProfileImg
 					onClick={() => goToPage('/user/mypage')}
 					alt="Profile"
-					src={Profile_1}
+					src={memberProfile}
 					scrollposition={scrollPosition}
 				/>
 
-				{/*<IconImg*/}
-				{/*    onClick={() => goToPage('/mypage')}*/}
-				{/*    alt="Profile"*/}
-				{/*    src={Profile_2}*/}
-				{/*    scrollposition={scrollPosition}*/}
-				{/*/>*/}
-				{/*<IconImg*/}
-				{/*    onClick={() => goToPage('/mypage')}*/}
-				{/*    alt="Profile"*/}
-				{/*    src={Profile_3}*/}
-				{/*    scrollposition={scrollPosition}*/}
-				{/*/>*/}
-				{/*<IconImg*/}
-				{/*    onClick={() => goToPage('/mypage')}*/}
-				{/*    alt="Profile"*/}
-				{/*    src={Profile_4}*/}
-				{/*    scrollposition={scrollPosition}*/}
-				{/*/>*/}
 		</IconWrapper>
 		</NavWrapper>
 		</>
@@ -267,7 +278,11 @@ function Navs() {
 }
 
 
+const ProfileImg = styled.img`
 
+  width: 25px;
+  cursor: pointer;
+`
 
 const NavWrapper = styled.div`
   display: flex;

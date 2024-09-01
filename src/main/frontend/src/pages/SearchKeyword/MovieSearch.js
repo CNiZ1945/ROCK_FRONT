@@ -8,7 +8,6 @@ import Pagination from "react-js-pagination";
 
 import search from "./images/search.svg"
 import bullet from "./images/bullet.svg"
-import searchimg from './images/searchimg.png'
 
 // 검색 페이지
 function MovieSearch() {
@@ -530,14 +529,6 @@ const SectionA = styled.div`
     }
 `;
 
-
-const SectionBottom = styled.div`
-    width: 240px;
-    color: #a5a5a5;
-    font-size: 14px;
-    display: table-cell;
-    vertical-align: top;
-`;
 
 const MovieSearchButton = styled.button`
 

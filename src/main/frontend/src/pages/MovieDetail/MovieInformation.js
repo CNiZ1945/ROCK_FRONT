@@ -27,64 +27,6 @@ const MovieInformation = () => {
         }
     }, [error]);
 
-    // 로그인 정보 확인 후 작업
-    useEffect(() => {
-        const fetchData = async () => {
-            const token = localStorage.getItem('accessToken');
-            if (!token) {
-                alert("로그인이 필요합니다.");
-                navigate('/login');
-                return;
-            }
-
-            try {
-                const memberInfo = await fetchMemberInfo(token);
-                setMemberInfo(memberInfo);
-                setMemRole(memberInfo.role);
-                await fetchMovieDetail(token, movieId);
-                // await fetchReviews(token, movieId);
-                setIsLoading(false);
-            } catch (error) {
-                console.error("데이터 로딩 중 오류 발생:", error);
-                if (error.response && error.response.status === 401) {
-                    alert("로그인 세션이 만료되었습니다. 다시 로그인해주세요.");
-                    localStorage.removeItem('accessToken');
-                    navigate('/login');
-                } else {
-                    setError("데이터를 불러오는데 실패했습니다.")
-                }
-                setIsLoading(false);
-            }
-        };
-        fetchData();
-    }, [movieId, navigate]);
-
-    // 로그인 정보 
-    const fetchMemberInfo = async (token) => {
-        try {
-            const response = await api.get('/auth/memberinfo', {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            return {
-                role: response.data.memRole,
-                memName: response.data.memName,
-                memNum: response.data.memNum
-            };
-        } catch (error) {
-            console.error('사용자 정보를 가져오는 중 오류 발생:', error);
-            if (error.response) {
-                if (error.response.status === 401) {
-                    setError("로그인 세션이 만료되었습니다. 다시 로그인해주세요.");
-                    navigate('/login');
-                } else {
-                    setError(error.response.data || "사용자 정보를 가져오는데 실패했습니다.");
-                }
-            } else {
-                setError("서버와의 연결에 실패했습니다.");
-            }
-            throw error;
-        }
-    };
 
     // 영화 상세 정보
     const fetchMovieDetail = useCallback(async (token) => {
@@ -211,8 +153,6 @@ const MovieInformation = () => {
                         <ActorBox>
                             {/*포스터-연습용*/}
 
-                            {/*포스터-data/*/}
-                            {/*<MoviePoster src={movieData.movieThumbNailImg} alt="포스터" />*/}
                             <PhotoArray>
                                 {movieDetail.actors?.map(actor => (
 
@@ -336,11 +276,6 @@ const ThumbBox = styled.div`
     height: 278px;
     border-radius: 12px;
 `;
-//포스터 - 이미지
-const MoviePoster = styled.img`
-    // width: 185px;
-    height: 278px;
-`;
 
 //감독- 전체 박스
 const DirectorBox = styled.div`
@@ -463,79 +398,8 @@ const DetailBox = styled.div`
     
 `;
 
-// 감독 출연진 정렬 박스
-const MovieDetailBoxUl = styled.ul`
-    display: flex;
-    // border: 1px solid white;
-    // width: 700px;
-`
 
 
-
-//줄거리 전체 박스
-const DesBox = styled.div`
-    display: flex;
-    flex-wrap: wrap;
-    width: 680px;
-    height: 200px;
-    margin-left: 20px;
-    line-height: 30px;
-`;
-
-//줄거리-제목 스타일
-const Destitle = styled.span`
-    font-weight: 500;
-    font-size: 20px;
-    text-align: left;
-    color: #fff;
-    margin-top: 20px;
-    margin-left: 10px;
-    //border-bottom: 1px solid #fff;
-`;
-
-
-//줄거리 내용
-const DesContent = styled.div`
-    text-align: left;
-    font-size: 16px;
-    color: #817f7f;
-    margin-left: 10px;
-    margin-top: 20px;
-    
-    //줄거리 내용
-    .Destitle_span{
-        margin-top: 20px;
-    }
-`;
-
-//버튼 전체 박스(BoxButton)
-
-const BoxButton = styled.div`
-    display: flex;
-    justify-content: left;
-    margin-top: 20px;
-`;
-
-//버튼- 영화 보러가기
-const BookingButton = styled.button`
-    background-color: #1351f9;
-    color: #fff;
-    box-shadow: 3px 4px 10px rgba(0, 0, 0, 0.2);
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    border-radius: 12px;
-    width: 343px;
-    height: 58px;
-    margin-top: 10px;
-    margin-right: 20px;
-
-
-    &:hover {
-        color: #000;
-        background-color: #fff;
-    }
-`;
 
 
 //포스터 - 오른쪽
