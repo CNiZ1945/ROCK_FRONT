@@ -146,7 +146,7 @@ function Login() {
                                 />
                                 <label htmlFor="id-save" className="label-id-save">아이디 저장</label>
                             </div>
-                            <a href="/FindIdPassword" className="find">아이디 찾기&nbsp;&nbsp;|&nbsp;&nbsp;비밀번호 찾기</a>
+                            <a href="/findIdPassword" className="find">아이디 찾기&nbsp;&nbsp;|&nbsp;&nbsp;비밀번호 찾기</a>
                         </EmailLoginOption>
                         <CommonButton
                             type="button"
@@ -158,7 +158,7 @@ function Login() {
                             <a>로그인</a>
                         </CommonButton>
                         <SignupButton>
-                            <Link to="/SignUp">회원가입</Link>
+                            <Link to="/signUp">회원가입</Link>
                         </SignupButton>
                         <LoginSignupContent>
                             <LogoImg
@@ -336,9 +336,10 @@ const EmailLoginInput = styled.input`
 
 // 폼 디자인
 const EmailLoginContainer = styled.div`
-    float: left;
-    width: 560px;
-    padding: 0 40px;
+float: left;
+width: 560px;
+padding: 0 40px;
+
 `;
 
 const LoginSigninContent = styled.div`
@@ -410,7 +411,8 @@ const LoginHeadText = styled.div`
 // 로그인 전체 박스
 const LoginContainer = styled.div`
     background: rgba(11, 11, 13,0.6);
-
+    border: 1px solid red;
+    
     @media (min-width: 720px) {
         //padding: 1px 0 50px;
         width: 560px;
@@ -420,6 +422,8 @@ const LoginContainer = styled.div`
         padding: 40px 0;
         margin: 80px auto;
         height: 600px;
+
+        margin-top: 120px
     }
 `;
 
@@ -432,5 +436,6 @@ const LoginWrap = styled.div`
     background-position: center;
     background-repeat: no-repeat;
     background-attachment: fixed;
+
 `;
 export default Login;

@@ -53,19 +53,21 @@ export default FindIdPassword;
 
 
 const WrapLogin = styled.div`
+    border: 1px solid red;
   //padding: 1px 0 50px;
     width: 560px;
     height: 450px;
-    margin-bottom: 120px;
+    // margin-bottom: 120px;
+    // margin-top: 120px;
     position: relative;
-    margin: 80px auto;
+    margin: 200px auto 200px auto;
   //min-height: 100%;
     padding: 40px 40px;
-  background:  rgba(11, 11, 13, 0.8);
+    background:  rgba(11, 11, 13, 0.8);
     display: flex;
     justify-content: center;
     text-align: center;
-    //margin-top: 30px;
+
     padding-bottom: 20px;
     
     

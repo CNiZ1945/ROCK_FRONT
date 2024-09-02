@@ -74,6 +74,13 @@ function FindID() {
                     아이디 찾기
                 </CommonButton>
             </Form>
+            <CommonButton
+                onClick={() => {
+                    navigate("/login");
+                }}
+            >
+                로그인 하기
+            </CommonButton>
         </EmailLoginContainer>
     );
 }
