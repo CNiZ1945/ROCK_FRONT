@@ -331,11 +331,11 @@ const MovieDetail = () => {
 
                                                 <SNS>
                                                     {/*찜*/}
-                                                    <MovieLike>
+                                                    <MovieLike onClick={toggleFavorite}>
                                                         <button
                                                             type="button"
+                                                            
                                                             className="MovieLike like"
-                                                            onClick={toggleFavorite}
                                                         >
                                                             {isFavorite ? '❤️' : '🤍'}
                                                         </button>
@@ -699,11 +699,12 @@ const MovieLike = styled.button`
 
     .like {
         font-size: 20px;
-        width: 20px;
+        // width: 20px;
         margin-bottom: 10px;
         justify-content: right;
         display: flex;
         justify-content: center;
+        border: 1px solid red;
         &:hover {
 
         }

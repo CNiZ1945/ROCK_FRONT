@@ -74,6 +74,8 @@ function MemberInfo() {
 
     useEffect(() => {
         fetchMemberInfo();
+        console.log("memberInfo:", memberInfo);
+        
     }, []);
 
 
@@ -346,11 +348,12 @@ function MemberInfo() {
 
                                 <FormBlockBody>
                                     {/*  성별 옵션 변경  */}
-                                    <CustomSelect name="memGender"
-                                        value={memberInfo.memGender}
-                                        disabled="disabled"
-                                        required>
-                                    </CustomSelect>
+                                    <EmailInput name="memGender"
+                                                  value={memberInfo.memGender}
+                                                  disabled
+                                                  required>
+                                        {/* <option value={memberInfo.memGender}>{memberInfo.memGender}</option> */}
+                                    </EmailInput>
                                 </FormBlockBody>
                             </FormBlock>
 

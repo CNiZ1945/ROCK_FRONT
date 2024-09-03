@@ -44,13 +44,16 @@ const MovieReview = ({ movieId, movieDetail, memRole, correspondMemName, corresp
     const [reviewLikes, setReviewLikes] = useState({});
     const [sortBy, setSortBy] = useState('likes');
 
+    const [graphUpdateTrigger, setGraphUpdateTrigger] = useState(0);
 
     // movieId, sortBy에 따라 랜더링
     useEffect(() => {
         const token = localStorage.getItem('accessToken');
 
         if (token) {
-            if (typeof movieId === 'object' && movieId.movieId) {
+            const validMovieId = typeof movieId === 'object' && movieId.movieId ? movieId.movieId : movieId;
+
+            if (validMovieId) {
                 fetchReviews(token, 1).then(() => {
                     console.log("useEffect EditingReviewId after fetch:", editingReviewId);
                 });
@@ -74,7 +77,8 @@ const MovieReview = ({ movieId, movieDetail, memRole, correspondMemName, corresp
     // 리뷰 불러오기 
     const fetchReviews = async (token, page = 1) => {
         try {
-            const validMovieId = movieId.movieId;
+            // movie id 정보가 객체일 경우 string을 추출
+            const validMovieId = typeof movieId === 'object' && movieId.movieId ? movieId.movieId : movieId;
             const response = await api.get(`/user/movies/detail/${validMovieId}/reviews?page=${page}&sortBy=${sortBy}`, {
                 headers: {'Authorization': `Bearer ${token}`}
             });
@@ -141,7 +145,7 @@ const MovieReview = ({ movieId, movieDetail, memRole, correspondMemName, corresp
     const handleSubmitReview = async () => {
         const token = localStorage.getItem('accessToken');
         try {
-            const validMovieId = movieId.movieId;
+            const validMovieId = typeof movieId === 'object' && movieId.movieId ? movieId.movieId : movieId;
             const reviewData = {
                 reviewContent: newReview.content,
                 reviewRating: newReview.rating,
@@ -164,6 +168,8 @@ const MovieReview = ({ movieId, movieDetail, memRole, correspondMemName, corresp
             setEmotionPoints({stressReliefPoint: false, scaryPoint: false, realityPoint: false, immersionPoint: false, tensionPoint: false});
             await fetchReviews(token, currentPage);
             alert(editingReviewId ? '리뷰가 수정되었습니다.' : '리뷰가 작성되었습니다.');
+
+            setGraphUpdateTrigger(prev => prev + 1);
         } catch (error) {
             if (error.response && error.response.data) {
                 
@@ -197,7 +203,7 @@ const MovieReview = ({ movieId, movieDetail, memRole, correspondMemName, corresp
     // 리뷰 delete 관리
     const handleDeleteReview = async (reviewId) => {
         const token = localStorage.getItem('accessToken');
-        const validMovieId = movieId.movieId;
+        const validMovieId = typeof movieId === 'object' && movieId.movieId ? movieId.movieId : movieId;
         try {
             const response = await api.delete(`/user/movies/detail/${validMovieId}/reviews/${reviewId}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
@@ -228,6 +234,9 @@ const MovieReview = ({ movieId, movieDetail, memRole, correspondMemName, corresp
             setEditingReviewId(null); // 삭제 후 편집 ID 초기화
 
             alert('리뷰가 삭제되었습니다.');
+
+            setGraphUpdateTrigger(prev => prev + 1);
+            
         } catch (error) {
             console.error('리뷰 삭제 중 오류 발생:', error);
             alert('리뷰 삭제에 실패했습니다. 다시 시도해주세요.');
@@ -309,26 +318,15 @@ const MovieReview = ({ movieId, movieDetail, memRole, correspondMemName, corresp
             {/*그래프 자리*/}
             {/* 그래프를 표시할 자리 */}
             <ChartWrap>
-                {/* chartImages의 키와 URL을 이용하여 CharmingGraph 컴포넌트에 데이터 전달 */}
-                {/* {Object.keys(chartImages).map((type, index) => (
-                    <CharmingGraph key={type} index={graphIndex[index]}>
-     
-                        <ReviewChartImg src={chartImages[type]} alt={`${graphIndex[index]} 차트`} />
-                    </CharmingGraph>
-                ))} */}
 
-                {/* <div className="chart-container">
-                    {chartImages.gender && <img src={chartImages.gender} alt="Gender Chart" />}
-                    {chartImages.age && <img src={chartImages.age} alt="Age Chart" />}
-                    {chartImages.attraction && <img src={chartImages.attraction} alt="Attraction Chart" />}
-                    {chartImages.emotion && <img src={chartImages.emotion} alt="Emotion Chart" />}
-                </div> */}
-
-                {CharmingGraph(
-                    movieId = { movieId }
-                )}
+                <CharmingGraph
+                    movieId={movieId}
+                    updateTrigger={graphUpdateTrigger}
+                />
 
             </ChartWrap>
+
+            {/* 리뷰 창 */}
             <WholeReviewConstainer>
 
                 <ReviewInfoBox>

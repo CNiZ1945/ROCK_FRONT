@@ -52,13 +52,12 @@ public class MemberEntity {
     @Column(name = "mem_name", nullable = false)
     private String memName;
 
+    @Column(name = "mem_profile", nullable = false)
+    private String memProfile;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "mem_role", nullable = false)
     private RoleEnum memRole;
-
-//    프로필 사진
-    @Column(name = "mem_profile")
-    private  String memProfile;
 
     //DB 및 연관관계 설정
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -79,20 +78,27 @@ public class MemberEntity {
     @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<MovieReviewEntity> reviews;
 
-
-
-
     @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<MovieWatchHistoryEntity> movieWatch;
 
 
 
     @Builder
-    public MemberEntity(
-            String memId, String memPassword, String memEmail, String memTel, String memGender,
-            LocalDate memBirth, String memName, RoleEnum memRole, String memProfile,
-            List<MessageEntity> message,List<ChatRoomEntity> member,List<SessionEntity> session,List<MovieFavorEntity> favorites,
-                        List<MovieReviewEntity> reviews,List<MovieWatchHistoryEntity> movieWatch) {
+    public MemberEntity(String memId,
+                        String memPassword,
+                        String memEmail,
+                        String memTel,
+                        String memGender,
+                        LocalDate memBirth,
+                        String memName,
+                        RoleEnum memRole,
+                        String memProfile,
+                        List<MessageEntity> message,
+                        List<ChatRoomEntity> member,
+                        List<SessionEntity> session,
+                        List<MovieFavorEntity> favorites,
+                        List<MovieReviewEntity> reviews,
+                        List<MovieWatchHistoryEntity> movieWatch) {
         this.memId = memId;
         this.memPassword = memPassword;
         this.memEmail = memEmail;
@@ -125,8 +131,8 @@ public class MemberEntity {
         this.memTel = newTel;
     }
 
-    // 프로필 사진 변경을 쥐한 메서드
-    public void updateProfile(String newProfile){
+    // 프로필 사진 변경을 위한 메서드
+    public void updateProfile(String newProfile) {
         this.memProfile = newProfile;
     }
 

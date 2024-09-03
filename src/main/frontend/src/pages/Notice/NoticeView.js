@@ -255,7 +255,7 @@ const NoticeView = () => {
                             <ul>
                                 {noticeInfo.files.map((file) => (
                                     <li key={file.boardFileId}>
-                                        <a href="#" onClick={() => downloadFile(file.boardFileId, file.boardOriginFileName)}>
+                                        <a onClick={() => downloadFile(file.boardFileId, file.boardOriginFileName)}>
                                             {file.boardOriginFileName}
                                         </a>
                                     </li>

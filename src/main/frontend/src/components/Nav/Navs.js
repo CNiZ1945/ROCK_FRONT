@@ -74,8 +74,13 @@ function Navs() {
             if (accessToken) {
                 localStorage.removeItem('accessToken');
                 setAccessToken(null);
+				alert("로그아웃 되었습니다.");
 				navigate('/login');
-            }		
+            }
+			else{
+				alert('에러가 발생했습니다. 다시 로그인해주세요');
+				navigate('/login');
+			}		
 		} 
 		catch (error) {
 			console.error('로그아웃 중 오류 발생:', error);

@@ -28,6 +28,7 @@ const MovieInformation = () => {
     }, [error]);
 
 
+
     // 영화 상세 정보
     const fetchMovieDetail = useCallback(async (token) => {
         try {
@@ -36,7 +37,8 @@ const MovieInformation = () => {
             });
             setMovieDetail(response.data);
             console.log("영화정보", response.data);
-        } catch (error) {
+        } 
+        catch (error) {
             console.error('영화 상세 정보를 가져오는 중 오류 발생:', error);
             setMovieDetail(null);
 
@@ -49,20 +51,8 @@ const MovieInformation = () => {
                         case "ERR_R_RATED_MOVIE":
                             alert("청소년 관람 불가 등급의 영화입니다.");
                             break;
-                        case "ERR_UNAUTHORIZED":
-                            alert("접근 권한이 없습니다.");
-                            navigate('/login');
-                            break;
-                        case "ERR_MEMBER_NOT_FOUND":
-                            alert("회원 정보를 찾을 수 없습니다.");
-                            navigate('/login');
-                            break;
                         case "ERR_MOVIE_NOT_FOUND":
                             alert("영화를 찾을 수 없습니다.");
-                            break;
-                        case "ERR_TOKEN_EXPIRED":
-                            alert("로그인 세션이 만료되었습니다. 다시 로그인해주세요.");
-                            navigate('/login');
                             break;
                         default:
                             alert(errorData.message || "영화 정보를 불러오는 데 실패했습니다.");
@@ -76,8 +66,16 @@ const MovieInformation = () => {
                 setError("요청 설정 중 오류가 발생했습니다.");
             }
         }
+        finally{
+            setIsLoading(false)
+        }
     }, [movieId, navigate, setError]);
 
+    useEffect(() =>{ 
+        const token = localStorage.getItem('accessToken');
+
+        fetchMovieDetail(token)
+    }, [movieId]);
 
     if (error) {
         return (

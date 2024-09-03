@@ -19,13 +19,13 @@ public class JwtUtil implements Serializable {
     private String secretKey;
 
     // 액세스 토큰 ( 3시간 유효 )
-//    public String generateAccessToken(String memId) {
-//        return createToken(memId, 1000 * 60 * 60 * 3);
-//    }
-
     public String generateAccessToken(String memId) {
-        return createToken(memId, 1000 * 10);
+        return createToken(memId, 1000 * 60 * 60 * 3);
     }
+
+//    public String generateAccessToken(String memId) {
+//        return createToken(memId, 1000 * 10);
+//    }
 
     // 리프래쉬 토큰 ( 7일 유효 )
     public String generateRefreshToken(String memId) {

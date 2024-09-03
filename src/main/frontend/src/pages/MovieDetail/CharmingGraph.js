@@ -15,7 +15,7 @@ ChartJs.register(LineElement, PointElement, Tooltip, Legend, RadialLinearScale, 
 
 
 //CharmingGraph -그래프
-const CharmingGraph = ({ movieId }) => {
+const CharmingGraph = ({ movieId, updateTrigger  }) => {
     const [error, setError] = useState(null);
     const [chartImages, setChartImages] = useState({
         gender: null,
@@ -24,12 +24,11 @@ const CharmingGraph = ({ movieId }) => {
         emotion: null
     });
 
-    useEffect(() => {
-        const token = localStorage.getItem('accessToken');
 
-        if (token) {
-            fetchMovieChartImages();
-        }
+
+    useEffect(() => {
+        fetchMovieChartImages();
+        
 
         return () => {
             const token = localStorage.getItem('accessToken');
@@ -52,7 +51,7 @@ const CharmingGraph = ({ movieId }) => {
                     });
             }
         };
-    }, [movieId]);
+    }, [movieId, updateTrigger]);
 
 
     const fetchMovieChartImages = async () => {
@@ -84,7 +83,7 @@ const CharmingGraph = ({ movieId }) => {
         }
     };
 
-    const graphIndex = ["‍🧑 성별 분포", "🎓 연령별 분포이", "❤️ 매력 포인트", "😳 감정 포인트"];
+    const graphIndex = ["‍🧑 성별 분포", "🎓 연령별 분포", "❤️ 매력 포인트", "😳 감정 포인트"];
 
     return (
         <GraphContainer>

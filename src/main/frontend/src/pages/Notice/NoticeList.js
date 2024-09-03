@@ -275,6 +275,7 @@ const NoticeList = () => {
                     placeholder="무엇이든 찾아보세요"
                     value={searchKeyword}
                     onChange={e => setSearchKeyword(e.target.value)}
+
                 />
             </WriteSection>
 

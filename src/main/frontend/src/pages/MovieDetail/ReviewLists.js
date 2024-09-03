@@ -59,9 +59,10 @@ const ReviewCommentBox = styled.div`
   background: white;
   // padding: 5px;
   padding: 10px;
-  width: 380px;
+  width: 200px;
   height: 400px;
   border: 2px solid #9971ff;
+  // border: 2px solid red;
   border-radius: 10px;
   margin: 10px 10px 20px 10px;
   box-shadow: 0 15px 15px rgba(0, 0, 0, 0.5);

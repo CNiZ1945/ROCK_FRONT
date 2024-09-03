@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import styled from 'styled-components';
-import { api } from '../../api/axios';
 
 
 //Swiper Component (메인)
@@ -13,7 +12,9 @@ import Watched from "./component/Watched";
 import Watching from "./component/Watching"
 
 //img
+// import searchimg from "../MovieDetail/images/searchimg.png";
 import bullet from "../SearchKeyword/images/bullet.svg";
+import { api } from '../../api/axios';
 
 
 //챗봇
@@ -26,46 +27,58 @@ function Main() {
     const [memberInfo, setMemberInfo] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
 
-    const fetchMemberInfo = async () => {
-        try {
-            const accessToken = localStorage.getItem('accessToken');
-            if (!accessToken) {
-                alert('로그인을 해야 서비스를 이용하실 수 있습니다. 로그인을 해주세요');
-                navigate('/login');
-                return;
-            }
+    // useEffect(() => {
+    //     if (!initializedRef.current) {
+    //         initializedRef.current = true;
 
-            const response = await api.get('/auth/memberinfo', {
-            
-                headers: {
-                    'Authorization': `Bearer ${accessToken}`,
-                    // 'Content-Type': 'application/json',
-                }
-            });
+    //         // 해시(#) 부분에서 토큰과 로그인 방법 추출
+    //         const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    //         const token = hashParams.get('token');
+    //         const loginMethod = hashParams.get('loginMethod');
 
-            if (response.status === 200) {
-                const data = response.data;
-                setMemberInfo(data);
-                console.log('Member info:', data);
-            } else {
-                throw new Error('Failed to fetch user info');
-            }
-        } catch (error) {
-            console.error('Error fetching user info:', error);
-            setError('사용자 정보를 불러오는데 실패했습니다.');
-            navigate('/login');
-        } finally {
-            setIsLoading(false);
-        }
-    };
+    //         if (token && loginMethod) {
+    //             localStorage.setItem('accessToken', token);
+    //             localStorage.setItem('loginMethod', loginMethod);
+    //             window.history.replaceState({}, document.title, "/"); // URL 클리어
+    //         }
 
-    useEffect(() => {
-        fetchMemberInfo();
-    }, []);
+    //         fetchMemberInfo(); // 토큰을 저장한 후에 회원 정보를 가져옴
+    //     }
+    // }, []);
+
+    // const fetchMemberInfo = async () => {
+    //     try {
+    //         const accessToken = localStorage.getItem('accessToken');
+    //         if (!accessToken) {
+    //             alert("로그인이 필요한 페이지입니다. 다시 로그인해주세요")
+    //             navigate('/login');
+    //             return;
+    //         }
+
+    //         const response = await api.get('/auth/memberinfo', {
+    //             headers: {
+    //                 'Authorization': `Bearer ${accessToken}`,
+    //                 'Content-Type': 'application/json'
+    //             }
+    //         });
+
+    //         if (response.ok) {
+    //             const data = await response.json();
+    //             setMemberInfo(data);
+    //         } else {
+    //             throw new Error('Failed to fetch user info');
+    //         }
+    //     } catch (error) {
+    //         setError('사용자 정보를 불러오는데 실패했습니다.');
+    //         navigate('/login');
+    //     } finally {
+    //         setIsLoading(false);
+    //     }
+    // };
 
     const handleMovieClick = async (movieId) => {
         const token = localStorage.getItem('accessToken');
-        if(!token) {
+        if (!token) {
             alert("접근권한이 없습니다.");
             navigate('/login');
         } else {
@@ -91,13 +104,17 @@ function Main() {
                             break;
 
                         default:
-                            alert("영화 정보를 불러오는 데 실패했습니다.")
+                            alert("영화 정보를 불러오는 데 실패했습니다.");
                     }
                 } else {
                     alert("서버와의 연결에 실패했습니다.");
                 }
             }
         }
+    };
+
+    if (isLoading) {
+        return <div>Loading...</div>;
     }
 
     return (

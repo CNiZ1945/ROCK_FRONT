@@ -164,7 +164,6 @@ public class AuthController {
 
         memberInfo.setMemBirth(member.getMemBirth().toString());
 
-
         return ResponseEntity.ok(memberInfo);
     }
 
