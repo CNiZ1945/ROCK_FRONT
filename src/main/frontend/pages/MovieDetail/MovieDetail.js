@@ -94,7 +94,7 @@ const MovieDetail = () => {
             const token = localStorage.getItem('accessToken');
             if (!token) {
                 alert("로그인이 필요합니다.");
-                navigate('/login');
+                navigate('/Login');
                 return;
             }
 
@@ -111,10 +111,10 @@ const MovieDetail = () => {
                 if (error.response && error.response.status === 401) {
                     alert("로그인 세션이 만료되었습니다. 다시 로그인해주세요.");
                     localStorage.removeItem('accessToken');
-                    navigate('/login');
+                    navigate('/Login');
                 } else {
                     setError("데이터를 불러오는데 실패했습니다.")
-                    navigate('/login');
+                    navigate('/Login');
                 }
                 setIsLoading(false);
             }
@@ -151,7 +151,7 @@ const MovieDetail = () => {
             if (error.response) {
                 if (error.response.status === 401) {
                     setError("로그인 세션이 만료되었습니다. 다시 로그인해주세요.");
-                    navigate('/login');
+                    navigate('/Login');
                 } else {
                     setError(error.response.data || "사용자 정보를 가져오는데 실패했습니다.");
                 }
@@ -185,18 +185,18 @@ const MovieDetail = () => {
                             break;
                         case "ERR_UNAUTHORIZED":
                             alert("접근 권한이 없습니다.");
-                            navigate('/login');
+                            navigate('/Login');
                             break;
                         case "ERR_MEMBER_NOT_FOUND":
                             alert("회원 정보를 찾을 수 없습니다.");
-                            navigate('/login');
+                            navigate('/Login');
                             break;
                         case "ERR_MOVIE_NOT_FOUND":
                             alert("영화를 찾을 수 없습니다.");
                             break;
                         case "ERR_TOKEN_EXPIRED":
                             alert("로그인 세션이 만료되었습니다. 다시 로그인해주세요.");
-                            navigate('/login');
+                            navigate('/Login');
                             break;
                         default:
                             alert(errorData.message || "영화 정보를 불러오는 데 실패했습니다.");
@@ -267,7 +267,7 @@ const MovieDetail = () => {
         const token = localStorage.getItem('accessToken');
         if (!token) {
             alert("로그인이 필요합니다.");
-            navigate('/login');
+            navigate('/Login');
             return;
         }
         try {

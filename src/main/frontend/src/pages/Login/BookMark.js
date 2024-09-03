@@ -40,7 +40,7 @@ function BookMark() {
             console.error('Error fetching favorite movies:', error);
             if (error.response && error.response.status === 401) {
                 alert("인증이 만료되었습니다. 다시 로그인해주세요.");
-                navigate('/login');
+                navigate('/Login');
             } else {
                 alert("찜한 컨텐츠를 불러오는 중 오류가 발생했습니다.");
             }

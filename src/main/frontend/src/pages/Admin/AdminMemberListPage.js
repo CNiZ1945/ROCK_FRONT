@@ -62,7 +62,7 @@ function AdminMemberListPage() {
         
         if (!token) {
             alert("로그인이 필요합니다.");
-            navigate('/login');
+            navigate('/Login');
             return;
         }
 
@@ -82,12 +82,12 @@ function AdminMemberListPage() {
                 // 401 Unauthorized: 토큰 만료 또는 잘못된 토큰
                 alert("세션이 만료되었습니다. 다시 로그인해주세요.");
                 localStorage.removeItem('accessToken'); // 토큰 제거
-                navigate('/login');
+                navigate('/Login');
             } else {
                 // 기타 오류
                 console.error('Error fetching user info:', error);
                 alert("오류가 발생했습니다. 다시 로그인해주세요.");
-                navigate('/login');
+                navigate('/Login');
             }
         } finally {
             setIsLoading(false);

@@ -31,7 +31,7 @@ function Main() {
             const accessToken = localStorage.getItem('accessToken');
             if (!accessToken) {
                 alert('로그인을 해야 서비스를 이용하실 수 있습니다. 로그인을 해주세요');
-                navigate('/login');
+                navigate('/Login');
                 return;
             }
 
@@ -53,7 +53,7 @@ function Main() {
         } catch (error) {
             console.error('Error fetching user info:', error);
             setError('사용자 정보를 불러오는데 실패했습니다.');
-            navigate('/login');
+            navigate('/Login');
         } finally {
             setIsLoading(false);
         }
@@ -67,7 +67,7 @@ function Main() {
         const token = localStorage.getItem('accessToken');
         if(!token) {
             alert("접근권한이 없습니다.");
-            navigate('/login');
+            navigate('/Login');
         } else {
             try {
                 await api.get(`/movie/${movieId}`, {
@@ -79,7 +79,7 @@ function Main() {
                     switch (error.response.data.errCode) {
                         case "ERR_UNAUTHORIZED":
                             alert("접근 권한이 없습니다.");
-                            navigate('/login');
+                            navigate('/Login');
                             break;
 
                         case "ERR_R_RATED_MOVIE":
@@ -119,7 +119,7 @@ function Main() {
                                 className="button"
                                 type="button"
                                 onClick={() => {
-                                    navigate(`/user/mypage/`);
+                                    navigate(`/user/Mypage/`);
                                 }}
                             >
                                 <img className="bullet" src={bullet}></img>
@@ -143,7 +143,7 @@ function Main() {
                                 className="button"
                                 type="button"
                                 onClick={() => {
-                                    navigate(`/user/mypage/`);
+                                    navigate(`/user/Mypage/`);
                                 }}
                             >
                                 <img className="bullet" src={bullet}></img>

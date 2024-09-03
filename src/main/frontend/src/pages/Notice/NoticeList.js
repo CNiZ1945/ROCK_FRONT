@@ -44,7 +44,7 @@ const NoticeList = () => {
             const token = localStorage.getItem('accessToken');
             if (!token) {
                 alert('로그인이 필요한 페이지입니다.');
-                navigate("/login");
+                navigate("/Login");
                 // return;
             }
             else {
@@ -55,7 +55,7 @@ const NoticeList = () => {
         catch (error) {
             console.error('PostList user info error:', error);
             alert("오류가 발생했습니다. 다시 로그인해주세요")
-            navigate('/login');
+            navigate('/Login');
         }
         finally {
             setIsLoading(false);
@@ -85,7 +85,7 @@ const NoticeList = () => {
         catch (error) {
             console.error('Error fetching board:', error);
             alert('공지사항 목록을 불러오는 중 오류가 발생했습니다.')
-            navigate("/login");
+            navigate("/Login");
         }
     };
 

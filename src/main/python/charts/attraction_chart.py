@@ -95,7 +95,7 @@ def plot_attraction_rader_chart(attraction_points_df, movie_id):
     # ax.set_ylim(0, 1)
 
     # 파일 경로 설정
-    file_path = os.path.join('src', 'main', 'resources', 'static', 'images', f'attraction_chart_{movie_id}.png')
+    file_path = os.path.join('src', 'main', 'resources', 'static', 'images', f'attraction_chart_{movie_id}.webp')
     os.makedirs(os.path.dirname(file_path), exist_ok=True)
 
     # 파일로 저장

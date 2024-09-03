@@ -10,7 +10,6 @@ import { api } from '../../api/axios';
 //아이디찾기
 function FindID() {
 
-    const navigate = useNavigate();
 
     const [findIdForm, setFindIdForm] = useState({
         memName: '',

@@ -39,7 +39,7 @@ const MyPage = () => {
             const accessToken = localStorage.getItem('accessToken');
             if (!accessToken) {
                 alert('로그인이 필요합니다.');
-                navigate('/login')
+                navigate('/Login')
                 return;
             }
 
@@ -61,7 +61,7 @@ const MyPage = () => {
         } catch (error) {
             console.error("Mypage header user name error:", error);
             alert("회원 이름을 불러오는데 문제가 발생했습니다. 다시 로그인해주세요");
-            navigate('/login')
+            navigate('/Login')
             return;
         }
     };

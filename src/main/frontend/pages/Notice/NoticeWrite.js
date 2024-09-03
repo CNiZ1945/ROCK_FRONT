@@ -39,7 +39,7 @@ function NoticeWrite() {
         const token = localStorage.getItem('accessToken');
         if(!token){
             alert("로그인이 필요한 페이지입니다. 로그인부터 진행해주세요");
-            navigate("/login")
+            navigate("/Login")
         }
 
     })
@@ -123,7 +123,7 @@ function NoticeWrite() {
         <Wrap>
             <FromNoticeWrap>
                 <Header className="name">
-                    <Link to={`/user/notice/`}>
+                    <Link to={`/user/Notice/`}>
                         게시판
                     </Link>
                 </Header>

@@ -43,7 +43,7 @@ const Recommend = () => {
             console.error('사용자 정보를 가져오는 중 오류 발생:', error);
             if (error.response && error.response.status === 401) {
                 setError("로그인 세션이 만료되었습니다. 다시 로그인해주세요.");
-                navigate('/login');
+                navigate('/Login');
             } else {
                 setError("사용자 정보를 가져오는데 실패했습니다.");
             }

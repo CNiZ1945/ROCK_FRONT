@@ -185,7 +185,7 @@ export default function ChangePassword() {
 
                 {/*회원가입 속 로그인하러 가기*/}
                 <div className="login_link">
-                    이전으로 돌아가기&nbsp;&nbsp;<Link to="/login">로그인</Link>
+                    이전으로 돌아가기&nbsp;&nbsp;<Link to="/Login">로그인</Link>
                 </div>
             </form>
 

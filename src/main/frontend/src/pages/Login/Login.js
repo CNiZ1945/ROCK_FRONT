@@ -158,7 +158,7 @@ function Login() {
                             <a>로그인</a>
                         </CommonButton>
                         <SignupButton>
-                            <Link to="/signUp">회원가입</Link>
+                            <Link to="/SignUp">회원가입</Link>
                         </SignupButton>
                         <LoginSignupContent>
                             <LogoImg
@@ -411,7 +411,7 @@ const LoginHeadText = styled.div`
 // 로그인 전체 박스
 const LoginContainer = styled.div`
     background: rgba(11, 11, 13,0.6);
-    border: 1px solid red;
+    // border: 1px solid red;
     
     @media (min-width: 720px) {
         //padding: 1px 0 50px;

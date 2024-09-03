@@ -13,7 +13,6 @@ function MyReview() {
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [hasPermission, setHasPermission] = useState(false);
-    const navigate = useNavigate();
 
     const reviewsPerPage = 1;
 

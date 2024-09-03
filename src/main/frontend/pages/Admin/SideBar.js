@@ -42,28 +42,28 @@ const SideBar = () => {
 
                     <Menu>
                         <Img src={pencil}></Img>
-                        <NavLink className="a" style={({isActive}) => (isActive ? activeStyle : {})} to='/admin/notice'>
+                        <NavLink className="a" style={({isActive}) => (isActive ? activeStyle : {})} to='/admin/Notice'>
                             Notice
                         </NavLink>
                     </Menu>
 
                     <Menu>
                         <Img src={people}></Img>
-                        <NavLink className="a" style={({isActive}) => (isActive ? activeStyle : {})} to='/admin/memberList'>
+                        <NavLink className="a" style={({isActive}) => (isActive ? activeStyle : {})} to='/admin/MemberList'>
                             MmberList
                         </NavLink>
                     </Menu>
 
                     <Menu>
                         <Img src={movie}></Img>
-                        <NavLink className="a" style={({isActive}) => (isActive ? activeStyle : {})} to='/admin/movieList'>
+                        <NavLink className="a" style={({isActive}) => (isActive ? activeStyle : {})} to='/admin/MovieList'>
                             Movie Manage
                         </NavLink>
                     </Menu>
 
                     <Menu>
                         <Img src={gear}></Img>
-                        <Link className="a" to='/login'>Logout</Link>
+                        <Link className="a" to='/Login'>Logout</Link>
                     </Menu>
                 </SideWrap>
             </MenuWrap>

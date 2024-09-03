@@ -39,7 +39,7 @@ function Navs() {
             if (accessToken) {
                 localStorage.removeItem('accessToken');
                 setAccessToken(null);
-				navigate('/login');
+				navigate('/Login');
             }		
 		} 
 		catch (error) {
@@ -151,7 +151,7 @@ function Navs() {
 
 			<MenuName
 				onClick={() => {
-					goToPage('user/notice');
+					goToPage('user/Notice');
 				}}
 				scrollposition={scrollPosition}
 			>
@@ -162,7 +162,7 @@ function Navs() {
 
 			<MenuName
 				onClick={() => {
-					goToPage('/user/mypage');
+					goToPage('/user/Mypage');
 				}}
 				scrollposition={scrollPosition}
 			>
@@ -173,7 +173,7 @@ function Navs() {
 
 			<MenuName
 				onClick={() => {
-					goToPage('/admin/movieList');
+					goToPage('/admin/MovieList');
 				}}
 				scrollposition={scrollPosition}
 			>
@@ -185,22 +185,7 @@ function Navs() {
 
 			{/*  검색창 */}
 			<SearchWrapper ref={searchWrapper}>
-				{/* {searchInput && (
-					<RecommendSearch>
-						{filteredRecommendData.map(item => {
-							return (
-								<SearchedLink
-									onClick={() => {
-										navigate(`/movieDetail/${item.id}`);
-									}}
-									key={item.id}
-								>
-									{item.name}
-								</SearchedLink>
-							);
-						})}
-					</RecommendSearch>
-				)} */}
+
 				<form onSubmit={handleSearchSubmit}>
 				<SearchInput
 					placeholder="영화 이름 입력"

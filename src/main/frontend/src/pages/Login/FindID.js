@@ -76,7 +76,7 @@ function FindID() {
             </Form>
             <CommonButton
                 onClick={() => {
-                    navigate("/login");
+                    navigate("/Login");
                 }}
             >
                 로그인 하기

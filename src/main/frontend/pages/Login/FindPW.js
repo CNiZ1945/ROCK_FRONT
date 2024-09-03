@@ -10,7 +10,6 @@ import { api } from '../../api/axios';
 //아이디찾기
 function FindLogin() {
 
-    const navigate = useNavigate();
 
     const [findPasswordForm, setFindPasswordForm] = useState({
         memId: '',

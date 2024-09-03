@@ -539,7 +539,7 @@ function SignUp() {
 
                         {/*회원가입 속 로그인하러 가기*/}
                         <AdditionTxt>
-                            이미 가입하셨다면&nbsp;&nbsp;<Link to="/login">로그인</Link>
+                            이미 가입하셨다면&nbsp;&nbsp;<Link to="/Login">로그인</Link>
                         </AdditionTxt>
 
                     </LoginSection>

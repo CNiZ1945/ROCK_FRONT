@@ -1,19 +1,26 @@
 package com.movie.rock.pythonData.controller;
 
-import com.movie.rock.pythonData.service.MovieChartService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.movie.rock.pythonData.service.MovieChartService;
+
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
@@ -53,7 +60,7 @@ public class MovieChartController {
     // 이미지 가져오기
     private ResponseEntity<byte[]> getMovieChartResponseEntity(Long movieId, String chartType) throws IOException {
         // 파일 경로
-        Path path = Paths.get("src/main/resources/static/images/" + chartType + "_" + movieId + ".png");
+        Path path = Paths.get("src/main/resources/static/images/" + chartType + "_" + movieId + ".webp");
 
         // 파일 존재 확인
         if (Files.notExists(path)) {

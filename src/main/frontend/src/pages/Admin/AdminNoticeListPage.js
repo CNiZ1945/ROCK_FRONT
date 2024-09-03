@@ -42,7 +42,7 @@ function AdminNoticeListPage() {
         
         if (!token) {
             alert("로그인이 필요합니다.");
-            navigate('/login');
+            navigate('/Login');
             return;
         }
 
@@ -62,12 +62,12 @@ function AdminNoticeListPage() {
                 // 401 Unauthorized: 토큰 만료 또는 잘못된 토큰
                 alert("세션이 만료되었습니다. 다시 로그인해주세요.");
                 localStorage.removeItem('accessToken'); // 토큰 제거
-                navigate('/login');
+                navigate('/Login');
             } else {
                 // 기타 오류
                 console.error('Error fetching user info:', error);
                 alert("오류가 발생했습니다. 다시 로그인해주세요.");
-                navigate('/login');
+                navigate('/Login');
             }
         } finally {
             setIsLoading(false);
@@ -97,7 +97,7 @@ function AdminNoticeListPage() {
         catch (error) {
             console.error('Error fetching board:', error);
             alert('공지사항 목록을 불러오는 중 오류가 발생했습니다.')
-            navigate("/login");
+            navigate("/Login");
         }
     };
 
@@ -364,7 +364,7 @@ function AdminNoticeListPage() {
                                 </CommonTableColumn>
                                 <CommonTableColumn>{noticeNumber(index)}</CommonTableColumn>
                                 <CommonTableColumn>
-                                    <Link to={`/user/notice/${item.boardId}`}>{item.boardTitle}</Link>
+                                    <Link to={`/user/Notice/${item.boardId}`}>{item.boardTitle}</Link>
                                 </CommonTableColumn>
                                 <CommonTableColumn>{item.modifyDate}</CommonTableColumn>
                                 <CommonTableColumn>{item.boardViewCount}</CommonTableColumn>
@@ -379,7 +379,7 @@ function AdminNoticeListPage() {
                                 <CommonTableRow key={index}>
                                     <CommonTableColumn>{noticeNumber(index)}</CommonTableColumn>
                                     <CommonTableColumn>
-                                        <Link to={`/user/notice/${item.boardId}`}>{item.boardTitle}</Link>
+                                        <Link to={`/user/Notice/${item.boardId}`}>{item.boardTitle}</Link>
                                     </CommonTableColumn>
                                     <CommonTableColumn>{item.modifyDate}</CommonTableColumn>
                                     <CommonTableColumn>{item.boardViewCount}</CommonTableColumn>

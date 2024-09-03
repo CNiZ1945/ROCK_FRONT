@@ -46,7 +46,7 @@ function SwiperCard({ movie }) {
 
                     <OverlayBtn
                         onClick={() => {
-                            navigate(`/user/moviePage/${movie.id}`);
+                            navigate(`/user/MoviePage/${movie.id}`);
                         }}
                     >
                         보러가기

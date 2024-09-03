@@ -73,7 +73,7 @@ def plot_age_bar_chart(age_df, movie_id):
     plt.tight_layout()
 
     # 파일 경로 설정
-    file_path = os.path.join('src', 'main', 'resources', 'static', 'images', f'age_chart_{movie_id}.png')
+    file_path = os.path.join('src', 'main', 'resources', 'static', 'images', f'age_chart_{movie_id}.webp')
     os.makedirs(os.path.dirname(file_path), exist_ok=True)
 
     # 파일로 저장

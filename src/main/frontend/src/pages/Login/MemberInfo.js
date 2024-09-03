@@ -38,7 +38,7 @@ function MemberInfo() {
         try {
             const accessToken = localStorage.getItem('accessToken');
             if (!accessToken) {
-                navigate('/login');
+                navigate('/Login');
                 return;
             }
 
@@ -63,7 +63,7 @@ function MemberInfo() {
         catch (error) {
             console.error('Error fetching user info:', error);
             alert('사용자 정보를 불러오는데 실패했습니다.')
-            navigate('/login');
+            navigate('/Login');
 
         }
         finally {
@@ -226,7 +226,7 @@ function MemberInfo() {
 
                                             <EmailsButton
                                                 type="button"
-                                                onClick={() => navigate('/user/changePassword')}
+                                                onClick={() => navigate('/user/ChangePassword')}
                                             >
                                                 비밀번호 변경
                                             </EmailsButton>

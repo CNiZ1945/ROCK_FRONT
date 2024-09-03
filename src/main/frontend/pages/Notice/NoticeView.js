@@ -25,7 +25,7 @@ const NoticeView = () => {
 
         if (!token) {
             alert("로그인이 필요합니다");
-            navigate('/login');
+            navigate('/Login');
             return;
         }
 
@@ -45,7 +45,7 @@ const NoticeView = () => {
         }).catch(error => {
             console.error("사용자 정보를 가져오는 중 오류 발생:", error);
             alert("오류가 발생했습니다. 다시 로그인해주세요")
-            navigate("/login");
+            navigate("/Login");
         })
 
 
@@ -108,7 +108,7 @@ const NoticeView = () => {
         }).then(response => {
             console.log('게시글 삭제 완료:', response.data);
             alert('게시글이 삭제되었습니다.');
-            navigate('/user/notice');
+            navigate('/user/Notice');
 
         }).catch(error => {
             console.error('게시글 삭제 중 오류 발생:', error);
@@ -186,7 +186,7 @@ const NoticeView = () => {
             <Wrap>
                 <NoticeViewHead>
                 <Header className="name">
-                    <Link to={`/user/notice/`}>
+                    <Link to={`/user/Notice/`}>
                         게시판
                     </Link>
                 </Header>

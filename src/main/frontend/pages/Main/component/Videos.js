@@ -69,10 +69,10 @@ const Videos = () => {
                         <VideoTextWrapper>
                             <VideoTitle>{movie.movieTitle}</VideoTitle>
                             <VideoContext>{movie.movieDescription || '줄거리 정보가 없습니다.'}</VideoContext>
-                            <VideoBtn onClick={() => navigate(`/user/moviePlay/${movie.movieId}`)}>
+                            <VideoBtn onClick={() => navigate(`/user/MoviePlay/${movie.movieId}`)}>
                                 재생
                             </VideoBtn>
-                            <VideoBtn onClick={() => navigate(`/user/moviePage/${movie.movieId}`)}>
+                            <VideoBtn onClick={() => navigate(`/user/MoviePage/${movie.movieId}`)}>
                                 상세 보기
                             </VideoBtn>
                         </VideoTextWrapper>
