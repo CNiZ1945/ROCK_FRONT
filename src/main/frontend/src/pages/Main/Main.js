@@ -27,25 +27,26 @@ function Main() {
     const [memberInfo, setMemberInfo] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
 
-    // useEffect(() => {
-    //     if (!initializedRef.current) {
-    //         initializedRef.current = true;
+    useEffect(() => {
+        if (!initializedRef.current) {
+            initializedRef.current = true;
 
-    //         // 해시(#) 부분에서 토큰과 로그인 방법 추출
-    //         const hashParams = new URLSearchParams(window.location.hash.substring(1));
-    //         const token = hashParams.get('token');
-    //         const loginMethod = hashParams.get('loginMethod');
+            // 해시(#) 부분에서 토큰과 로그인 방법 추출
+            const hashParams = new URLSearchParams(window.location.hash.substring(1));
+            const token = hashParams.get('token');
+            const loginMethod = hashParams.get('loginMethod');
 
-    //         if (token && loginMethod) {
-    //             localStorage.setItem('accessToken', token);
-    //             localStorage.setItem('loginMethod', loginMethod);
-    //             window.history.replaceState({}, document.title, "/"); // URL 클리어
-    //         }
+            if (token && loginMethod) {
+                localStorage.setItem('accessToken', token);
+                localStorage.setItem('loginMethod', loginMethod);
+                window.history.replaceState({}, document.title, "/"); // URL 클리어
+            }
 
-    //         fetchMemberInfo(); // 토큰을 저장한 후에 회원 정보를 가져옴
-    //     }
-    // }, []);
+            fetchMemberInfo(); // 토큰을 저장한 후에 회원 정보를 가져옴
+        }
+    }, []);
 
+    // 원본
     // const fetchMemberInfo = async () => {
     //     try {
     //         const accessToken = localStorage.getItem('accessToken');
@@ -75,6 +76,34 @@ function Main() {
     //         setIsLoading(false);
     //     }
     // };
+
+
+    // 로그인 에러로 수정했음
+        const fetchMemberInfo = async () => {
+        try {
+            const accessToken = localStorage.getItem('accessToken');
+            if (!accessToken) {
+                alert("로그인이 필요한 페이지입니다. 다시 로그인해주세요.");
+                navigate('/Login');
+                return;
+            }
+
+            const response = await api.get('/auth/memberinfo', {
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            setMemberInfo(response.data);
+        } catch (error) {
+            setError('사용자 정보를 불러오는데 실패했습니다.');
+            navigate('/Login');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
 
     const handleMovieClick = async (movieId) => {
         const token = localStorage.getItem('accessToken');
