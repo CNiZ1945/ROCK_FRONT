@@ -7,7 +7,7 @@ import { api } from '../../api/axios';
 //css
 import './css/Chatbot.css';
 import styled from "styled-components";
-
+import ChatImg from "./images/chat_img.png"
 
 
 
@@ -207,11 +207,15 @@ function ChatBot() {
         <>
             {userRole === 'ADMIN' ? (
                 <div className="chatbot-button" onClick={handleAdminChatbotClick}>
-                    <button>챗봇 상담 관리</button>
+                    <button>
+                    <img src={ChatImg} />
+                    </button>
                 </div>
             ) : (
                 <div className="chatbot-button" onClick={openChatBot}>
-                    <button>챗봇 상담</button>
+                    <button>
+                        <img src={ChatImg} />
+                    </button>
                 </div>
             )}
 

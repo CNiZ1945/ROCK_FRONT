@@ -8,6 +8,7 @@ import { api } from '../../api/axios';
 import styled from 'styled-components';
 
 import ChatBot from '../../components/ChatBot/ChatBot';
+import BackImg from './images/login-background3.png'
 
 //공지사항 보기
 const NoticeView = () => {
@@ -217,13 +218,17 @@ const NoticeView = () => {
                         {/* 조건부 렌더링 적용 */}
                         {noticeInfo ? (
                             <>
+                            <NoticeInfo>
                                 <span>날짜: {noticeInfo.modifyDate}</span>
                                 <span>조회수: {noticeInfo.boardViewCount ?? '조회수 정보 없음'}</span>
+                            </NoticeInfo>
                             </>
                         ) : (
                             <>
+                            <NoticeInfo>
                                 <span>날짜: 정보 없음</span>
                                 <span>조회수: 조회수 정보 없음</span>
+                            </NoticeInfo>
                             </>
                         )}
                     </div>
@@ -304,6 +309,9 @@ const Wrap = styled.div`
     display: inline-block;
     display: flex;
     flex-direction: column;
+
+    // background-image: url(${BackImg});
+
 `;
 
 
@@ -314,9 +322,11 @@ const Header = styled.div`
     //background: red;
     font-family: 'SUIT-Regular' !important;
     // color: rgb(51, 61, 75);
+    // color: white;
     font-size: 36px;
     font-weight: 800;
     text-align: left;
+
 `;
 
 
@@ -327,6 +337,8 @@ const NoticeViewHead = styled.div`
     flex-direction: column;
     justify-content: center;
     align-items: center;
+
+    
 
     .noticeViewInfo{
         width: 1024px;
@@ -347,11 +359,32 @@ const NoticeViewTitle = styled.div`
     text-align: center;
     // border: 1px solid red;
 
+    
     input[type = "input"]{
-        border: none;
+        // border: none;
+        border: 1px solid red;
     
     }
 `;
+
+// 글 날짜, 조회
+const NoticeInfo = styled.div`
+    // border: 1px dashed black;
+    background: #f8f8f8;
+    height: 45px;
+    display: flex;
+    justify-content: right;
+    align-items: center;
+    padding-right: 10px;
+    border: none;
+    border-top: 2px solid #d6d4ca;
+    border-bottom: 2px solid #d6d4ca;
+    // border-radius: 10px;
+    
+    span{
+        color: black;
+    }
+`
 
 
 // 글 내용
@@ -362,7 +395,11 @@ const NoticeViewContent = styled.div`
     text-align: center;
 
     textarea{
-
+    // border-radius: 20px;
+    
+    //         border: none;
+    // border-top: 2px solid #d6d4ca;
+    // border-bottom: 2px solid #d6d4ca;
     }
 `;
 
