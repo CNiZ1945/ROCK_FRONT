@@ -15,6 +15,7 @@ import Watching from "./component/Watching"
 // import searchimg from "../MovieDetail/images/searchimg.png";
 import bullet from "../SearchKeyword/images/bullet.svg";
 import { api } from '../../api/axios';
+import ChatBot from '../../components/ChatBot/ChatBot';
 
 
 //챗봇
@@ -259,6 +260,7 @@ function Main() {
 
 
             </Article>
+            <ChatBot />
         </MainContainer>
     );
 }

@@ -11,7 +11,7 @@
     background-image: url("../images/chat_img.png");
 }
 
-.chatbot-button button{
+.chatbot-button > button{
     width: 60px;
     height: 60px;
     border-radius: 50%;
